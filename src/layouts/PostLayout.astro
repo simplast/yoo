@@ -1,0 +1,30 @@
+---
+import BaseLayout from './BaseLayout.astro';
+
+interface Props {
+  title: string; description?: string;
+  pubDate: Date; updatedDate?: Date;
+  category: string; tags?: string[];
+}
+
+const { title, description, pubDate, updatedDate, category, tags = [] } = Astro.props;
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
+---
+
+<BaseLayout title={title} description={description}>
+  <a href="/" class="back-link">← 返回</a>
+  <article>
+    <header class="post-header">
+      <h1 class="post-title">{title}</h1>
+      <div class="post-meta">
+        <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
+        {updatedDate && <span>· 更新于 {formatDate(updatedDate)}</span>}
+        <span>·</span>
+        <a href={`/category/${category}`} class="tag tag-category">{category}</a>
+        {tags.map((tag) => <span class="tag">#{tag}</span>)}
+      </div>
+    </header>
+    <div class="post-body"><slot /></div>
+  </article>
+</BaseLayout>

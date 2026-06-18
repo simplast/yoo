@@ -1,0 +1,40 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  const categories = [...new Set(posts.map((p) => p.data.category))];
+  return categories.map((category) => ({
+    params: { category },
+    props: {
+      category,
+      posts: posts.filter((p) => p.data.category === category)
+        .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()),
+    },
+  }));
+}
+
+const { category, posts } = Astro.props;
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+---
+
+<BaseLayout title={category} description={`${category} 分类下的文章`}>
+  <a href="/category" class="back-link">← 全部分类</a>
+  <h1 class="page-title">{category}</h1>
+  <p class="page-subtitle">共 {posts.length} 篇文章</p>
+  <ul class="post-list">
+    {posts.map((post) => (
+      <li class="post-item">
+        <h2 class="post-item-title">
+          <a href={`/posts/${post.slug}/`}>{post.data.title}</a>
+        </h2>
+        <div class="post-item-meta">
+          <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+        </div>
+        {post.data.description && <p class="post-item-description">{post.data.description}</p>}
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

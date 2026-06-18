@@ -1,0 +1,37 @@
+---
+import '../styles/global.css';
+import { SITE_TITLE } from '../consts';
+
+interface Props { title?: string; description?: string; }
+const { title, description } = Astro.props;
+const pageTitle = title ? `${title} - ${SITE_TITLE}` : SITE_TITLE;
+---
+
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="generator" content={Astro.generator} />
+    {description && <meta name="description" content={description} />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{pageTitle}</title>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <div class="site-title"><a href="/">{SITE_TITLE}</a></div>
+        <nav class="site-nav">
+          <a href="/">文章</a>
+          <a href="/category">分类</a>
+        </nav>
+      </div>
+    </header>
+    <main class="container"><slot /></main>
+    <footer class="site-footer">
+      <div class="container">
+        <p>&copy; {new Date().getFullYear()} {SITE_TITLE}. Powered by Astro & Cloudflare Pages.</p>
+      </div>
+    </footer>
+  </body>
+</html>
