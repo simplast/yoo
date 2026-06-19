@@ -542,13 +542,14 @@ canvas.addEventListener('touchstart',e=>{
     const tx=(touch.clientX-rect.left)*scaleX;
     const ty=(touch.clientY-rect.top)*scaleY;
 
-    // Top 2/3 tap: launch ball or state transitions
-    if(ty<CFG.H*0.66){
-      if(state==='START'){startGame();return;}
-      if(state==='GAME_OVER'){startGame();return;}
-      if(state==='PAUSED'){state='PLAYING';return;}
-      if(ballOnPaddle&&state==='PLAYING'){launchBall();}
-    }
+    // State transitions: tap anywhere on these screens
+    if(state==='START'){startGame();return;}
+    if(state==='GAME_OVER'){startGame();return;}
+    if(state==='PAUSED'){state='PLAYING';return;}
+
+    // Top 2/3 tap while playing: launch ball
+    if(ty<CFG.H*0.66 && ballOnPaddle && state==='PLAYING'){launchBall();}
+
     // Set paddle position immediately on touch
     mouseX=clamp(tx,0,CFG.W);
     lastTouchX=mouseX;
@@ -1197,6 +1198,11 @@ function draw(){
   // Ball-on-paddle hint
   if(ballOnPaddle&&state==='PLAYING'&&Math.sin(gameTime*5)>0){
     drawText('▲ 点击/空格 发球' + (isTouching ? ' · 双击加速' : ''),CFG.W/2,CFG.PAD_Y-50,'#aaffaa',14,'center');
+  }
+
+  // Mobile start hint
+  if(state==='START'&&Math.sin(gameTime*4)>0){
+    drawText('点击屏幕任意位置开始',CFG.W/2,CFG.H/2+52,'#aaa',14,'center');
   }
 
   // Impact rings
