@@ -1,0 +1,79 @@
+// 实体渲染：按顺序绘制所有实体 + 选中塔射程圈
+import type { GameState } from '../game/State';
+import type { Tower } from '../types';
+import { getTowerStat } from '../entities/Tower';
+import { drawEnemy, drawTower, drawProjectile, drawEffect } from './PixelArt';
+
+/**
+ * 绘制所有实体
+ * 顺序：enemies → towers → projectiles → hit/death/splash effects → damageText
+ */
+export function drawEntities(
+  ctx: CanvasRenderingContext2D,
+  state: GameState,
+): void {
+  // 敌人
+  for (const e of state.enemies) {
+    if (!e.alive) continue;
+    drawEnemy(ctx, e);
+  }
+
+  // 塔（光环范围圈由 drawTower 内部处理）
+  for (const t of state.towers) {
+    drawTower(ctx, t);
+    // 选中塔：射程圈 + 高亮边框
+    if (state.selectedTowerId === t.instanceId) {
+      drawSelectionRing(ctx, t);
+    }
+  }
+
+  // 投射物
+  for (const p of state.projectiles) {
+    if (!p.alive) continue;
+    drawProjectile(ctx, p);
+  }
+
+  // 特效（非 damageText，粒子在实体之上）
+  for (const e of state.effects) {
+    if (!e.alive) continue;
+    if (e.type === 'damageText') continue;
+    drawEffect(ctx, e);
+  }
+
+  // 伤害文字（最顶层）
+  for (const e of state.effects) {
+    if (!e.alive) continue;
+    if (e.type === 'damageText') drawEffect(ctx, e);
+  }
+}
+
+/**
+ * 画选中塔的射程圈（虚线圆，半径=getTowerStat(t).range）+ 高亮边框
+ */
+function drawSelectionRing(
+  ctx: CanvasRenderingContext2D,
+  tower: Tower,
+): void {
+  const stat = getTowerStat(tower);
+  const range = stat.range;
+  ctx.save();
+  // 射程圈（白色虚线）
+  ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([6, 4]);
+  ctx.beginPath();
+  ctx.arc(tower.x, tower.y, range, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  // 高亮边框
+  const half = Math.floor(tower.size / 2);
+  ctx.strokeStyle = '#FFFFFF';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(
+    tower.x - half - 2,
+    tower.y - half - 2,
+    tower.size + 4,
+    tower.size + 4,
+  );
+  ctx.restore();
+}

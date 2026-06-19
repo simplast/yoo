@@ -25,9 +25,18 @@
 ## 目录结构
 
 ```
-├── public/                    # 静态资源
-│   ├── games/                # 小游戏
+├── public/                    # 静态资源（原样对外提供）
+│   ├── games/                # 游戏构建产物（green-cycle 为生成物，gitignore）
+│   │   ├── breakout/         # 打砖块（纯 HTML/JS，无构建）
+│   │   └── green-cycle/      # ← vite build 生成
 │   └── favicon.svg
+├── games/                     # 游戏源码项目（不对外提供）
+│   ├── green-cycle/          # TypeScript + Vite 塔防游戏
+│   │   ├── src/  docs/  AGENT.md  package.json  vite.config.ts
+│   │   └── 构建输出 → ../../public/games/green-cycle/
+│   ├── green-cycle-plan.md   # 规划文档
+│   ├── green-cycle-prd.md
+│   └── green-cycle-research.md
 ├── src/
 │   ├── content/
 │   │   ├── config.ts        # 内容集合 schema
@@ -37,6 +46,8 @@
 │   │   └── PostLayout.astro
 │   ├── pages/               # 路由页面
 │   │   ├── index.astro      # 首页（文章列表）
+│   │   ├── games/
+│   │   │   └── index.astro  # 游戏大厅页
 │   │   ├── posts/[...slug].astro
 │   │   └── category/
 │   │       ├── index.astro
@@ -45,7 +56,7 @@
 │   └── styles/
 │       └── global.css       # 全局样式与主题变量
 ├── astro.config.mjs         # Astro 配置
-├── package.json
+├── package.json             # build 脚本编排：build:games && astro build
 ├── tsconfig.json
 └── wrangler.toml            # Cloudflare Pages 配置
 ```
@@ -53,11 +64,24 @@
 ## 常用命令
 
 ```bash
-npm install                  # 安装依赖
-npm run dev                  # 开发服务器 http://localhost:4321
-npm run build                # 构建到 dist/
+npm install                  # 安装博客依赖
+npm run dev                  # 博客开发服务器 http://localhost:4321
+npm run build                # 构建游戏 + 博客到 dist/
 npm run preview              # 预览构建结果
 npx wrangler pages deploy dist  # CLI 部署到 Cloudflare Pages
+```
+
+### 游戏开发
+
+游戏源码在 `games/` 目录，独立于博客构建：
+
+```bash
+# green-cycle 塔防游戏
+cd games/green-cycle
+npm install              # 安装游戏依赖
+npx vite                 # 游戏开发服务器 http://localhost:5173
+npm run build            # 构建到 public/games/green-cycle/
+npx tsc --noEmit         # 类型检查
 ```
 
 ## 写作规范
@@ -138,6 +162,14 @@ npx wrangler pages deploy dist
 ### 添加新分类
 
 文章的 `category` 字段自动生成分类页面，无需额外配置。
+
+### 添加新游戏
+
+1. 在 `games/` 下创建游戏项目（如 `games/my-game/`）
+2. 配置构建输出到 `public/games/my-game/`（Vite 项目设 `outDir`，纯 HTML 直接放 `public/games/`）
+3. 在 `src/pages/games/index.astro` 的 `games` 数组中添加入口
+4. 若游戏有构建步骤，在根 `package.json` 的 `build:games` 脚本中追加
+5. 若构建产物在 `public/games/` 下，在 `.gitignore` 中添加忽略规则
 
 ### 调试构建问题
 

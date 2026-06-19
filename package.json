@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
-    "build": "astro build",
+    "build": "npm run build:games && astro build",
+    "build:games": "cd games/green-cycle && npm run build",
     "preview": "astro preview",
     "astro": "astro"
   },

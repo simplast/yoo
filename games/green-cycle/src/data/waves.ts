@@ -1,0 +1,625 @@
+// 波次表（PRD 5.1 节）
+// 共 50 波，难度递增
+// Boss 波：15/25/35/45/50
+// 经济波：30
+// spawns 中 interval 为出生间隔秒，startDelay 为波次开始后延迟
+
+import type { WaveDef } from '../types';
+
+export const WAVES: WaveDef[] = [
+  // ===== 第 1-10 波：少量物理/魔法甲小怪 =====
+  {
+    index: 1,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [{ enemyId: 'grunt', count: 8, interval: 1.2, startDelay: 0 }],
+    rewardGold: 20,
+    rewardWood: 0,
+    hint: '多物理甲小兵',
+  },
+  {
+    index: 2,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'grunt', count: 10, interval: 1.2, startDelay: 0 },
+      { enemyId: 'runner', count: 4, interval: 0.8, startDelay: 5 },
+    ],
+    rewardGold: 22,
+    rewardWood: 0,
+    hint: '混入飞奔兵',
+  },
+  {
+    index: 3,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'grunt', count: 12, interval: 1.2, startDelay: 0 },
+      { enemyId: 'mage', count: 3, interval: 1.5, startDelay: 6 },
+    ],
+    rewardGold: 24,
+    rewardWood: 0,
+    hint: '混入魔法甲',
+  },
+  {
+    index: 4,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [{ enemyId: 'runner', count: 10, interval: 0.8, startDelay: 0 }],
+    rewardGold: 26,
+    rewardWood: 0,
+    hint: '快速飞奔兵',
+  },
+  {
+    index: 5,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'grunt', count: 10, interval: 1.2, startDelay: 0 },
+      { enemyId: 'mage', count: 5, interval: 1.5, startDelay: 5 },
+    ],
+    rewardGold: 28,
+    rewardWood: 0,
+    hint: '物理+魔法混合',
+  },
+  {
+    index: 6,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'brute', count: 3, interval: 2.0, startDelay: 0 },
+      { enemyId: 'grunt', count: 10, interval: 1.2, startDelay: 3 },
+    ],
+    rewardGold: 30,
+    rewardWood: 0,
+    hint: '壮汉登场，需高伤',
+  },
+  {
+    index: 7,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'runner', count: 12, interval: 0.8, startDelay: 0 },
+      { enemyId: 'mage', count: 5, interval: 1.5, startDelay: 5 },
+    ],
+    rewardGold: 32,
+    rewardWood: 0,
+    hint: '快速混合',
+  },
+  {
+    index: 8,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'grunt', count: 12, interval: 1.2, startDelay: 0 },
+      { enemyId: 'priest', count: 3, interval: 2.0, startDelay: 6 },
+    ],
+    rewardGold: 34,
+    rewardWood: 0,
+    hint: '神圣甲登场',
+  },
+  {
+    index: 9,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'mage', count: 10, interval: 1.5, startDelay: 0 },
+      { enemyId: 'grunt', count: 8, interval: 1.2, startDelay: 5 },
+    ],
+    rewardGold: 36,
+    rewardWood: 0,
+    hint: '多魔法甲',
+  },
+  {
+    index: 10,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'brute', count: 5, interval: 2.0, startDelay: 0 },
+      { enemyId: 'runner', count: 8, interval: 0.8, startDelay: 3 },
+      { enemyId: 'mage', count: 5, interval: 1.5, startDelay: 8 },
+    ],
+    rewardGold: 40,
+    rewardWood: 0,
+    hint: '混合高压',
+  },
+
+  // ===== 第 11-14 波：中等数量，混入抗性/神圣甲 =====
+  {
+    index: 11,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'dragonkin', count: 5, interval: 1.8, startDelay: 0 },
+      { enemyId: 'grunt', count: 12, interval: 1.2, startDelay: 3 },
+    ],
+    rewardGold: 44,
+    rewardWood: 0,
+    hint: '抗性甲龙裔登场',
+  },
+  {
+    index: 12,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'priest', count: 6, interval: 2.0, startDelay: 0 },
+      { enemyId: 'mage', count: 8, interval: 1.5, startDelay: 3 },
+    ],
+    rewardGold: 48,
+    rewardWood: 0,
+    hint: '神圣+魔法混合',
+  },
+  {
+    index: 13,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'dragonkin', count: 8, interval: 1.8, startDelay: 0 },
+      { enemyId: 'brute', count: 5, interval: 2.0, startDelay: 3 },
+    ],
+    rewardGold: 52,
+    rewardWood: 0,
+    hint: '抗性+物理厚血',
+  },
+  {
+    index: 14,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'priest', count: 8, interval: 2.0, startDelay: 0 },
+      { enemyId: 'dragonkin', count: 6, interval: 1.8, startDelay: 3 },
+      { enemyId: 'grunt', count: 10, interval: 1.2, startDelay: 6 },
+    ],
+    rewardGold: 56,
+    rewardWood: 0,
+    hint: '三甲混合，Boss 前夕',
+  },
+
+  // ===== 第 15 波：Boss 奇美拉 =====
+  {
+    index: 15,
+    isBoss: true,
+    isEconomy: false,
+    spawns: [{ enemyId: 'chimeraBoss', count: 1, interval: 1.0, startDelay: 0 }],
+    rewardGold: 100,
+    rewardWood: 1,
+    bossTimer: 90,
+    hint: 'Boss：奇美拉（魔法甲）',
+  },
+
+  // ===== 第 16-24 波：中量混合，加入飞行/隐形/魔免 =====
+  {
+    index: 16,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'wyvern', count: 10, interval: 1.0, startDelay: 0 },
+      { enemyId: 'grunt', count: 10, interval: 1.2, startDelay: 3 },
+    ],
+    rewardGold: 60,
+    rewardWood: 0,
+    hint: '飞行兵登场',
+  },
+  {
+    index: 17,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'ghost', count: 10, interval: 1.2, startDelay: 0 },
+      { enemyId: 'mage', count: 8, interval: 1.5, startDelay: 3 },
+    ],
+    rewardGold: 64,
+    rewardWood: 0,
+    hint: '隐形幽灵，需真视',
+  },
+  {
+    index: 18,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'golem', count: 5, interval: 2.5, startDelay: 0 },
+      { enemyId: 'dragonkin', count: 8, interval: 1.8, startDelay: 3 },
+    ],
+    rewardGold: 68,
+    rewardWood: 0,
+    hint: '魔像魔免，需物理',
+  },
+  {
+    index: 19,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'wyvern', count: 12, interval: 1.0, startDelay: 0 },
+      { enemyId: 'ghost', count: 8, interval: 1.2, startDelay: 3 },
+    ],
+    rewardGold: 72,
+    rewardWood: 0,
+    hint: '飞行+隐形',
+  },
+  {
+    index: 20,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'splitter', count: 8, interval: 1.8, startDelay: 0 },
+      { enemyId: 'grunt', count: 12, interval: 1.2, startDelay: 3 },
+    ],
+    rewardGold: 76,
+    rewardWood: 0,
+    hint: '分裂怪登场',
+  },
+  {
+    index: 21,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'golem', count: 6, interval: 2.5, startDelay: 0 },
+      { enemyId: 'priest', count: 8, interval: 2.0, startDelay: 3 },
+    ],
+    rewardGold: 80,
+    rewardWood: 0,
+    hint: '魔免+神圣',
+  },
+  {
+    index: 22,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'ghost', count: 12, interval: 1.2, startDelay: 0 },
+      { enemyId: 'wyvern', count: 10, interval: 1.0, startDelay: 3 },
+    ],
+    rewardGold: 84,
+    rewardWood: 0,
+    hint: '隐形+飞行高压',
+  },
+  {
+    index: 23,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'splitter', count: 10, interval: 1.8, startDelay: 0 },
+      { enemyId: 'dragonkin', count: 8, interval: 1.8, startDelay: 3 },
+    ],
+    rewardGold: 88,
+    rewardWood: 0,
+    hint: '分裂+抗性',
+  },
+  {
+    index: 24,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'golem', count: 8, interval: 2.5, startDelay: 0 },
+      { enemyId: 'ghost', count: 10, interval: 1.2, startDelay: 3 },
+      { enemyId: 'wyvern', count: 8, interval: 1.0, startDelay: 6 },
+    ],
+    rewardGold: 92,
+    rewardWood: 0,
+    hint: '三特性混合，Boss 前夕',
+  },
+
+  // ===== 第 25 波：Boss 黑龙（飞行+魔免）=====
+  {
+    index: 25,
+    isBoss: true,
+    isEconomy: false,
+    spawns: [{ enemyId: 'dragonBoss', count: 1, interval: 1.0, startDelay: 0 }],
+    rewardGold: 150,
+    rewardWood: 2,
+    bossTimer: 90,
+    hint: 'Boss：黑龙（神圣甲·飞行·魔免）',
+  },
+
+  // ===== 第 26-34 波：大量混合，加入光环怪、分裂怪 =====
+  {
+    index: 26,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'auraHaster', count: 5, interval: 2.0, startDelay: 0 },
+      { enemyId: 'grunt', count: 15, interval: 1.0, startDelay: 3 },
+    ],
+    rewardGold: 96,
+    rewardWood: 0,
+    hint: '光环怪加速友军',
+  },
+  {
+    index: 27,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'splitter', count: 12, interval: 1.5, startDelay: 0 },
+      { enemyId: 'runner', count: 12, interval: 0.7, startDelay: 3 },
+    ],
+    rewardGold: 100,
+    rewardWood: 0,
+    hint: '分裂+快速',
+  },
+  {
+    index: 28,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'auraHaster', count: 6, interval: 2.0, startDelay: 0 },
+      { enemyId: 'dragonkin', count: 10, interval: 1.5, startDelay: 3 },
+    ],
+    rewardGold: 104,
+    rewardWood: 0,
+    hint: '光环+抗性',
+  },
+  {
+    index: 29,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'golem', count: 10, interval: 2.0, startDelay: 0 },
+      { enemyId: 'priest', count: 10, interval: 1.8, startDelay: 3 },
+    ],
+    rewardGold: 108,
+    rewardWood: 0,
+    hint: '魔免+神圣高压',
+  },
+  // 第 30 波：经济波（兔子）
+  {
+    index: 30,
+    isBoss: false,
+    isEconomy: true,
+    spawns: [{ enemyId: 'economyRabbit', count: 15, interval: 0.5, startDelay: 0 }],
+    rewardGold: 60,
+    rewardWood: 1,
+    hint: '经济波：击杀兔子获大量金币',
+  },
+  {
+    index: 31,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'auraHaster', count: 8, interval: 2.0, startDelay: 0 },
+      { enemyId: 'ghost', count: 12, interval: 1.2, startDelay: 3 },
+    ],
+    rewardGold: 116,
+    rewardWood: 0,
+    hint: '光环+隐形',
+  },
+  {
+    index: 32,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'splitter', count: 15, interval: 1.5, startDelay: 0 },
+      { enemyId: 'wyvern', count: 12, interval: 1.0, startDelay: 3 },
+    ],
+    rewardGold: 120,
+    rewardWood: 0,
+    hint: '分裂+飞行',
+  },
+  {
+    index: 33,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'golem', count: 12, interval: 2.0, startDelay: 0 },
+      { enemyId: 'dragonkin', count: 12, interval: 1.5, startDelay: 3 },
+    ],
+    rewardGold: 124,
+    rewardWood: 0,
+    hint: '双抗性高压',
+  },
+  {
+    index: 34,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'auraHaster', count: 10, interval: 2.0, startDelay: 0 },
+      { enemyId: 'splitter', count: 12, interval: 1.5, startDelay: 3 },
+      { enemyId: 'ghost', count: 10, interval: 1.2, startDelay: 6 },
+    ],
+    rewardGold: 128,
+    rewardWood: 0,
+    hint: '光环+分裂+隐形，Boss 前夕',
+  },
+
+  // ===== 第 35 波：Boss 奇美拉（代替熊猫）=====
+  {
+    index: 35,
+    isBoss: true,
+    isEconomy: false,
+    spawns: [{ enemyId: 'chimeraBoss', count: 1, interval: 1.0, startDelay: 0 }],
+    rewardGold: 180,
+    rewardWood: 2,
+    bossTimer: 90,
+    hint: 'Boss：奇美拉再临（魔法甲）',
+  },
+
+  // ===== 第 36-44 波：大量混合，难度递增 =====
+  {
+    index: 36,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'brute', count: 15, interval: 1.8, startDelay: 0 },
+      { enemyId: 'dragonkin', count: 12, interval: 1.5, startDelay: 3 },
+    ],
+    rewardGold: 132,
+    rewardWood: 0,
+    hint: '厚血+抗性',
+  },
+  {
+    index: 37,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'ghost', count: 15, interval: 1.2, startDelay: 0 },
+      { enemyId: 'wyvern', count: 15, interval: 1.0, startDelay: 3 },
+    ],
+    rewardGold: 136,
+    rewardWood: 0,
+    hint: '隐形+飞行海',
+  },
+  {
+    index: 38,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'golem', count: 15, interval: 2.0, startDelay: 0 },
+      { enemyId: 'priest', count: 12, interval: 1.8, startDelay: 3 },
+    ],
+    rewardGold: 140,
+    rewardWood: 0,
+    hint: '魔免+神圣海',
+  },
+  {
+    index: 39,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'splitter', count: 18, interval: 1.5, startDelay: 0 },
+      { enemyId: 'auraHaster', count: 8, interval: 2.0, startDelay: 3 },
+    ],
+    rewardGold: 144,
+    rewardWood: 0,
+    hint: '分裂+光环',
+  },
+  {
+    index: 40,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'dragonkin', count: 18, interval: 1.5, startDelay: 0 },
+      { enemyId: 'ghost', count: 12, interval: 1.2, startDelay: 3 },
+      { enemyId: 'wyvern', count: 10, interval: 1.0, startDelay: 6 },
+    ],
+    rewardGold: 150,
+    rewardWood: 0,
+    hint: '三特性高压',
+  },
+  {
+    index: 41,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'golem', count: 18, interval: 2.0, startDelay: 0 },
+      { enemyId: 'splitter', count: 12, interval: 1.5, startDelay: 3 },
+    ],
+    rewardGold: 156,
+    rewardWood: 0,
+    hint: '魔免+分裂',
+  },
+  {
+    index: 42,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'auraHaster', count: 12, interval: 2.0, startDelay: 0 },
+      { enemyId: 'brute', count: 15, interval: 1.8, startDelay: 3 },
+    ],
+    rewardGold: 162,
+    rewardWood: 0,
+    hint: '光环+厚血',
+  },
+  {
+    index: 43,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'ghost', count: 18, interval: 1.2, startDelay: 0 },
+      { enemyId: 'dragonkin', count: 15, interval: 1.5, startDelay: 3 },
+      { enemyId: 'priest', count: 10, interval: 1.8, startDelay: 6 },
+    ],
+    rewardGold: 168,
+    rewardWood: 0,
+    hint: '隐形+抗性+神圣',
+  },
+  {
+    index: 44,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'golem', count: 20, interval: 2.0, startDelay: 0 },
+      { enemyId: 'splitter', count: 15, interval: 1.5, startDelay: 3 },
+      { enemyId: 'auraHaster', count: 10, interval: 2.0, startDelay: 6 },
+    ],
+    rewardGold: 174,
+    rewardWood: 0,
+    hint: '终极混合，Boss 前夕',
+  },
+
+  // ===== 第 45 波：Boss 黑龙 =====
+  {
+    index: 45,
+    isBoss: true,
+    isEconomy: false,
+    spawns: [{ enemyId: 'dragonBoss', count: 1, interval: 1.0, startDelay: 0 }],
+    rewardGold: 220,
+    rewardWood: 3,
+    bossTimer: 90,
+    hint: 'Boss：黑龙再临（神圣甲·飞行·魔免）',
+  },
+
+  // ===== 第 46-49 波：高压混合波 =====
+  {
+    index: 46,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'brute', count: 20, interval: 1.5, startDelay: 0 },
+      { enemyId: 'dragonkin', count: 18, interval: 1.3, startDelay: 3 },
+      { enemyId: 'ghost', count: 12, interval: 1.0, startDelay: 6 },
+    ],
+    rewardGold: 180,
+    rewardWood: 0,
+    hint: '高压混合波',
+  },
+  {
+    index: 47,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'golem', count: 22, interval: 1.8, startDelay: 0 },
+      { enemyId: 'splitter', count: 18, interval: 1.3, startDelay: 3 },
+      { enemyId: 'wyvern', count: 12, interval: 0.8, startDelay: 6 },
+    ],
+    rewardGold: 190,
+    rewardWood: 0,
+    hint: '魔免+分裂+飞行',
+  },
+  {
+    index: 48,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'auraHaster', count: 15, interval: 1.8, startDelay: 0 },
+      { enemyId: 'ghost', count: 20, interval: 1.0, startDelay: 3 },
+      { enemyId: 'dragonkin', count: 15, interval: 1.3, startDelay: 6 },
+    ],
+    rewardGold: 200,
+    rewardWood: 0,
+    hint: '光环+隐形+抗性',
+  },
+  {
+    index: 49,
+    isBoss: false,
+    isEconomy: false,
+    spawns: [
+      { enemyId: 'golem', count: 25, interval: 1.5, startDelay: 0 },
+      { enemyId: 'splitter', count: 20, interval: 1.2, startDelay: 3 },
+      { enemyId: 'priest', count: 15, interval: 1.5, startDelay: 6 },
+      { enemyId: 'brute', count: 10, interval: 1.8, startDelay: 9 },
+    ],
+    rewardGold: 200,
+    rewardWood: 0,
+    hint: '最终波前夕，全类型高压',
+  },
+
+  // ===== 第 50 波：最终 Boss 终极龙 =====
+  {
+    index: 50,
+    isBoss: true,
+    isEconomy: false,
+    spawns: [{ enemyId: 'finalBoss', count: 1, interval: 1.0, startDelay: 0 }],
+    rewardGold: 500,
+    rewardWood: 5,
+    bossTimer: 120,
+    hint: '最终 Boss：终极龙（抗性甲·12000 血）',
+  },
+];

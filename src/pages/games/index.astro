@@ -1,0 +1,81 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const games = [
+  {
+    name: '绿色循环圈',
+    description: '像素风塔防游戏，50 波次、13 种塔、成长塔技能系统',
+    href: '/games/green-cycle/',
+    tag: '塔防',
+  },
+  {
+    name: '打砖块',
+    description: '经典 Breakout 游戏，8-bit 音效',
+    href: '/games/breakout/',
+    tag: '休闲',
+  },
+];
+---
+
+<BaseLayout title="游戏" description="小游戏合集">
+  <section>
+    <h1 class="page-title">游戏</h1>
+    <p class="page-subtitle">共 {games.length} 个游戏</p>
+    <div class="game-grid">
+      {games.map((game) => (
+        <a href={game.href} class="game-card">
+          <div class="game-card-tag">{game.tag}</div>
+          <h2 class="game-card-name">{game.name}</h2>
+          <p class="game-card-desc">{game.description}</p>
+          <span class="game-card-play">开始游戏 →</span>
+        </a>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+    margin-top: 1.5rem;
+  }
+  .game-card {
+    display: block;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    color: var(--color-text);
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .game-card:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    opacity: 1;
+  }
+  .game-card-tag {
+    display: inline-block;
+    padding: 0.15rem 0.6rem;
+    font-size: 0.75rem;
+    background-color: var(--color-code-bg);
+    color: var(--color-text-soft);
+    border-radius: 3px;
+    margin-bottom: 0.75rem;
+  }
+  .game-card-name {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+  }
+  .game-card-desc {
+    font-size: 0.9rem;
+    color: var(--color-text-soft);
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+  }
+  .game-card-play {
+    font-size: 0.85rem;
+    color: var(--color-accent);
+  }
+</style>

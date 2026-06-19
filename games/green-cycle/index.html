@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>绿色循环圈</title>
+  <style>
+    :root {
+      --bg: #0d1b0d;
+      --panel: #1a2a1a;
+      --panel-border: #2f4f2f;
+      --text: #e0f0d0;
+      --accent: #7CFC00;
+      --gold: #FFD700;
+      --wood: #C97A3D;
+      --danger: #FF4444;
+      --magic: #4FA3FF;
+      --holy: #FFE9A8;
+      --resist: #B266FF;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: var(--bg); color: var(--text);
+      font-family: 'Courier New', 'Menlo', monospace;
+      user-select: none; -webkit-user-select: none;
+    }
+    #app {
+      position: relative; width: 100vw; height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #game-canvas {
+      display: block; image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      background: #0a1a0a; cursor: crosshair;
+      touch-action: none;
+    }
+    #topbar {
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 44px; display: flex; align-items: center;
+      gap: 16px; padding: 0 12px;
+      background: linear-gradient(180deg, rgba(0,0,0,0.85), rgba(0,0,0,0.4));
+      border-bottom: 1px solid var(--panel-border);
+      font-size: 14px; z-index: 10; pointer-events: none;
+    }
+    .stat { display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+    .stat .icon { font-size: 16px; }
+    .stat .val { color: var(--accent); font-weight: bold; min-width: 30px; }
+    .stat.gold .val { color: var(--gold); }
+    .stat.wood .val { color: var(--wood); }
+    .stat.pop .val { color: var(--text); }
+    .stat.pf .val { color: var(--holy); }
+    #pressure-bar {
+      flex: 1; max-width: 200px; height: 10px;
+      background: #300; border: 1px solid #500; border-radius: 2px;
+      overflow: hidden; position: relative;
+    }
+    #pressure-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #4CAF50, #FFC107, #FF4444);
+      transition: width 0.2s;
+    }
+    #wave-banner {
+      position: absolute; top: 50px; left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85); border: 1px solid var(--panel-border);
+      padding: 8px 16px; border-radius: 4px;
+      font-size: 13px; z-index: 10; pointer-events: none;
+      display: none; text-align: center;
+    }
+    #wave-banner.show { display: block; animation: pulse 1s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+    #tower-panel {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: linear-gradient(0deg, rgba(0,0,0,0.9), rgba(0,0,0,0.5));
+      border-top: 1px solid var(--panel-border);
+      padding: 8px; z-index: 10;
+      display: flex; gap: 6px; overflow-x: auto;
+    }
+    .tower-btn {
+      flex: 0 0 auto; min-width: 88px; padding: 6px 8px;
+      background: var(--panel); border: 1px solid var(--panel-border);
+      border-radius: 3px; color: var(--text); cursor: pointer;
+      font-family: inherit; font-size: 11px; text-align: center;
+      transition: all 0.1s;
+    }
+    .tower-btn:hover { border-color: var(--accent); background: #243a24; }
+    .tower-btn.active { border-color: var(--accent); box-shadow: 0 0 8px var(--accent); }
+    .tower-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .tower-btn .name { font-weight: bold; color: var(--accent); display: block; }
+    .tower-btn .cost { color: var(--gold); font-size: 10px; }
+    .tower-btn .pop { color: var(--text); font-size: 10px; }
+    #skills {
+      position: absolute; bottom: 70px; right: 12px;
+      display: flex; flex-direction: column; gap: 6px; z-index: 10;
+    }
+    .skill-btn {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--panel); border: 2px solid var(--panel-border);
+      color: var(--text); cursor: pointer; font-size: 18px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; font-family: inherit;
+    }
+    .skill-btn:hover { border-color: var(--accent); }
+    .skill-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .skill-btn .cd {
+      position: absolute; bottom: -2px; right: -2px;
+      background: #000; color: var(--accent);
+      font-size: 9px; padding: 1px 3px; border-radius: 3px;
+    }
+    #tower-info {
+      position: absolute; top: 50px; right: 12px;
+      width: 220px; max-height: calc(100vh - 140px); overflow-y: auto;
+      background: rgba(0,0,0,0.9);
+      border: 1px solid var(--panel-border); border-radius: 4px;
+      padding: 10px; z-index: 10; display: none;
+      font-size: 12px;
+    }
+    #tower-info.show { display: block; }
+    #tower-info h3 { color: var(--accent); margin-bottom: 6px; font-size: 13px; }
+    #tower-info .row { display: flex; justify-content: space-between; margin: 2px 0; }
+    #tower-info button {
+      width: 100%; margin-top: 6px; padding: 6px;
+      background: var(--panel); border: 1px solid var(--panel-border);
+      color: var(--text); cursor: pointer; font-family: inherit; font-size: 11px;
+      border-radius: 3px;
+    }
+    #tower-info button:hover { border-color: var(--accent); }
+    #tower-info button.sell { color: var(--danger); }
+    #tower-info .exp-section { margin: 4px 0; }
+    #ti-exp-bar {
+      height: 6px; background: #300; border: 1px solid #500;
+      border-radius: 2px; overflow: hidden; margin-top: 2px;
+    }
+    #ti-exp-fill {
+      height: 100%; width: 0%;
+      background: linear-gradient(90deg, #4FA3FF, #7CFC00);
+      transition: width 0.2s;
+    }
+    #tower-info .attr-section,
+    #tower-info .skill-section {
+      margin-top: 6px; padding-top: 6px;
+      border-top: 1px solid var(--panel-border);
+    }
+    #tower-info .section-title {
+      color: var(--accent); font-size: 11px; margin-bottom: 4px;
+    }
+    #tower-info .attr-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 2px 0; gap: 4px;
+    }
+    #tower-info .attr-btn {
+      width: 22px; height: 18px; padding: 0; margin: 0;
+      font-size: 12px; line-height: 1;
+    }
+    #tower-info .skill-row {
+      display: flex; align-items: center; justify-content: space-between;
+      margin: 3px 0; gap: 4px; font-size: 10px;
+    }
+    #tower-info .skill-info { flex: 1; line-height: 1.4; }
+    #tower-info .skill-name { color: var(--accent); font-weight: bold; }
+    #tower-info .skill-lv { color: var(--text); margin-left: 4px; }
+    #tower-info .skill-req { color: var(--danger); }
+    #tower-info .skill-up-btn {
+      width: auto; min-width: 40px; margin: 0; padding: 2px 6px;
+      font-size: 10px; flex: 0 0 auto;
+    }
+    #overlay {
+      position: absolute; inset: 0; background: rgba(0,0,0,0.85);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 100; gap: 16px;
+    }
+    #overlay.hide { display: none; }
+    #overlay h1 { color: var(--accent); font-size: 36px; letter-spacing: 4px; }
+    #overlay h2 { color: var(--text); font-size: 20px; }
+    #overlay .menu-row { display: flex; gap: 12px; flex-wrap: wrap; justify-content: center; }
+    .menu-btn {
+      padding: 10px 24px; background: var(--panel);
+      border: 2px solid var(--accent); color: var(--accent);
+      cursor: pointer; font-family: inherit; font-size: 14px;
+      border-radius: 4px; transition: all 0.1s;
+    }
+    .menu-btn:hover { background: var(--accent); color: #000; }
+    .diff-btn.active { background: var(--accent); color: #000; }
+    #speed-controls {
+      position: absolute; top: 50px; left: 12px;
+      display: flex; gap: 4px; z-index: 10;
+    }
+    .speed-btn {
+      width: 32px; height: 28px; background: var(--panel);
+      border: 1px solid var(--panel-border); color: var(--text);
+      cursor: pointer; font-family: inherit; font-size: 11px;
+      border-radius: 3px;
+    }
+    .speed-btn.active { border-color: var(--accent); color: var(--accent); }
+  </style>
+  <script type="module" src="/src/main.ts"></script>
+</head>
+<body>
+  <div id="app">
+    <canvas id="game-canvas"></canvas>
+
+    <div id="topbar">
+      <div class="stat gold"><span class="icon">💰</span><span class="val" id="stat-gold">0</span></div>
+      <div class="stat wood"><span class="icon">🪵</span><span class="val" id="stat-wood">0</span></div>
+      <div class="stat pop"><span class="icon">🏠</span><span class="val" id="stat-pop">0/0</span></div>
+      <div class="stat"><span class="icon">🌊</span><span class="val" id="stat-wave">0/50</span></div>
+      <div class="stat pf"><span class="icon">⭐</span><span class="val" id="stat-pf">0</span></div>
+      <div id="pressure-bar"><div id="pressure-fill"></div></div>
+      <div class="stat" id="next-wave-info">下波: -</div>
+    </div>
+
+    <div id="speed-controls">
+      <button class="speed-btn active" data-speed="1">1x</button>
+      <button class="speed-btn" data-speed="2">2x</button>
+      <button class="speed-btn" data-speed="3">3x</button>
+      <button class="speed-btn" id="pause-btn">⏸</button>
+    </div>
+
+    <div id="wave-banner"></div>
+
+    <div id="tower-info">
+      <h3 id="ti-name"></h3>
+      <div class="row"><span>等级</span><span id="ti-level"></span></div>
+      <div id="ti-exp-section" class="exp-section" style="display:none">
+        <div class="row"><span>经验</span><span id="ti-exp">0/100</span></div>
+        <div id="ti-exp-bar"><div id="ti-exp-fill"></div></div>
+      </div>
+      <div class="row"><span>攻击</span><span id="ti-dmg"></span></div>
+      <div class="row"><span>攻速</span><span id="ti-as"></span></div>
+      <div class="row"><span>射程</span><span id="ti-range"></span></div>
+      <div class="row"><span>类型</span><span id="ti-type"></span></div>
+      <div id="ti-attr-section" class="attr-section" style="display:none">
+        <div class="section-title">属性点: <span id="ti-attr-pts">0</span></div>
+        <div class="attr-row"><span>力量</span><span id="ti-str">0</span><button id="ti-add-str" class="attr-btn">+</button></div>
+        <div class="attr-row"><span>敏捷</span><span id="ti-agi">0</span><button id="ti-add-agi" class="attr-btn">+</button></div>
+        <div class="attr-row"><span>智力</span><span id="ti-int">0</span><button id="ti-add-int" class="attr-btn">+</button></div>
+      </div>
+      <div id="ti-skill-section" class="skill-section" style="display:none">
+        <div class="section-title">技能点: <span id="ti-skill-pts">0</span></div>
+        <div id="ti-skill-list"></div>
+      </div>
+      <button id="ti-upgrade">升级</button>
+      <button id="ti-sell" class="sell">出售</button>
+    </div>
+
+    <div id="tower-panel"></div>
+
+    <div id="skills">
+      <button class="skill-btn" id="skill-blast" title="神力一击">💥<span class="cd"></span></button>
+      <button class="skill-btn" id="skill-slow" title="全屏减速">🐌<span class="cd"></span></button>
+      <button class="skill-btn" id="skill-summon" title="召唤支援">🏰<span class="cd"></span></button>
+    </div>
+
+    <div id="overlay">
+      <h1>绿色循环圈</h1>
+      <h2 id="overlay-sub">选择难度开始游戏</h2>
+      <div class="menu-row" id="diff-row">
+        <button class="menu-btn diff-btn" data-diff="easy">简单</button>
+        <button class="menu-btn diff-btn active" data-diff="normal">普通</button>
+        <button class="menu-btn diff-btn" data-diff="hard">困难</button>
+      </div>
+      <div class="menu-row">
+        <button class="menu-btn" id="start-btn">开始游戏</button>
+      </div>
+      <div id="overlay-tip" style="font-size:12px;color:#888;max-width:400px;text-align:center;line-height:1.6;">
+        怪物沿循环圈道无限跑动，建造防御塔击杀它们。<br>
+        同屏怪物超过上限即失败。注意护甲克制关系。
+      </div>
+    </div>
+  </div>
+</body>
+</html>
