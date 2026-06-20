@@ -20,7 +20,7 @@ row when done.
 | 008  | 接入对象池减少 GC 压力 | P3 | L | 004, 007 | DONE (merged `abadf08`) |
 | 009  | 为普通波增加时间压力与清场奖励 | P3 | M | 004 | DONE (merged `eaf2d25`) |
 | 010  | 扩展木材获取渠道 | P3 | S | 004 | DONE (merged `99da51a`) |
-| 011  | 扩充合成配方系统 | P3 | M | 004, 010 | DONE |
+| 011  | 扩充合成配方系统 | P3 | M | 004, 010 | DONE (merged `1d230a4`) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
