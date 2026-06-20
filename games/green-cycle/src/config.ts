@@ -26,7 +26,7 @@ export const CONFIG = {
   // 难度系数
   DIFF_HP: { easy: 0.8, normal: 1.0, hard: 1.3 },
   DIFF_GOLD: { easy: 1.2, normal: 1.0, hard: 0.9 },
-  DIFF_POP: { easy: 10, normal: 0, hard: -10 },
+  DIFF_POP: { easy: 10, normal: 0, hard: 0 },
 
   // 波次
   TOTAL_WAVES: 50,

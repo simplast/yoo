@@ -14,7 +14,7 @@
 ### 技术架构
 - **ECS-lite**：集中式 `GameState` + 8 个纯函数系统（`update(state, dt)`）
 - **固定步长主循环**：60FPS，支持 1x/2x/3x 加速
-- **单文件产物**：`vite build` 输出 `dist/index.html`（79KB，JS/CSS 全内联）
+- **单文件产物**（历史）：`vite build` 输出 `dist/index.html`（79KB，JS/CSS 全内联）。当前输出路径已改为 `../../public/games/green-cycle/`，见 vite.config.ts
 
 ### 目录结构
 ```

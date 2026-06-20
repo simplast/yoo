@@ -22,7 +22,7 @@
 ### 技术架构
 - **ECS-lite 架构**：集中式 `GameState` + 纯函数系统（`update(state, dt)`）
 - **固定步长主循环**：60FPS，支持 1x/2x/3x 加速
-- **单文件产物**：`vite build` 输出 `dist/index.html`（JS/CSS 全内联）
+- **单文件产物**：`vite build` 输出 `../../public/games/green-cycle/index.html`（JS/CSS 全内联）
 
 ### 核心系统（8 个）
 | 系统 | 文件 | 职责 |

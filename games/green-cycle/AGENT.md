@@ -10,7 +10,7 @@
 | 技术栈 | TypeScript + Vite + Canvas 2D + Web Audio |
 | 架构 | ECS-lite（集中式状态 + 8 纯函数系统） |
 | 产物 | `public/games/green-cycle/index.html` 单文件（JS/CSS 全内联） |
-| 当前进度 | M7 完成（合成系统），M8-M9 待开发 |
+| 当前进度 | M10 完成（UI 资源 SVG 化），后续优化见 plans/ |
 
 ## 快速开始
 
