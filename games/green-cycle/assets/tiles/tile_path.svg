@@ -1,69 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
   <!-- Base dirt -->
-  <rect x="0" y="0" width="64" height="64" fill="#C4A46C"/>
-  <!-- Sand patches -->
-  <rect x="4" y="4" width="8" height="6" fill="#D4B886"/>
-  <rect x="18" y="2" width="10" height="4" fill="#DEC8A0"/>
-  <rect x="34" y="6" width="6" height="8" fill="#D4B886"/>
-  <rect x="46" y="2" width="8" height="6" fill="#DEC8A0"/>
-  <rect x="56" y="4" width="4" height="4" fill="#D4B886"/>
-  <rect x="4" y="34" width="10" height="4" fill="#DEC8A0"/>
-  <rect x="20" y="36" width="6" height="8" fill="#D4B886"/>
-  <rect x="32" y="34" width="8" height="6" fill="#DEC8A0"/>
-  <rect x="46" y="36" width="10" height="4" fill="#D4B886"/>
-  <rect x="58" y="34" width="2" height="8" fill="#DEC8A0"/>
-  <rect x="4" y="52" width="6" height="8" fill="#D4B886"/>
-  <rect x="16" y="54" width="8" height="6" fill="#DEC8A0"/>
-  <rect x="30" y="52" width="10" height="4" fill="#D4B886"/>
-  <rect x="46" y="54" width="8" height="6" fill="#DEC8A0"/>
-  <rect x="58" y="52" width="2" height="8" fill="#D4B886"/>
-  <!-- Dark brown spots -->
-  <rect x="8" y="14" width="4" height="4" fill="#8B6914"/>
-  <rect x="22" y="12" width="2" height="6" fill="#A0845C"/>
-  <rect x="32" y="16" width="4" height="2" fill="#8B6914"/>
-  <rect x="44" y="12" width="4" height="4" fill="#A0845C"/>
-  <rect x="54" y="14" width="2" height="2" fill="#8B6914"/>
-  <rect x="4" y="24" width="2" height="4" fill="#8B6914"/>
-  <rect x="14" y="22" width="4" height="2" fill="#A0845C"/>
-  <rect x="26" y="24" width="2" height="4" fill="#8B6914"/>
-  <rect x="38" y="22" width="4" height="4" fill="#A0845C"/>
-  <rect x="50" y="24" width="2" height="2" fill="#8B6914"/>
-  <rect x="58" y="22" width="2" height="4" fill="#A0845C"/>
-  <rect x="6" y="44" width="2" height="2" fill="#8B6914"/>
-  <rect x="14" y="42" width="4" height="4" fill="#A0845C"/>
-  <rect x="26" y="44" width="2" height="2" fill="#8B6914"/>
-  <rect x="36" y="42" width="4" height="4" fill="#A0845C"/>
-  <rect x="48" y="44" width="2" height="2" fill="#8B6914"/>
-  <rect x="56" y="42" width="4" height="4" fill="#A0845C"/>
-  <rect x="10" y="58" width="4" height="2" fill="#8B6914"/>
-  <rect x="22" y="56" width="2" height="4" fill="#A0845C"/>
-  <rect x="34" y="58" width="4" height="2" fill="#8B6914"/>
-  <rect x="46" y="56" width="2" height="2" fill="#A0845C"/>
-  <!-- Light sand highlights -->
-  <rect x="8" y="6" width="2" height="2" fill="#DEC8A0"/>
-  <rect x="22" y="4" width="2" height="2" fill="#D4B886"/>
-  <rect x="38" y="8" width="2" height="2" fill="#DEC8A0"/>
-  <rect x="50" y="4" width="2" height="2" fill="#D4B886"/>
-  <rect x="8" y="36" width="2" height="2" fill="#D4B886"/>
-  <rect x="24" y="38" width="2" height="2" fill="#DEC8A0"/>
-  <rect x="36" y="36" width="2" height="2" fill="#D4B886"/>
-  <rect x="50" y="38" width="2" height="2" fill="#DEC8A0"/>
-  <rect x="8" y="54" width="2" height="2" fill="#DEC8A0"/>
-  <rect x="20" y="56" width="2" height="2" fill="#D4B886"/>
-  <rect x="34" y="54" width="2" height="2" fill="#DEC8A0"/>
-  <rect x="50" y="56" width="2" height="2" fill="#D4B886"/>
-  <!-- Edge dirt details (seamless) -->
-  <rect x="0" y="12" width="2" height="4" fill="#A0845C"/>
-  <rect x="62" y="12" width="2" height="4" fill="#A0845C"/>
-  <rect x="0" y="28" width="2" height="2" fill="#8B6914"/>
-  <rect x="62" y="28" width="2" height="2" fill="#8B6914"/>
-  <rect x="0" y="48" width="2" height="4" fill="#A0845C"/>
-  <rect x="62" y="48" width="2" height="4" fill="#A0845C"/>
-  <rect x="12" y="0" width="4" height="2" fill="#8B6914"/>
-  <rect x="12" y="62" width="4" height="2" fill="#8B6914"/>
-  <rect x="28" y="0" width="2" height="2" fill="#A0845C"/>
-  <rect x="28" y="62" width="2" height="2" fill="#A0845C"/>
-  <rect x="44" y="0" width="4" height="2" fill="#8B6914"/>
-  <rect x="44" y="62" width="4" height="2" fill="#8B6914"/>
+  <rect x="0" y="0" width="64" height="64" fill="#A1887F"/>
+  <!-- Subtle edge shadow -->
+  <rect x="0" y="0" width="64" height="2" fill="#8D6E63"/>
+  <rect x="0" y="62" width="64" height="2" fill="#8D6E63"/>
+  <rect x="0" y="0" width="2" height="64" fill="#8D6E63"/>
+  <rect x="62" y="0" width="2" height="64" fill="#8D6E63"/>
+  <!-- Light sand patches -->
+  <rect x="10" y="10" width="12" height="6" fill="#BCAAA4"/>
+  <rect x="38" y="18" width="10" height="6" fill="#BCAAA4"/>
+  <rect x="14" y="42" width="10" height="6" fill="#BCAAA4"/>
+  <rect x="42" y="46" width="12" height="6" fill="#BCAAA4"/>
+  <!-- Tiny dark details -->
+  <rect x="30" y="30" width="6" height="2" fill="#8D6E63"/>
+  <rect x="8" y="56" width="6" height="2" fill="#8D6E63"/>
+  <rect x="54" y="8" width="4" height="2" fill="#8D6E63"/>
 </svg>

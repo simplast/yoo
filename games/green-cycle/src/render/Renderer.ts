@@ -53,7 +53,7 @@ export class Renderer {
     ctx.translate(this.offsetX, this.offsetY);
     ctx.scale(this.scale, this.scale);
     // 绘制各层
-    drawMap(ctx, state);
+    drawMap(ctx, state, mouseWorld);
     drawEntities(ctx, state);
     drawBuildPreview(ctx, state, mouseWorld);
     drawSelectBox(ctx, state);

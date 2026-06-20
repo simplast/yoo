@@ -6,6 +6,7 @@ export const CONFIG = {
 
   // 路径与地图
   TILE: 32, // 格子大小
+  TOWER_BASE: 32, // 塔基大小（与 TILE 对齐）
   OUTER_PAD: 80, // 外圈距画布边距
   INNER_SIZE: 320, // 内圈边长
   PATH_WIDTH: 28, // 跑道宽度

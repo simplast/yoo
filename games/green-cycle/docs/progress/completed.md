@@ -249,3 +249,27 @@
 ### 验证状态
 - `tsc --noEmit`：零错误
 - `vite build`：成功，`../../public/games/green-cycle/index.html` 196.33 kB（gzip 41.33 kB）
+
+---
+
+## M10+：塔图标与地图纹理细化
+
+### 修改文件
+| 文件 | 改动 |
+|------|------|
+| `src/render/PixelArt.ts` | 地图上已建造的塔使用对应 `tower_*.svg` 图标绘制；未加载完成回退原方块；成长塔等级数字带描边 |
+| `src/render/MapRenderer.ts` | 重写地图渲染：草地使用简化 `tile_buildable.svg` 平铺；跑道改为简洁双层纯色带；出怪口改为旋转脉动 Portal；终点新增蓝色水晶基地；动态元素不再缓存 |
+| `assets/tiles/tile_buildable.svg` | 简化草地纹理，减少细碎像素块 |
+| `assets/tiles/tile_path.svg` | 简化路径纹理，减少细碎像素块 |
+
+### 机制实装
+| 机制 | 说明 |
+|------|------|
+| 地图塔图标 | 已建塔与塔面板使用一致 SVG 资源，视觉统一 |
+| 简洁地图 | 草地/路径减少杂色块；路径用深色描边+主色+浅色中线三层结构，边界更清晰 |
+| 动态 Portal | 出怪口红色旋转扇形 + 脉动光环 |
+| 终点基地 | 蓝色菱形水晶 + 脉动光环，提示玩家防守目标 |
+
+### 验证状态
+- `tsc --noEmit`：零错误
+- `vite build`：成功，`../../public/games/green-cycle/index.html` 191.27 kB（gzip 40.97 kB）

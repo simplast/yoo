@@ -215,27 +215,36 @@ export function drawTower(
     ctx.stroke();
   }
 
-  // 底座灰色方块（外亮内暗）
-  ctx.fillStyle = '#444444';
-  ctx.fillRect(x - half, y - half, size, size);
-  ctx.fillStyle = '#2A2A2A';
-  ctx.fillRect(x - half + 2, y - half + 2, size - 4, size - 4);
+  // 尝试使用 SVG 图标绘制塔
+  const img = getSvgImage(tower.id, 'tower');
+  if (img && img.complete && img.naturalWidth > 0) {
+    // 图标按塔 size 缩放并居中绘制
+    ctx.drawImage(img, x - half, y - half, size, size);
+  } else {
+    // 回退：底座灰色方块 + 顶部 category 色
+    ctx.fillStyle = '#444444';
+    ctx.fillRect(x - half, y - half, size, size);
+    ctx.fillStyle = '#2A2A2A';
+    ctx.fillRect(x - half + 2, y - half + 2, size - 4, size - 4);
 
-  // 顶部按 category 着色，等级越高越亮
-  const catColor = TOWER_CATEGORY_COLOR[category] ?? '#888888';
-  const brightAmount = Math.min(0.5, (level - 1) * 0.06);
-  const topColor = brighten(catColor, brightAmount);
-  const topSize = Math.max(4, size - 8);
-  ctx.fillStyle = topColor;
-  ctx.fillRect(x - topSize / 2, y - topSize / 2, topSize, topSize);
+    const catColor = TOWER_CATEGORY_COLOR[category] ?? '#888888';
+    const brightAmount = Math.min(0.5, (level - 1) * 0.06);
+    const topColor = brighten(catColor, brightAmount);
+    const topSize = Math.max(4, size - 8);
+    ctx.fillStyle = topColor;
+    ctx.fillRect(x - topSize / 2, y - topSize / 2, topSize, topSize);
+  }
 
   // 成长塔顶部画等级数字
   if (tower.isGrowth === true || category === 'growth') {
     ctx.fillStyle = COLOR_WHITE;
+    ctx.strokeStyle = COLOR_BLACK;
+    ctx.lineWidth = 3;
     ctx.font = 'bold 10px monospace';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(String(level), x, y);
+    ctx.strokeText(String(level), x, y + half - 6);
+    ctx.fillText(String(level), x, y + half - 6);
   }
 
   // 友方光环加成可视化：塔顶金色小箭头
