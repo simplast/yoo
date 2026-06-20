@@ -87,6 +87,9 @@ export class GameState {
   bossTimer = 0; // Boss 波击杀限时，0=无
   bossAlive = false;
 
+  // 波次 PF 判定：记录当前波次开始时 enemies 是否为空
+  waveStartEnemiesEmpty = true;
+
   // ===== 游戏速度 =====
   speed = 1; // 1/2/3
   accumulator = 0; // 固定步长累加
@@ -182,7 +185,7 @@ export class GameState {
     this.popMax = CONFIG.START_POP[diff] + CONFIG.DIFF_POP[diff];
     this.maxEnemies = endless
       ? CONFIG.ENDLESS_MAX_ENEMIES
-      : (diff === 'easy' ? 50 : diff === 'normal' ? 40 : 35);
+      : CONFIG.MAX_ENEMIES_BY_DIFF[diff];
   }
 
   /** 获取资源快照 */
