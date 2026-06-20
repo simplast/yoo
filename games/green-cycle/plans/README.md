@@ -4,12 +4,12 @@
 
 ## 执行顺序 & 状态
 
-| Plan | 标题 | 优先级 | 投入 | 依赖 | 状态 |
-|------|------|--------|------|------|------|
-| 001  | 为 8 个核心系统补单元测试 | P1 | M | — | TODO |
-| 002  | 修复 Game.syncUI 每帧 60Hz DOM 重写 | P1 | M | 001 (强烈建议) | TODO |
-| 003  | 清理 4 个小型技术债 | P1 | S | — | TODO |
-| 004  | 加 GitHub Actions CI 与 pre-commit 钩子 | P2 | S | — | IN PROGRESS |
+| Plan | 标题                                    | 优先级 | 投入 | 依赖           | 状态 |
+| ---- | --------------------------------------- | ------ | ---- | -------------- | ---- |
+| 001  | 为 8 个核心系统补单元测试               | P1     | M    | —              | TODO |
+| 002  | 修复 Game.syncUI 每帧 60Hz DOM 重写     | P1     | M    | 001 (强烈建议) | TODO |
+| 003  | 清理 4 个小型技术债                     | P1     | S    | —              | TODO |
+| 004  | 加 GitHub Actions CI 与 pre-commit 钩子 | P2     | S    | —              | DONE |
 
 状态取值：`TODO` | `IN PROGRESS` | `DONE` | `BLOCKED`（附一行原因）| `REJECTED`（附一行理由 —— 发现被独立修复或方案放弃）
 
@@ -49,6 +49,7 @@
 ### 方向
 
 未选入本次 plan 的方向发现（D1-D4），由维护者决定是否独立成 plan：
+
 - D1 多路径 / 地图变体
 - D2 设置 UI（音量/画质）— 与 #9 对称
 - D3 存档槽位
@@ -63,11 +64,11 @@
 
 ## 验证矩阵（每个 plan 都跑）
 
-| 命令 | 用途 |
-|------|------|
-| `npm run typecheck` | TS 严格模式无错 |
-| `npm run lint` | ESLint 0 警告 |
-| `npm test` | 单元测试全过 |
-| `npm run format:check` | Prettier 格式无差 |
-| `npm run build` | singlefile 产物能生成（仅 004 必须跑） |
-| `npm run dev` | 本地服务器可启动（手测步骤需要时） |
+| 命令                   | 用途                                   |
+| ---------------------- | -------------------------------------- |
+| `npm run typecheck`    | TS 严格模式无错                        |
+| `npm run lint`         | ESLint 0 警告                          |
+| `npm test`             | 单元测试全过                           |
+| `npm run format:check` | Prettier 格式无差                      |
+| `npm run build`        | singlefile 产物能生成（仅 004 必须跑） |
+| `npm run dev`          | 本地服务器可启动（手测步骤需要时）     |

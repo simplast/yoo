@@ -13,14 +13,55 @@
     "lint": "eslint src/",
     "lint:fix": "eslint src/ --fix",
     "format": "prettier --write 'src/**/*.ts' '*.json' '*.js' '*.ts'",
-    "format:check": "prettier --check 'src/**/*.ts' '*.json' '*.js' '*.ts'"
+    "format:check": "prettier --check 'src/**/*.ts' '*.json' '*.js' '*.ts'",
+    "prepare": "husky || true"
+  },
+  "lint-staged": {
+    "src/**/*.ts": [
+      "prettier --write",
+      "eslint --fix"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ],
+    "rules": {
+      "header-max-length": [
+        2,
+        "always",
+        72
+      ],
+      "type-enum": [
+        2,
+        "always",
+        [
+          "feat",
+          "fix",
+          "refactor",
+          "perf",
+          "test",
+          "docs",
+          "chore",
+          "style",
+          "ci"
+        ]
+      ]
+    }
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.0.2",
+    "@commitlint/config-conventional": "^21.0.2",
     "@eslint/js": "^10.0.1",
     "@typescript-eslint/eslint-plugin": "^8.61.1",
     "@typescript-eslint/parser": "^8.61.1",
     "eslint": "^10.5.0",
     "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
     "prettier": "^3.8.4",
     "typescript": "^5.4.0",
     "vite": "^5.2.0",
