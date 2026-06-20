@@ -136,7 +136,7 @@ export function update(state: GameState, dt: number): void {
   const elapsed = state.gameTime - state.waveStartTime;
   for (const task of state.spawnQueue) {
     if (!task.spawned && task.spawnAt <= elapsed) {
-      const enemy = createEnemy(task.enemyId, state.path, state.difficulty);
+      const enemy = createEnemy(task.enemyId, state.path, state.difficulty, state.enemyPool);
       // 无尽模式超过 50 波后应用额外血量加成
       if (state.endless && state.waveIndex > CONFIG.TOTAL_WAVES) {
         const cycle = Math.floor((state.waveIndex - 1) / CONFIG.TOTAL_WAVES);

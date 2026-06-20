@@ -172,7 +172,7 @@ export function executeCombine(state: GameState, recipe: Recipe, materials: Towe
   }
 
   state.addTower(resultTower);
-  state.addEffect(createCombineEffect(resultX, resultY));
+  state.addEffect(createCombineEffect(resultX, resultY, state.effectPool));
 
   // 清空多选，选中产物塔
   state.selectedTowerIds = [];

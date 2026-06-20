@@ -34,10 +34,12 @@ export function update(state: GameState, dt: number): void {
     }
   }
 
-  // 清理已死亡/过期的特效（反向遍历，原地删除）
+  // 清理已死亡/过期的特效（反向遍历，原地删除，release 到池）
   for (let i = state.effects.length - 1; i >= 0; i--) {
-    if (!state.effects[i].alive) {
+    const e = state.effects[i];
+    if (!e.alive) {
       state.effects.splice(i, 1);
+      state.effectPool.release(e);
     }
   }
 }

@@ -13,6 +13,10 @@ import type {
 import { CONFIG } from '../config';
 import { Path } from '../utils/Path';
 import { Quadtree } from '../utils/Quadtree';
+import { Pool } from '../utils/Pool';
+import { ENEMIES } from '../data/enemies';
+import { resetEnemy } from '../entities/Enemy';
+import { resetEffect } from '../entities/Effect';
 
 /** 待出生的敌人队列项 */
 export interface SpawnTask {
@@ -74,6 +78,11 @@ export class GameState {
   // ===== 帧级共享四叉树（每帧由 TowerAISystem 构建，供 Combat/Skill 复用）=====
   enemyQuadtree: Quadtree = new Quadtree({ x: 0, y: 0, w: CONFIG.WORLD_WIDTH, h: CONFIG.WORLD_HEIGHT });
 
+  // ===== 对象池（减少 GC 压力）=====
+  enemyPool: Pool<Enemy>;
+  projectilePool: Pool<Projectile>;
+  effectPool: Pool<Effect>;
+
   // ===== 框选 =====
   selectBox: { start: Vec2; end: Vec2 } | null = null; // 世界坐标，仅绘制用
 
@@ -104,6 +113,21 @@ export class GameState {
 
   constructor(path: Path) {
     this.path = path;
+    this.enemyPool = new Pool<Enemy>(
+      () => ({ ...ENEMIES['grunt'], instanceId: 0, hp: 0, maxHp: 0, pathProgress: 0, speed: 0, x: 0, y: 0, alive: false, buffs: [], auraFlags: 0, hitFlash: 0, rewardGold: 0 }),
+      (e) => resetEnemy(e),
+      20,
+    );
+    this.projectilePool = new Pool<Projectile>(
+      () => ({ instanceId: 0, x: 0, y: 0, targetId: 0, speed: 0, damage: 0, attackType: 'normal', splashRadius: 0, sourceTowerId: 0, alive: false, color: '', size: 0 }),
+      (p) => { p.alive = false; p.x = 0; p.y = 0; p.targetId = 0; p.debuff = undefined; },
+      30,
+    );
+    this.effectPool = new Pool<Effect>(
+      () => ({ instanceId: 0, type: 'hit', x: 0, y: 0, remaining: 0, duration: 0, alive: false }),
+      (e) => resetEffect(e),
+      30,
+    );
   }
 
   // ===== 实体增删 =====

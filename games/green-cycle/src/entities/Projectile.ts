@@ -2,6 +2,7 @@
 // 投射物由塔发射，追踪目标敌人，命中后造成伤害
 
 import type { Projectile, AttackType } from '../types';
+import type { Pool } from '../utils/Pool';
 import { nextEntityId } from './Entity';
 
 import type { BuffType } from '../types';
@@ -29,27 +30,27 @@ export interface CreateProjectileOpts {
  * - instanceId = nextEntityId()
  * - alive = true
  */
-export function createProjectile(opts: CreateProjectileOpts): Projectile {
-  const proj: Projectile = {
-    instanceId: nextEntityId(),
-    x: opts.x,
-    y: opts.y,
-    targetId: opts.targetId,
-    speed: opts.speed,
-    damage: opts.damage,
-    attackType: opts.attackType,
-    splashRadius: opts.splashRadius,
-    sourceTowerId: opts.sourceTowerId,
-    alive: true,
-    color: opts.color,
-    size: opts.size,
-  };
+export function createProjectile(opts: CreateProjectileOpts, pool?: Pool<Projectile>): Projectile {
+  const proj = pool ? pool.acquire() : ({} as Projectile);
+  // 重新分配 id
+  proj.instanceId = nextEntityId();
+  // 填充所有字段
+  proj.x = opts.x;
+  proj.y = opts.y;
+  proj.targetId = opts.targetId;
+  proj.speed = opts.speed;
+  proj.damage = opts.damage;
+  proj.attackType = opts.attackType ?? 'normal';
+  proj.splashRadius = opts.splashRadius ?? 0;
+  proj.sourceTowerId = opts.sourceTowerId ?? 0;
+  proj.alive = true;
+  proj.color = opts.color ?? '#FFFFFF';
+  proj.size = opts.size ?? 4;
+  // debuff 字段：显式设置（覆盖池中旧值）
   if (opts.debuffType != null) {
-    proj.debuff = {
-      type: opts.debuffType,
-      value: opts.debuffValue ?? 0,
-      duration: opts.debuffDuration ?? 1,
-    };
+    proj.debuff = { type: opts.debuffType, value: opts.debuffValue ?? 0, duration: opts.debuffDuration ?? 1 };
+  } else {
+    proj.debuff = undefined;
   }
   return proj;
 }
