@@ -38,6 +38,17 @@ export const RECIPES: Recipe[] = [
     result: { towerId: 'tianshen', level: 15 },
     cost: { gold: 500, wood: 10 },
   },
+  // 2 座 3 级冰霜塔 → 1 级冰冻塔（成长塔，冻结控制）
+  {
+    id: 'recipe_frost_to_freeze',
+    name: '冰霜塔合冰冻塔',
+    ingredients: [
+      { towerId: 'frost', level: 3 },
+      { towerId: 'frost', level: 3 },
+    ],
+    result: { towerId: 'freeze', level: 1 },
+    cost: { gold: 120, wood: 2 },
+  },
   // 2 座 4 级闪电塔 → 1 级电法塔（成长塔，闪电链）
   {
     id: 'recipe_lightning_to_dianfa',
