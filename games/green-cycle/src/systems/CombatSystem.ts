@@ -44,7 +44,7 @@ export function applyDamage(
   if (enemy.hp <= 0) {
     enemy.alive = false;
     // 死亡特效
-    state.addEffect(createDeathEffect(enemy.x, enemy.y, enemy.color));
+    state.addEffect(createDeathEffect(enemy.x, enemy.y, enemy.color, state.effectPool));
     // 击杀奖励
     state.gold += enemy.rewardGold;
     state.wood += enemy.rewardWood;
@@ -85,7 +85,7 @@ export function update(state: GameState, dt: number): void {
             proj.debuff?.duration,
           );
         }
-        state.addEffect(createSplashEffect(proj.x, proj.y, proj.splashRadius, proj.color));
+        state.addEffect(createSplashEffect(proj.x, proj.y, proj.splashRadius, proj.color, state.effectPool));
       }
       proj.alive = false;
       continue;
@@ -126,7 +126,7 @@ export function update(state: GameState, dt: number): void {
             proj.debuff?.duration,
           );
         }
-        state.addEffect(createSplashEffect(target.x, target.y, proj.splashRadius, proj.color));
+        state.addEffect(createSplashEffect(target.x, target.y, proj.splashRadius, proj.color, state.effectPool));
       } else {
         // 单体伤害
         applyDamage(
@@ -139,7 +139,7 @@ export function update(state: GameState, dt: number): void {
           proj.debuff?.value,
           proj.debuff?.duration,
         );
-        state.addEffect(createHitEffect(target.x, target.y, proj.color));
+        state.addEffect(createHitEffect(target.x, target.y, proj.color, state.effectPool));
       }
       proj.alive = false;
     } else {
@@ -149,17 +149,21 @@ export function update(state: GameState, dt: number): void {
     }
   }
 
-  // ===== 清理已死亡投射物（反向遍历）=====
+  // ===== 清理已死亡投射物（反向遍历，release 到池）=====
   for (let i = state.projectiles.length - 1; i >= 0; i--) {
-    if (!state.projectiles[i].alive) {
+    const p = state.projectiles[i];
+    if (!p.alive) {
       state.projectiles.splice(i, 1);
+      state.projectilePool.release(p);
     }
   }
 
-  // ===== 清理已死亡敌人（反向遍历）=====
+  // ===== 清理已死亡敌人（反向遍历，release 到池）=====
   for (let i = state.enemies.length - 1; i >= 0; i--) {
-    if (!state.enemies[i].alive) {
+    const e = state.enemies[i];
+    if (!e.alive) {
       state.enemies.splice(i, 1);
+      state.enemyPool.release(e);
     }
   }
 }

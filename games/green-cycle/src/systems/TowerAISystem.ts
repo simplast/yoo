@@ -148,32 +148,36 @@ export function update(state: GameState, dt: number): void {
         hitDebuff?.value,
         hitDebuff?.duration,
       );
-      state.addEffect(createHitEffect(target.x, target.y, tower.color));
+      state.addEffect(createHitEffect(target.x, target.y, tower.color, state.effectPool));
       state.addEffect(
         createDamageText(
           target.x,
           target.y - target.size,
           (isCrit ? '✦' : '') + Math.floor(damage).toString(),
           isCrit ? '#FFD700' : tower.color,
+          state.effectPool,
         ),
       );
     } else {
       // 生成投射物
-      const proj = createProjectile({
-        x: tower.x,
-        y: tower.y,
-        targetId: target.instanceId,
-        speed: tower.projectileSpeed,
-        damage,
-        attackType: tower.attackType,
-        splashRadius: tower.splashRadius,
-        sourceTowerId: tower.instanceId,
-        color: isCrit ? '#FFD700' : tower.color,
-        size: 4,
-        debuffType: hitDebuff?.type,
-        debuffValue: hitDebuff?.value,
-        debuffDuration: hitDebuff?.duration,
-      });
+      const proj = createProjectile(
+        {
+          x: tower.x,
+          y: tower.y,
+          targetId: target.instanceId,
+          speed: tower.projectileSpeed,
+          damage,
+          attackType: tower.attackType,
+          splashRadius: tower.splashRadius,
+          sourceTowerId: tower.instanceId,
+          color: isCrit ? '#FFD700' : tower.color,
+          size: 4,
+          debuffType: hitDebuff?.type,
+          debuffValue: hitDebuff?.value,
+          debuffDuration: hitDebuff?.duration,
+        },
+        state.projectilePool,
+      );
       state.addProjectile(proj);
     }
   }

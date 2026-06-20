@@ -120,6 +120,10 @@ export class Game {
     audio.resume();
     resetEntityId();
     const path = this.state.path;
+    // 释放旧对象池中的对象，避免旧实体引用残留
+    this.state.enemyPool.releaseAll();
+    this.state.projectilePool.releaseAll();
+    this.state.effectPool.releaseAll();
     this.state = new GameState(path);
     this.state.initDifficulty(difficulty, endless);
     this.state.phase = 'battling';
@@ -368,7 +372,7 @@ export class Game {
     const tower =
       def.category === 'growth' ? createHeroTower(defId, cx, cy) : createTower(defId, cx, cy);
     state.addTower(tower);
-    state.addEffect(createBuildEffect(cx, cy));
+    state.addEffect(createBuildEffect(cx, cy, state.effectPool));
     audio.playBuild();
   }
 
@@ -385,7 +389,7 @@ export class Game {
     state.gold -= nextCost;
     tower.totalSpent += nextCost;
     upgradeTower(tower);
-    state.addEffect(createUpgradeEffect(tower.x, tower.y));
+    state.addEffect(createUpgradeEffect(tower.x, tower.y, state.effectPool));
     audio.playUpgrade();
     this.showTowerInfo(tower);
   }

@@ -4,6 +4,7 @@
 import type { Enemy } from '../types';
 import type { Path } from '../utils/Path';
 import type { Difficulty } from '../config';
+import type { Pool } from '../utils/Pool';
 import { ENEMIES } from '../data/enemies';
 import { CONFIG } from '../config';
 import { nextEntityId } from './Entity';
@@ -15,7 +16,7 @@ import { nextEntityId } from './Entity';
  * - 初始位置取 path.getPosition(0)，pathProgress=0
  * - speed=baseSpeed，alive=true，buffs=[]，hitFlash=0，auraFlags=0
  */
-export function createEnemy(defId: string, path: Path, difficulty: Difficulty): Enemy {
+export function createEnemy(defId: string, path: Path, difficulty: Difficulty, pool?: Pool<Enemy>): Enemy {
   const def = ENEMIES[defId];
   if (!def) {
     throw new Error(`[createEnemy] 未找到敌人定义: ${defId}`);
@@ -26,25 +27,26 @@ export function createEnemy(defId: string, path: Path, difficulty: Difficulty): 
   const pos = path.getPosition(0);
   const hp = def.baseHp * hpMul;
 
-  const enemy: Enemy = {
-    // 拷贝定义字段
-    ...def,
-    abilities: [...def.abilities],
-    // 运行时字段
-    instanceId: nextEntityId(),
-    hp,
-    maxHp: hp,
-    pathProgress: 0,
-    speed: def.baseSpeed,
-    x: pos.x,
-    y: pos.y,
-    alive: true,
-    buffs: [],
-    auraFlags: 0,
-    hitFlash: 0,
-    // 难度调整后的奖励
-    rewardGold: def.rewardGold * goldMul,
-  };
+  // 从池获取或新建
+  const enemy = pool ? pool.acquire() : ({} as Enemy);
+
+  // 拷贝定义字段
+  Object.assign(enemy, def);
+  enemy.abilities = [...def.abilities];
+  // 运行时字段
+  enemy.instanceId = nextEntityId();
+  enemy.hp = hp;
+  enemy.maxHp = hp;
+  enemy.pathProgress = 0;
+  enemy.speed = def.baseSpeed;
+  enemy.x = pos.x;
+  enemy.y = pos.y;
+  enemy.alive = true;
+  enemy.buffs = [];
+  enemy.auraFlags = 0;
+  enemy.hitFlash = 0;
+  // 难度调整后的奖励
+  enemy.rewardGold = def.rewardGold * goldMul;
 
   return enemy;
 }
