@@ -38,4 +38,37 @@ export const RECIPES: Recipe[] = [
     result: { towerId: 'tianshen', level: 15 },
     cost: { gold: 500, wood: 10 },
   },
+  // 2 座 4 级闪电塔 → 1 级电法塔（成长塔，闪电链）
+  {
+    id: 'recipe_lightning_to_dianfa',
+    name: '闪电塔合电法塔',
+    ingredients: [
+      { towerId: 'lightning', level: 4 },
+      { towerId: 'lightning', level: 4 },
+    ],
+    result: { towerId: 'dianfa', level: 1 },
+    cost: { gold: 180, wood: 3 },
+  },
+  // 2 座 3 级眩晕塔 → 1 级剑圣塔（成长塔，剑刃风暴）
+  {
+    id: 'recipe_stun_to_jianfa',
+    name: '眩晕塔合剑圣塔',
+    ingredients: [
+      { towerId: 'stun', level: 3 },
+      { towerId: 'stun', level: 3 },
+    ],
+    result: { towerId: 'jianfa', level: 1 },
+    cost: { gold: 150, wood: 2 },
+  },
+  // 2 座 3 级腐蚀塔 → 1 级天神塔（成长塔，审判之光）
+  {
+    id: 'recipe_corrosive_to_tianshen',
+    name: '腐蚀塔合天神塔',
+    ingredients: [
+      { towerId: 'corrosive', level: 3 },
+      { towerId: 'corrosive', level: 3 },
+    ],
+    result: { towerId: 'tianshen', level: 1 },
+    cost: { gold: 200, wood: 3 },
+  },
 ];
