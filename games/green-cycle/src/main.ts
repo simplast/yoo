@@ -2,6 +2,7 @@
 import { Game } from './game/Game';
 import type { UIElements } from './game/Game';
 import type { Difficulty } from './config';
+import { getIconSvg, preloadImages } from './utils/AssetLoader';
 
 function $(id: string): HTMLElement {
   const el = document.getElementById(id);
@@ -68,6 +69,17 @@ function init(): void {
   };
 
   const game = new Game(canvas, ui);
+
+  // 技能按钮替换为 SVG 图标
+  function setSkillIcon(btn: HTMLButtonElement, iconId: string) {
+    const svg = getIconSvg(iconId);
+    if (svg) {
+      btn.innerHTML = `<span class="svg-icon">${svg}</span><span class="cd"></span>`;
+    }
+  }
+  setSkillIcon(ui.skillBlast, 'blast');
+  setSkillIcon(ui.skillSlow, 'slowGlobal');
+  setSkillIcon(ui.skillSummon, 'summon');
 
   // 当前选择的难度与无尽模式
   let selectedDiff: Difficulty = 'normal';
@@ -154,6 +166,11 @@ function init(): void {
 
   // 启动主循环（菜单状态也运行，处理输入与渲染背景）
   game.start();
+
+  // 预加载 SVG 资源，确保 canvas 绘制与 UI 图标可用
+  preloadImages().catch(() => {
+    // 忽略预加载错误，回退逻辑会处理
+  });
 }
 
 init();

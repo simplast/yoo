@@ -11,6 +11,7 @@ import { InputManager } from '../input/InputManager';
 import { audio } from '../audio/Audio';
 import { matchRecipe, executeCombine } from '../utils/RecipeUtil';
 import { SaveManager } from '../utils/SaveManager';
+import { getTowerSvg } from '../utils/AssetLoader';
 
 import * as WaveSystem from '../systems/WaveSystem';
 import * as MovementSystem from '../systems/MovementSystem';
@@ -782,21 +783,17 @@ export class Game {
     const state = this.state;
     ui.towerPanel.innerHTML = '';
     const defIds = Object.keys(TOWERS);
-    const categoryIcon: Record<string, string> = {
-      basic: '⚔',
-      support: '❄',
-      aura: '✦',
-      growth: '⭐',
-      special: '⚡',
-    };
     for (const id of defIds) {
       const def = TOWERS[id];
       const btn = document.createElement('button');
       btn.className = `tower-btn cat-${def.category}`;
       btn.dataset.towerId = id;
       const cost = def.levels[0].upgradeCost;
-      const icon = categoryIcon[def.category] ?? '•';
-      btn.innerHTML = `<span class="icon">${icon}</span><span class="name">${def.name}</span><span class="cost">💰${cost}</span><span class="pop">🏠${def.popCost}</span>`;
+      const svg = getTowerSvg(id);
+      const iconHtml = svg
+        ? `<span class="icon svg-icon">${svg}</span>`
+        : `<span class="icon">•</span>`;
+      btn.innerHTML = `${iconHtml}<span class="name">${def.name}</span><span class="cost">💰${cost}</span><span class="pop">🏠${def.popCost}</span>`;
       btn.disabled = state.gold < cost || state.pop + def.popCost > state.popMax;
       btn.addEventListener('click', () => {
         audio.init();

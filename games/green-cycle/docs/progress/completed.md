@@ -13,6 +13,7 @@
 | M7 | 合成系统 | ✅ 完成 |
 | M8 | 存档与难度 | ✅ 完成 |
 | M9 | 音效/UI/性能 | ✅ 完成 |
+| M10 | UI 资源优化（SVG） | ✅ 完成 |
 
 ---
 
@@ -217,3 +218,34 @@
 ### 验证状态
 - `tsc --noEmit`：零错误
 - `vite build`：成功，`../../public/games/green-cycle/index.html` 99.29 kB（gzip 28.84 kB）
+
+---
+
+## M10：UI 资源优化（SVG）
+
+### 新增文件
+- `src/utils/AssetLoader.ts` — 使用 Vite `?raw` 内联所有 SVG，提供字符串/canvas Image 获取与预加载
+- `src/types/assets.d.ts` — `*.svg?raw` 模块类型声明
+
+### 修改文件
+| 文件 | 改动 |
+|------|------|
+| `src/game/Game.ts` | 塔面板按钮使用对应 `tower_*.svg` 图标，移除分类 emoji |
+| `src/main.ts` | 全局技能按钮使用 `icon_blast.svg`/`icon_slowGlobal.svg`/`icon_summon.svg`；启动时预加载 SVG |
+| `src/render/PixelArt.ts` | 敌人头顶 debuff 指示器优先使用 `icon_*.svg`；未加载完成回退像素几何 |
+| `src/render/MapRenderer.ts` | 草地/跑道静态层使用 `tile_buildable.svg`/`tile_path.svg` 平铺；未加载完成回退原程序化绘制 |
+| `index.html` | 塔按钮与技能按钮 SVG 图标样式适配 |
+
+### 机制实装
+| 机制 | 说明 |
+|------|------|
+| 资源内联 | 所有 SVG 通过 `?raw` 导入并 base64 为 data URL，单文件产物无需额外网络请求 |
+| 塔面板图标 | 15 种塔均使用专属像素风 SVG 图标 |
+| 技能按钮图标 | 3 个全局技能使用专属 SVG 图标 |
+| Debuff 图标 | slow/armorBreak/stun/freeze/haste/poison 使用 SVG 资源 |
+| 地图贴图 | buildable/path 地块使用 SVG pattern 平铺 |
+| 回退机制 | 图片未加载完成时保留原程序化绘制/emoji，避免白屏 |
+
+### 验证状态
+- `tsc --noEmit`：零错误
+- `vite build`：成功，`../../public/games/green-cycle/index.html` 196.33 kB（gzip 41.33 kB）

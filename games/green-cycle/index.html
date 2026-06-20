@@ -99,6 +99,8 @@
     .tower-btn.active { border-color: var(--accent); box-shadow: 0 0 8px var(--accent); }
     .tower-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .tower-btn .icon { font-size: 14px; display: block; margin-bottom: 2px; }
+    .tower-btn .icon.svg-icon { display: flex; align-items: center; justify-content: center; height: 24px; margin-bottom: 4px; }
+    .tower-btn .icon.svg-icon svg { width: 24px; height: 24px; }
     .tower-btn .name { font-weight: bold; color: var(--accent); display: block; }
     .tower-btn .cost { color: var(--gold); font-size: 10px; }
     .tower-btn .pop { color: var(--text); font-size: 10px; }
@@ -123,6 +125,8 @@
     .skill-btn:hover { border-color: var(--accent); transform: scale(1.08); }
     .skill-btn.active { border-color: var(--accent); box-shadow: 0 0 10px var(--accent); transform: scale(1.05); }
     .skill-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .skill-btn .svg-icon { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; }
+    .skill-btn .svg-icon svg { width: 28px; height: 28px; }
     .skill-btn .cd {
       position: absolute; bottom: -2px; right: -2px;
       background: #000; color: var(--accent);

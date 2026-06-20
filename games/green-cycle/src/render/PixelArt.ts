@@ -1,6 +1,7 @@
-// 程序生成像素精灵 - 全部用 Canvas 矩形 fillRect 绘制，不用图片
+// 程序生成像素精灵 - 部分使用 SVG 资源优化
 import type { Enemy, Tower, Projectile, Effect } from '../types';
 import { ARMOR_COLOR } from '../types';
+import { getSvgImage } from '../utils/AssetLoader';
 
 // 颜色常量（复用，避免每帧创建字符串）
 const COLOR_WHITE = '#FFFFFF';
@@ -96,12 +97,19 @@ export function drawEnemy(ctx: CanvasRenderingContext2D, enemy: Enemy): void {
   drawBuffIndicators(ctx, x, y - half - 10, enemy.buffs);
 }
 
+/** debuff 类型到图标 id 映射 */
+const BUFF_ICON_MAP: Record<string, string> = {
+  slow: 'slow',
+  armorBreak: 'armorBreak',
+  stun: 'stun',
+  freeze: 'freeze',
+  haste: 'haste',
+  poison: 'poison',
+};
+
 /**
- * 画敌人头顶 debuff 小图标（像素风）
- * - slow: 蓝色向下箭头
- * - armorBreak: 绿色小破甲（向下三角）
- * - stun: 黄色小星号
- * - freeze: 青色小十字（雪花简化）
+ * 画敌人头顶 debuff 图标
+ * - 优先使用 SVG 资源；未加载完成则回退像素风简图
  */
 function drawBuffIndicators(
   ctx: CanvasRenderingContext2D,
@@ -111,34 +119,39 @@ function drawBuffIndicators(
 ): void {
   if (buffs.length === 0) return;
   const uniqueTypes = Array.from(new Set(buffs.map((b) => b.type)));
-  const size = 4;
+  const size = 10;
   const gap = 2;
   const totalW = uniqueTypes.length * size + (uniqueTypes.length - 1) * gap;
   let x = cx - totalW / 2;
   for (const type of uniqueTypes) {
-    ctx.fillStyle = AURA_COLOR[type] ?? '#FFFFFF';
-    switch (type) {
-      case 'slow':
-      case 'armorBreak': {
-        ctx.beginPath();
-        ctx.moveTo(x + size / 2, topY + size);
-        ctx.lineTo(x, topY);
-        ctx.lineTo(x + size, topY);
-        ctx.closePath();
-        ctx.fill();
-        break;
-      }
-      case 'stun': {
-        // 小星号
-        ctx.fillRect(x + size / 2 - 1, topY, 2, size);
-        ctx.fillRect(x, topY + size / 2 - 1, size, 2);
-        break;
-      }
-      case 'freeze': {
-        // 小十字
-        ctx.fillRect(x + size / 2 - 0.5, topY, 1, size);
-        ctx.fillRect(x, topY + size / 2 - 0.5, size, 1);
-        break;
+    const iconId = BUFF_ICON_MAP[type];
+    const img = iconId ? getSvgImage(iconId, 'icon') : null;
+    if (img && img.complete && img.naturalWidth > 0) {
+      ctx.drawImage(img, x, topY, size, size);
+    } else {
+      // 回退：简单几何
+      ctx.fillStyle = AURA_COLOR[type] ?? '#FFFFFF';
+      switch (type) {
+        case 'slow':
+        case 'armorBreak': {
+          ctx.beginPath();
+          ctx.moveTo(x + size / 2, topY + size);
+          ctx.lineTo(x, topY);
+          ctx.lineTo(x + size, topY);
+          ctx.closePath();
+          ctx.fill();
+          break;
+        }
+        case 'stun': {
+          ctx.fillRect(x + size / 2 - 1, topY, 2, size);
+          ctx.fillRect(x, topY + size / 2 - 1, size, 2);
+          break;
+        }
+        case 'freeze': {
+          ctx.fillRect(x + size / 2 - 0.5, topY, 1, size);
+          ctx.fillRect(x, topY + size / 2 - 0.5, size, 1);
+          break;
+        }
       }
     }
     x += size + gap;

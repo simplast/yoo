@@ -2,6 +2,7 @@
 import type { GameState } from '../game/State';
 import type { Path } from '../utils/Path';
 import { CONFIG } from '../config';
+import { getSvgImage } from '../utils/AssetLoader';
 
 // 颜色常量（复用）
 const COLOR_GRASS_DARK = '#1a3a1a';
@@ -44,47 +45,76 @@ function drawStaticMap(path: Path): void {
   const TILE = CONFIG.TILE;
   const pts = path.points;
 
+  const tileBuildable = getSvgImage('buildable', 'tile');
+  const tilePath = getSvgImage('path', 'tile');
+  const buildableReady = tileBuildable && tileBuildable.complete && tileBuildable.naturalWidth > 0;
+  const pathReady = tilePath && tilePath.complete && tilePath.naturalWidth > 0;
+
   ctx.clearRect(0, 0, W, H);
 
   // 草地背景
   ctx.fillStyle = COLOR_GRASS_DARK;
   ctx.fillRect(0, 0, W, H);
 
-  // 棋盘格子（浅绿）
-  ctx.fillStyle = COLOR_GRASS_LIGHT;
-  for (let y = 0; y < H; y += TILE) {
-    for (let x = 0; x < W; x += TILE) {
-      if (((x / TILE) + (y / TILE)) % 2 === 0) {
-        ctx.fillRect(x, y, TILE, TILE);
+  // 可建造地块贴图平铺
+  if (buildableReady) {
+    const pat = ctx.createPattern(tileBuildable, 'repeat');
+    if (pat) {
+      ctx.fillStyle = pat;
+      ctx.fillRect(0, 0, W, H);
+    }
+  } else {
+    // 回退：棋盘格子（浅绿）
+    ctx.fillStyle = COLOR_GRASS_LIGHT;
+    for (let y = 0; y < H; y += TILE) {
+      for (let x = 0; x < W; x += TILE) {
+        if (((x / TILE) + (y / TILE)) % 2 === 0) {
+          ctx.fillRect(x, y, TILE, TILE);
+        }
       }
     }
   }
 
   // 跑道
   if (pts.length > 0) {
-    // 粗深棕线
-    ctx.strokeStyle = COLOR_PATH_DARK;
-    ctx.lineWidth = CONFIG.PATH_WIDTH;
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
-    ctx.beginPath();
-    ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) {
-      ctx.lineTo(pts[i].x, pts[i].y);
-    }
-    ctx.closePath();
-    ctx.stroke();
 
-    // 浅棕中线
-    ctx.strokeStyle = COLOR_PATH_LIGHT;
-    ctx.lineWidth = Math.max(2, CONFIG.PATH_WIDTH - 10);
-    ctx.beginPath();
-    ctx.moveTo(pts[0].x, pts[0].y);
-    for (let i = 1; i < pts.length; i++) {
-      ctx.lineTo(pts[i].x, pts[i].y);
+    if (pathReady) {
+      const pat = ctx.createPattern(tilePath, 'repeat');
+      if (pat) {
+        ctx.strokeStyle = pat;
+        ctx.lineWidth = CONFIG.PATH_WIDTH;
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i < pts.length; i++) {
+          ctx.lineTo(pts[i].x, pts[i].y);
+        }
+        ctx.closePath();
+        ctx.stroke();
+      }
+    } else {
+      // 回退：粗深棕线 + 浅棕中线
+      ctx.strokeStyle = COLOR_PATH_DARK;
+      ctx.lineWidth = CONFIG.PATH_WIDTH;
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) {
+        ctx.lineTo(pts[i].x, pts[i].y);
+      }
+      ctx.closePath();
+      ctx.stroke();
+
+      ctx.strokeStyle = COLOR_PATH_LIGHT;
+      ctx.lineWidth = Math.max(2, CONFIG.PATH_WIDTH - 10);
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) {
+        ctx.lineTo(pts[i].x, pts[i].y);
+      }
+      ctx.closePath();
+      ctx.stroke();
     }
-    ctx.closePath();
-    ctx.stroke();
   }
 
   // 出怪口：路径起点画黑色漩涡（同心圆）
