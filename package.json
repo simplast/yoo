@@ -13,5 +13,10 @@
   },
   "dependencies": {
     "astro": "^4.16.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0",
+    "vite-plugin-singlefile": "^2.0.0"
   }
 }
