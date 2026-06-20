@@ -18,6 +18,17 @@ export function update(state: GameState, dt: number): void {
     state.globalSlowTimer = Math.max(0, state.globalSlowTimer - dt);
   }
 
+  // ===== 召唤炮台计时 =====
+  if (state.summonTimer > 0) {
+    state.summonTimer = Math.max(0, state.summonTimer - dt);
+    if (state.summonTimer <= 0 && state.summonTowerId !== -1) {
+      // 到期移除临时炮台（使用 removeTower 确保选中状态清理）
+      const tower = state.towers.find((t) => t.instanceId === state.summonTowerId);
+      if (tower) state.removeTower(tower);
+      state.summonTowerId = -1;
+    }
+  }
+
   // ===== 更新压力 =====
   state.updatePressure();
 

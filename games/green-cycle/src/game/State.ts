@@ -75,6 +75,7 @@ export class GameState {
   skillSummonCd = 0;
   globalSlowTimer = 0; // 全屏减速剩余秒
   summonTowerId = -1; // 召唤的临时炮台 instanceId，-1=无
+  summonTimer = 0; // 召唤炮台剩余持续时间秒，0=无活跃召唤
 
   // ===== 路径 =====
   path: Path;
