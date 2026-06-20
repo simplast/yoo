@@ -10,16 +10,16 @@ row when done.
 
 | Plan | Title | Priority | Effort | Depends on | Status |
 |------|-------|----------|--------|------------|--------|
-| 001  | 修复 hard 难度人口上限为负数 + 纠正过时文档 | P1 | S | — | TODO |
-| 002  | 召唤炮台改用游戏内计时器替代 setTimeout | P1 | S | — | TODO |
-| 003  | 修复 maxEnemies 硬编码、清理 dead code、消除模块级状态 | P2 | S | — | TODO |
-| 004  | 建立测试基线（Vitest + 核心纯逻辑覆盖） | P1 | M | 001 | TODO |
-| 005  | 引入 ESLint + Prettier 并开启未使用代码检查 | P2 | S | 004 | TODO |
-| 006  | 预计算友方光环加成，消除每帧 O(towers²) 重复扫描 | P2 | M | 004 | TODO |
-| 007  | 技能系统与投射物溅射接入 Quadtree | P2 | M | 004, 006 | TODO |
-| 008  | 接入对象池减少 GC 压力 | P3 | L | 004, 007 | TODO |
-| 009  | 为普通波增加时间压力与清场奖励 | P3 | M | 004 | TODO |
-| 010  | 扩展木材获取渠道 | P3 | S | 004 | TODO |
+| 001  | 修复 hard 难度人口上限为负数 + 纠正过时文档 | P1 | S | — | DONE (merged `2dc9d55`) |
+| 002  | 召唤炮台改用游戏内计时器替代 setTimeout | P1 | S | — | DONE (merged `dd31b72`) |
+| 003  | 修复 maxEnemies 硬编码、清理 dead code、消除模块级状态 | P2 | S | — | DONE (merged `a68a84f`) |
+| 004  | 建立测试基线（Vitest + 核心纯逻辑覆盖） | P1 | M | 001 | DONE (merged `a6100df`) |
+| 005  | 引入 ESLint + Prettier 并开启未使用代码检查 | P2 | S | 004 | DONE (merged `92f93ca`) |
+| 006  | 预计算友方光环加成，消除每帧 O(towers²) 重复扫描 | P2 | M | 004 | DONE (merged `9102dd9`) |
+| 007  | 技能系统与投射物溅射接入 Quadtree | P2 | M | 004, 006 | DONE (merged `f309ad9`) |
+| 008  | 接入对象池减少 GC 压力 | P3 | L | 004, 007 | DONE (merged `abadf08`) |
+| 009  | 为普通波增加时间压力与清场奖励 | P3 | M | 004 | DONE (merged `eaf2d25`) |
+| 010  | 扩展木材获取渠道 | P3 | S | 004 | DONE (merged `99da51a`) |
 | 011  | 扩充合成配方系统 | P3 | M | 004, 010 | TODO |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
