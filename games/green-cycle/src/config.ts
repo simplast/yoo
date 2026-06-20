@@ -15,6 +15,7 @@ export const CONFIG = {
   TARGET_FPS: 60,
   MAX_ENEMIES_NORMAL: 40, // 单人普通模式同屏上限
   MAX_ENEMIES_ENDLESS: 20,
+  MAX_ENEMIES_BY_DIFF: { easy: 50, normal: 40, hard: 35 },
   PRESSURE_WARN: 0.8, // 80% 警告
 
   // 经济

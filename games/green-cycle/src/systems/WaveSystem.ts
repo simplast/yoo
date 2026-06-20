@@ -6,9 +6,6 @@ import { CONFIG } from '../config';
 import { createEnemy } from '../entities/Enemy';
 import { audio } from '../audio/Audio';
 
-// 模块级变量：记录当前波次开始时 enemies 是否为空（用于 PF 判定）
-let waveStartEnemiesEmpty = true;
-
 /**
  * 根据当前波次生成无尽模式波次模板
  * - 超过 TOTAL_WAVES 后循环使用 WAVES，每循环一次强度递增
@@ -19,7 +16,6 @@ function generateEndlessWave(waveIndex: number): WaveDef {
   const templateIndex = ((waveIndex - 1) % total) + 1;
   const template = WAVES[templateIndex - 1];
 
-  const hpMul = 1 + CONFIG.ENDLESS_HP_SCALE * cycle;
   const countMul = 1 + CONFIG.ENDLESS_COUNT_SCALE * cycle;
   const rewardMul = 1 + CONFIG.ENDLESS_REWARD_SCALE * cycle;
 
@@ -65,7 +61,7 @@ function startNextWave(state: GameState): void {
   state.waveStartTime = state.gameTime;
 
   // 记录波次开始时 enemies 是否为空（用于 PF 判定）
-  waveStartEnemiesEmpty = state.enemies.length === 0;
+  state.waveStartEnemiesEmpty = state.enemies.length === 0;
 
   // Boss 波设置击杀限时
   if (wave.isBoss) {
@@ -87,7 +83,7 @@ function endWave(state: GameState): void {
   state.wood += wave.rewardWood;
 
   // PF 判定：波次开始时 enemies 为空则 PF
-  if (waveStartEnemiesEmpty) {
+  if (state.waveStartEnemiesEmpty) {
     state.pf++;
     state.perfectStreak++;
     // PF 连胜奖励：达到 5 次额外金币，重置连胜计数但保留 pf
