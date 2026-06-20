@@ -1,6 +1,6 @@
 // 游戏主控：状态机、系统调度、输入处理、UI 同步
 import { CONFIG } from '../config';
-import type { Difficulty, GamePhase, Tower, Vec2, SaveData } from '../types';
+import type { Difficulty, Tower, Vec2, SaveData } from '../types';
 import { TOWERS } from '../data/towers';
 import { RECIPES } from '../data/recipes';
 import { Path } from '../utils/Path';
@@ -59,7 +59,6 @@ function isCellBuildable(path: Path, cx: number, cy: number, pathWidth: number):
 }
 
 export class Game {
-  private canvas: HTMLCanvasElement;
   private state: GameState;
   private renderer: Renderer;
   private input: InputManager;
@@ -75,7 +74,6 @@ export class Game {
   onShowMenu?: () => void;
 
   constructor(canvas: HTMLCanvasElement, ui: UIElements) {
-    this.canvas = canvas;
     this.ui = ui;
     this.saveData = SaveManager.load() ?? SaveManager.getDefault();
     const path = Path.createLoopPath(
@@ -199,7 +197,9 @@ export class Game {
       state.selectedTowerIds = [];
       state.selectBox = null;
       this.ui.towerInfo.classList.remove('show');
-      this.ui.towerPanel.querySelectorAll('.tower-btn').forEach((b) => b.classList.remove('active'));
+      this.ui.towerPanel
+        .querySelectorAll('.tower-btn')
+        .forEach((b) => b.classList.remove('active'));
       return;
     }
 
@@ -229,7 +229,9 @@ export class Game {
         // shift 连续建造
         if (!shiftDown) {
           state.pendingBuildTowerId = null;
-          this.ui.towerPanel.querySelectorAll('.tower-btn').forEach((b) => b.classList.remove('active'));
+          this.ui.towerPanel
+            .querySelectorAll('.tower-btn')
+            .forEach((b) => b.classList.remove('active'));
         }
         return;
       }
@@ -253,9 +255,10 @@ export class Game {
       if (idx >= 0) {
         state.selectedTowerIds.splice(idx, 1);
         if (state.selectedTowerId === tower.instanceId) {
-          state.selectedTowerId = state.selectedTowerIds.length > 0
-            ? state.selectedTowerIds[state.selectedTowerIds.length - 1]
-            : -1;
+          state.selectedTowerId =
+            state.selectedTowerIds.length > 0
+              ? state.selectedTowerIds[state.selectedTowerIds.length - 1]
+              : -1;
         }
       } else {
         // 将当前主选移入多选（如果存在）
@@ -322,10 +325,13 @@ export class Game {
           this.togglePause();
         }
         break;
-      case '1': case '2': case '3':
+      case '1':
+      case '2':
+      case '3':
         this.setSpeed(Number(key));
         break;
-      case 'p': case 'P':
+      case 'p':
+      case 'P':
         this.togglePause();
         break;
     }
@@ -359,7 +365,8 @@ export class Game {
 
     // 扣资源建塔
     state.spend(cost, 0);
-    const tower = def.category === 'growth' ? createHeroTower(defId, cx, cy) : createTower(defId, cx, cy);
+    const tower =
+      def.category === 'growth' ? createHeroTower(defId, cx, cy) : createTower(defId, cx, cy);
     state.addTower(tower);
     state.addEffect(createBuildEffect(cx, cy));
     audio.playBuild();
@@ -371,7 +378,6 @@ export class Game {
     const state = this.state;
     const tower = state.getTowerById(state.selectedTowerId);
     if (!tower) return;
-    const stat = getTowerStat(tower);
     const nextLevel = tower.level + 1;
     if (nextLevel > tower.maxLevel) return;
     const nextCost = tower.levels[Math.min(nextLevel - 1, tower.levels.length - 1)].upgradeCost;
@@ -564,7 +570,9 @@ export class Game {
     ui.statGold.textContent = String(Math.floor(state.gold));
     ui.statWood.textContent = String(Math.floor(state.wood));
     ui.statPop.textContent = `${state.pop}/${state.popMax}`;
-    ui.statWave.textContent = state.endless ? `无尽 ${state.waveIndex} 波` : `${state.waveIndex}/${CONFIG.TOTAL_WAVES}`;
+    ui.statWave.textContent = state.endless
+      ? `无尽 ${state.waveIndex} 波`
+      : `${state.waveIndex}/${CONFIG.TOTAL_WAVES}`;
     ui.statPf.textContent = String(state.pf);
     // 压力条
     ui.pressureFill.style.width = `${Math.min(100, state.pressure * 100)}%`;
@@ -572,7 +580,9 @@ export class Game {
     if (state.currentWave) {
       ui.nextWaveInfo.textContent = `当前: ${state.currentWave.hint}`;
     } else if (state.waveIndex < CONFIG.TOTAL_WAVES) {
-      ui.nextWaveInfo.textContent = state.waveActive ? '波次进行中' : `下波倒计时: ${Math.ceil(state.waveTimer)}s`;
+      ui.nextWaveInfo.textContent = state.waveActive
+        ? '波次进行中'
+        : `下波倒计时: ${Math.ceil(state.waveTimer)}s`;
     } else {
       ui.nextWaveInfo.textContent = '已完成';
     }
@@ -602,9 +612,10 @@ export class Game {
       ui.overlayTitle.textContent = '绿色循环圈';
       const bestPf = this.saveData.bestPf;
       const endlessRecords = this.saveData.leaderboard.endless.slice(0, 3);
-      const recordText = endlessRecords.length > 0
-        ? `\n最佳 PF: ${bestPf} | 无尽榜: ${endlessRecords.map((r) => `${r.wave}波/${r.score}分`).join(', ')}`
-        : `\n最佳 PF: ${bestPf}`;
+      const recordText =
+        endlessRecords.length > 0
+          ? `\n最佳 PF: ${bestPf} | 无尽榜: ${endlessRecords.map((r) => `${r.wave}波/${r.score}分`).join(', ')}`
+          : `\n最佳 PF: ${bestPf}`;
       ui.overlaySub.textContent = (won ? '🎉 通关成功！' : '💀 防线崩溃') + recordText;
       ui.diffRow.style.display = 'flex';
       ui.startBtn.textContent = '再来一局';
@@ -615,7 +626,7 @@ export class Game {
     }
   }
 
-  private syncSkillBtn(btn: HTMLButtonElement, cd: number, maxCd: number) {
+  private syncSkillBtn(btn: HTMLButtonElement, cd: number, _maxCd: number) {
     const cdEl = btn.querySelector('.cd');
     if (cd > 0) {
       btn.disabled = true;
@@ -696,7 +707,8 @@ export class Game {
       const materialValue = materials.reduce((sum, t) => sum + t.totalSpent, 0);
       const resultDef = TOWERS[recipe.result.towerId];
       const resultLevel = recipe.result.level ?? 1;
-      const resultValue = resultDef.levels[Math.min(resultLevel, resultDef.levels.length) - 1].upgradeCost;
+      const resultValue =
+        resultDef.levels[Math.min(resultLevel, resultDef.levels.length) - 1].upgradeCost;
       const netCost = (recipe.cost?.gold ?? 0) + resultValue - materialValue;
       const costText = netCost > 0 ? `需支付 ${netCost}💰` : `返还 ${-netCost}💰`;
       ui.tiCombineInfo.innerHTML = `可合成：<span style="color:var(--accent)">${recipe.name}</span><br>${resultDef.name} Lv${resultLevel}<br>${costText}${recipe.cost?.wood ? ` / ${recipe.cost.wood}🪵` : ''}`;
@@ -752,7 +764,8 @@ export class Game {
 
       const info = document.createElement('div');
       info.className = 'skill-info';
-      const reqMet = (!def.reqStr || (tower.str ?? 0) >= def.reqStr) &&
+      const reqMet =
+        (!def.reqStr || (tower.str ?? 0) >= def.reqStr) &&
         (!def.reqInt || (tower.int ?? 0) >= def.reqInt);
       const lvText = lv > 0 ? `Lv${lv}` : '未学';
       const reqText = !reqMet

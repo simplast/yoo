@@ -5,7 +5,6 @@ import type { Vec2 } from '../types';
 import { CONFIG } from '../config';
 
 // 颜色常量
-const COLOR_GRASS = '#4a7c3f';
 const COLOR_GRASS_LIGHT = '#5a8c4f';
 const COLOR_GRASS_DARK = '#3d6b35';
 const COLOR_PATH_DARK = '#4e342e';
@@ -41,7 +40,13 @@ function pathKey(points: { x: number; y: number }[]): string {
  * 同步绘制 32x32 草地纹理单元
  * 棋盘明暗交替以 (col+row) 奇偶决定，每格 32x32 = 一个塔基
  */
-function drawGrassTile(ctx: CanvasRenderingContext2D, ox: number, oy: number, col: number, row: number): void {
+function drawGrassTile(
+  ctx: CanvasRenderingContext2D,
+  ox: number,
+  oy: number,
+  col: number,
+  row: number,
+): void {
   // 基础草地（奇偶交替明暗）
   const isLight = (col + row) % 2 === 0;
   ctx.fillStyle = isLight ? COLOR_GRASS_LIGHT : COLOR_GRASS_DARK;
@@ -233,11 +238,7 @@ function drawPlacementHint(
  *   3. 终点基地
  *   4. 放置提示（仅悬停格子）
  */
-export function drawMap(
-  ctx: CanvasRenderingContext2D,
-  state: GameState,
-  mouseWorld?: Vec2,
-): void {
+export function drawMap(ctx: CanvasRenderingContext2D, state: GameState, mouseWorld?: Vec2): void {
   // 路径变化时重建静态缓存
   const key = pathKey(state.path.points);
   if (key !== cachedPathKey) {

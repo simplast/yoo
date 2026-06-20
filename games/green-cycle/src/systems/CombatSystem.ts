@@ -132,9 +132,7 @@ export function update(state: GameState, dt: number): void {
             );
           }
         }
-        state.addEffect(
-          createSplashEffect(target.x, target.y, proj.splashRadius, proj.color),
-        );
+        state.addEffect(createSplashEffect(target.x, target.y, proj.splashRadius, proj.color));
       } else {
         // 单体伤害
         applyDamage(

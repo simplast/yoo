@@ -123,14 +123,18 @@ function init(): void {
     // 渲染排行榜
     const records = save.leaderboard.endless.slice(0, 5);
     if (records.length === 0) {
-      ui.leaderboard.innerHTML = '<div class="lb-title">无尽排行榜</div><div class="lb-empty">暂无记录</div>';
+      ui.leaderboard.innerHTML =
+        '<div class="lb-title">无尽排行榜</div><div class="lb-empty">暂无记录</div>';
     } else {
-      ui.leaderboard.innerHTML = '<div class="lb-title">无尽排行榜</div>' +
-        records.map((r, i) => {
-          const date = new Date(r.date);
-          const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
-          return `<div class="lb-row">${i + 1}. ${r.wave}波 / ${r.score}分 — ${dateStr}</div>`;
-        }).join('');
+      ui.leaderboard.innerHTML =
+        '<div class="lb-title">无尽排行榜</div>' +
+        records
+          .map((r, i) => {
+            const date = new Date(r.date);
+            const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
+            return `<div class="lb-row">${i + 1}. ${r.wave}波 / ${r.score}分 — ${dateStr}</div>`;
+          })
+          .join('');
     }
   }
 

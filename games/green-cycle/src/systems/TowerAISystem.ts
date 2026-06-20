@@ -48,7 +48,9 @@ function getAllyAuraBonus(
  * 提取 support / 控制塔的命中 debuff 信息
  * 条件：有 auraType、auraTarget 为 enemy、无 auraRadius（非光环塔）
  */
-function getHitDebuff(tower: Tower): { type: BuffType; value: number; duration: number } | undefined {
+function getHitDebuff(
+  tower: Tower,
+): { type: BuffType; value: number; duration: number } | undefined {
   if (!tower.auraType || tower.auraTarget !== 'enemy') return undefined;
   if (tower.auraRadius != null && tower.auraRadius > 0) return undefined;
   if (tower.auraValue == null || tower.debuffDuration == null) return undefined;
@@ -104,8 +106,7 @@ function selectTarget(qt: Quadtree, tower: Tower, range: number): Enemy | undefi
       case 'priority': {
         // 优先 boss/auraHaste，同优先级内取最近
         const ePri = e.abilities.includes('boss') || e.abilities.includes('auraHaste');
-        const bestPri =
-          best.abilities.includes('boss') || best.abilities.includes('auraHaste');
+        const bestPri = best.abilities.includes('boss') || best.abilities.includes('auraHaste');
         if (ePri !== bestPri) {
           replace = ePri;
         } else {

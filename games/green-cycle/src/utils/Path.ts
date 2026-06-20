@@ -161,12 +161,7 @@ export class Path {
    * @param outerPad  外圈距画布边距
    * @param innerSize 内圈边长（居中放置）
    */
-  static createLoopPath(
-    worldW: number,
-    worldH: number,
-    outerPad: number,
-    innerSize: number,
-  ): Path {
+  static createLoopPath(worldW: number, worldH: number, outerPad: number, innerSize: number): Path {
     // 外圈四角（顺时针：左上 → 右上 → 右下 → 左下）
     const A: Vec2 = { x: outerPad, y: outerPad };
     const B: Vec2 = { x: worldW - outerPad, y: outerPad };

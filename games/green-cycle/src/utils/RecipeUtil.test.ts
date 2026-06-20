@@ -50,7 +50,11 @@ describe('matchRecipe', () => {
   });
 
   it('returns null when tower level does not match', () => {
-    const towers = [createTower('arrow', 0, 0), createTower('arrow', 0, 0), createTower('arrow', 0, 0)];
+    const towers = [
+      createTower('arrow', 0, 0),
+      createTower('arrow', 0, 0),
+      createTower('arrow', 0, 0),
+    ];
     expect(matchRecipe(towers, RECIPES)).toBeNull();
   });
 

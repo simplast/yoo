@@ -80,12 +80,7 @@ export function drawEnemy(ctx: CanvasRenderingContext2D, enemy: Enemy): void {
     const eyeSize = Math.max(1, Math.floor(size / 6));
     const eyeY = y - half + Math.floor(size / 3);
     ctx.fillRect(x - half + Math.floor(size / 3), eyeY, eyeSize, eyeSize);
-    ctx.fillRect(
-      x + half - Math.floor(size / 3) - eyeSize,
-      eyeY,
-      eyeSize,
-      eyeSize,
-    );
+    ctx.fillRect(x + half - Math.floor(size / 3) - eyeSize, eyeY, eyeSize, eyeSize);
   }
 
   ctx.restore();
@@ -203,9 +198,7 @@ export function drawTower(
 
   // 光环塔底部画半透明范围圈
   if (category === 'aura' && tower.auraRadius) {
-    const auraColor = tower.auraType
-      ? (AURA_COLOR[tower.auraType] ?? '#FFD700')
-      : '#FFD700';
+    const auraColor = tower.auraType ? (AURA_COLOR[tower.auraType] ?? '#FFD700') : '#FFD700';
     ctx.fillStyle = hexToRgba(auraColor, 0.12);
     ctx.beginPath();
     ctx.arc(x, y, tower.auraRadius, 0, Math.PI * 2);

@@ -1,6 +1,6 @@
 // 技能系统：成长塔技能 CD tick、主动技能自动释放、被动技能应用
 import type { GameState } from '../game/State';
-import type { Tower, Enemy, SkillDef, Buff, AttackType } from '../types';
+import type { Tower, Enemy, SkillDef, Buff } from '../types';
 import { SKILLS } from '../data/skills';
 import { getHeroStat, getSkillLevel } from '../entities/HeroTower';
 import { applyDamage } from './CombatSystem';
@@ -100,7 +100,13 @@ function findNearestExcept(
 }
 
 /** 施加 buff 到敌人 */
-function applyBuff(enemy: Enemy, type: Buff['type'], value: number, duration: number, source: string): void {
+function applyBuff(
+  enemy: Enemy,
+  type: Buff['type'],
+  value: number,
+  duration: number,
+  source: string,
+): void {
   const existing = enemy.buffs.find((b) => b.type === type && b.source === source);
   if (existing) {
     existing.remaining = Math.max(existing.remaining, duration);
@@ -117,7 +123,7 @@ function applyBuff(enemy: Enemy, type: Buff['type'], value: number, duration: nu
 function castActiveSkill(
   state: GameState,
   tower: Tower,
-  skillId: string,
+  _skillId: string,
   level: number,
   def: SkillDef,
   towerRange: number,
@@ -148,7 +154,7 @@ function castActiveSkill(
     case 'chainLightning': {
       // 闪电链：连锁魔法伤害，value=弹射次数
       const jumps = value;
-      const chainRange2 = (skillRange * 1.5) * (skillRange * 1.5); // 连锁范围放宽
+      const chainRange2 = skillRange * 1.5 * (skillRange * 1.5); // 连锁范围放宽
       const points: { x: number; y: number }[] = [{ x: tower.x, y: tower.y }];
       const hit = new Set<number>();
       let current = { x: tower.x, y: tower.y };
