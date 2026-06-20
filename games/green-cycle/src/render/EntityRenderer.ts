@@ -5,6 +5,22 @@ import { getTowerStat } from '../entities/Tower';
 import { drawEnemy, drawTower, drawProjectile, drawEffect } from './PixelArt';
 
 /**
+ * 判断塔是否处于任意友方光环加成范围内
+ */
+function hasAllyAura(state: GameState, tower: Tower): boolean {
+  for (const aura of state.towers) {
+    if (aura.category !== 'aura' || aura.auraTarget !== 'ally') continue;
+    if (aura.auraRadius == null || aura.auraValue == null) continue;
+    const dx = aura.x - tower.x;
+    const dy = aura.y - tower.y;
+    if (dx * dx + dy * dy <= aura.auraRadius * aura.auraRadius) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
  * 绘制所有实体
  * 顺序：enemies → towers → projectiles → hit/death/splash effects → damageText
  */
@@ -20,7 +36,7 @@ export function drawEntities(
 
   // 塔（光环范围圈由 drawTower 内部处理）
   for (const t of state.towers) {
-    drawTower(ctx, t);
+    drawTower(ctx, t, hasAllyAura(state, t));
     // 选中塔：射程圈 + 高亮边框
     if (state.selectedTowerId === t.instanceId) {
       drawSelectionRing(ctx, t);

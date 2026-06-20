@@ -1,6 +1,6 @@
 // 塔攻击系统：索敌、生成投射物/即时命中
 import type { GameState } from '../game/State';
-import type { Enemy, Tower } from '../types';
+import type { Enemy, Tower, BuffType } from '../types';
 import { getTowerStat } from '../entities/Tower';
 import { getHeroStat } from '../entities/HeroTower';
 import { createProjectile } from '../entities/Projectile';
@@ -39,6 +39,21 @@ function getAllyAuraBonus(
     }
   }
   return { damageMult, speedMult };
+}
+
+/**
+ * 提取 support / 控制塔的命中 debuff 信息
+ * 条件：有 auraType、auraTarget 为 enemy、无 auraRadius（非光环塔）
+ */
+function getHitDebuff(tower: Tower): { type: BuffType; value: number; duration: number } | undefined {
+  if (!tower.auraType || tower.auraTarget !== 'enemy') return undefined;
+  if (tower.auraRadius != null && tower.auraRadius > 0) return undefined;
+  if (tower.auraValue == null || tower.debuffDuration == null) return undefined;
+  return {
+    type: tower.auraType,
+    value: tower.auraValue,
+    duration: tower.debuffDuration,
+  };
 }
 
 /**
@@ -126,9 +141,20 @@ export function update(state: GameState, dt: number): void {
     // 重置冷却
     tower.cooldown = attackSpeed > 0 ? 1 / attackSpeed : 1;
 
+    const hitDebuff = getHitDebuff(tower);
+
     if (tower.projectileSpeed <= 0) {
       // 即时命中：直接结算伤害 + 命中特效 + 伤害飘字
-      applyDamage(state, target, damage, tower.attackType, tower.instanceId);
+      applyDamage(
+        state,
+        target,
+        damage,
+        tower.attackType,
+        tower.instanceId,
+        hitDebuff?.type,
+        hitDebuff?.value,
+        hitDebuff?.duration,
+      );
       state.addEffect(createHitEffect(target.x, target.y, tower.color));
       state.addEffect(
         createDamageText(
@@ -151,6 +177,9 @@ export function update(state: GameState, dt: number): void {
         sourceTowerId: tower.instanceId,
         color: isCrit ? '#FFD700' : tower.color,
         size: 4,
+        debuffType: hitDebuff?.type,
+        debuffValue: hitDebuff?.value,
+        debuffDuration: hitDebuff?.duration,
       });
       state.addProjectile(proj);
     }

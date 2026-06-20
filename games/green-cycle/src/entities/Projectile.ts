@@ -4,6 +4,8 @@
 import type { Projectile, AttackType } from '../types';
 import { nextEntityId } from './Entity';
 
+import type { BuffType } from '../types';
+
 /** 创建投射物的参数 */
 export interface CreateProjectileOpts {
   x: number;
@@ -16,6 +18,10 @@ export interface CreateProjectileOpts {
   sourceTowerId: number;
   color: string;
   size: number;
+  // 命中 debuff（support / 控制塔）
+  debuffType?: BuffType;
+  debuffValue?: number;
+  debuffDuration?: number;
 }
 
 /**
@@ -24,7 +30,7 @@ export interface CreateProjectileOpts {
  * - alive = true
  */
 export function createProjectile(opts: CreateProjectileOpts): Projectile {
-  return {
+  const proj: Projectile = {
     instanceId: nextEntityId(),
     x: opts.x,
     y: opts.y,
@@ -38,4 +44,12 @@ export function createProjectile(opts: CreateProjectileOpts): Projectile {
     color: opts.color,
     size: opts.size,
   };
+  if (opts.debuffType != null) {
+    proj.debuff = {
+      type: opts.debuffType,
+      value: opts.debuffValue ?? 0,
+      duration: opts.debuffDuration ?? 1,
+    };
+  }
+  return proj;
 }

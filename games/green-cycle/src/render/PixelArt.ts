@@ -91,6 +91,58 @@ export function drawEnemy(ctx: CanvasRenderingContext2D, enemy: Enemy): void {
 
   // 头顶血条
   drawHpBar(ctx, x, y - half - 6, size, hp, maxHp, isBoss);
+
+  // 头顶 debuff 状态指示
+  drawBuffIndicators(ctx, x, y - half - 10, enemy.buffs);
+}
+
+/**
+ * 画敌人头顶 debuff 小图标（像素风）
+ * - slow: 蓝色向下箭头
+ * - armorBreak: 绿色小破甲（向下三角）
+ * - stun: 黄色小星号
+ * - freeze: 青色小十字（雪花简化）
+ */
+function drawBuffIndicators(
+  ctx: CanvasRenderingContext2D,
+  cx: number,
+  topY: number,
+  buffs: { type: string }[],
+): void {
+  if (buffs.length === 0) return;
+  const uniqueTypes = Array.from(new Set(buffs.map((b) => b.type)));
+  const size = 4;
+  const gap = 2;
+  const totalW = uniqueTypes.length * size + (uniqueTypes.length - 1) * gap;
+  let x = cx - totalW / 2;
+  for (const type of uniqueTypes) {
+    ctx.fillStyle = AURA_COLOR[type] ?? '#FFFFFF';
+    switch (type) {
+      case 'slow':
+      case 'armorBreak': {
+        ctx.beginPath();
+        ctx.moveTo(x + size / 2, topY + size);
+        ctx.lineTo(x, topY);
+        ctx.lineTo(x + size, topY);
+        ctx.closePath();
+        ctx.fill();
+        break;
+      }
+      case 'stun': {
+        // 小星号
+        ctx.fillRect(x + size / 2 - 1, topY, 2, size);
+        ctx.fillRect(x, topY + size / 2 - 1, size, 2);
+        break;
+      }
+      case 'freeze': {
+        // 小十字
+        ctx.fillRect(x + size / 2 - 0.5, topY, 1, size);
+        ctx.fillRect(x, topY + size / 2 - 0.5, size, 1);
+        break;
+      }
+    }
+    x += size + gap;
+  }
 }
 
 /**
@@ -126,7 +178,11 @@ function drawHpBar(
  * - 光环塔底部画半透明范围圈
  * - 等级越高颜色越亮
  */
-export function drawTower(ctx: CanvasRenderingContext2D, tower: Tower): void {
+export function drawTower(
+  ctx: CanvasRenderingContext2D,
+  tower: Tower,
+  allyAura: boolean = false,
+): void {
   const { x, y, size, category, level } = tower;
   const half = Math.floor(size / 2);
 
@@ -167,6 +223,18 @@ export function drawTower(ctx: CanvasRenderingContext2D, tower: Tower): void {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(String(level), x, y);
+  }
+
+  // 友方光环加成可视化：塔顶金色小箭头
+  if (allyAura) {
+    ctx.fillStyle = '#FFD700';
+    const arrowSize = Math.max(3, Math.floor(size / 5));
+    ctx.beginPath();
+    ctx.moveTo(x, y - half - 2);
+    ctx.lineTo(x - arrowSize, y - half - 2 - arrowSize * 1.5);
+    ctx.lineTo(x + arrowSize, y - half - 2 - arrowSize * 1.5);
+    ctx.closePath();
+    ctx.fill();
   }
 
   ctx.restore();

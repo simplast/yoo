@@ -9,7 +9,7 @@
 |------|------|------|
 | M0-M4 | MVP 核心玩法 | ✅ 完成 |
 | M5 | 成长塔技能系统 | ✅ 完成 |
-| M6 | 辅助/光环/控制塔 | ⏳ 待开发 |
+| M6 | 辅助/光环/控制塔 | ✅ 完成 |
 | M7 | 合成系统 | ⏳ 待开发 |
 | M8 | 存档与难度 | ⏳ 待开发 |
 | M9 | 音效/UI/性能 | ⏳ 待开发 |
@@ -92,6 +92,35 @@
 - 选中成长塔时显示：经验条、属性加点（力量/敏捷/智力 +按钮）、技能树（学习/升级按钮，显示属性需求）
 - 暴击伤害金色飘字（✦ 前缀标记）
 
+---
+
+## M6：辅助/光环/控制塔
+
+### 新增文件
+- `src/utils/BuffUtil.ts` — 统一 buff 施加/叠加/汇总工具
+
+### 修改文件
+| 文件 | 改动 |
+|------|------|
+| `src/types.ts` | Projectile 增 `debuff` 字段；TowerDef 增 `debuffDuration` 字段 |
+| `src/entities/Projectile.ts` | createProjectile 支持 `debuffType/debuffValue/debuffDuration` |
+| `src/systems/TowerAISystem.ts` | 提取 `getHitDebuff`；即时命中与投射物均携带 debuff |
+| `src/systems/CombatSystem.ts` | 伤害计算加入减甲加成（`armorBreak * 10%`）；命中时应用 debuff |
+| `src/systems/MovementSystem.ts` | 已支持 `stun/freeze` 停止移动，无需改动 |
+| `src/data/towers.ts` | 冰霜/腐蚀塔补 `debuffDuration`；新增眩晕塔/冰冻塔 |
+| `src/render/PixelArt.ts` | 敌人头顶 debuff 小图标；友方光环覆盖的塔顶金色箭头 |
+| `src/render/EntityRenderer.ts` | 计算每个塔是否处于友方光环范围并传给 drawTower |
+
+### 机制实装
+| 机制 | 说明 |
+|------|------|
+| 冰霜塔 | 命中施加 `slow 0.4`，持续 1.5s，多座冰霜塔减速叠加（上限 0.8 由 MovementSystem 控制） |
+| 腐蚀塔 | 命中施加 `armorBreak 3`，持续 3s，多座腐蚀塔减甲叠加，每点 +10% 受到伤害 |
+| 眩晕塔 | 即时命中，眩晕 1.0/1.2/1.5s，敌人完全停止移动 |
+| 冰冻塔 | 投射物命中，冻结 1.5/2.0/2.5s，敌人完全停止移动 |
+| 友方光环可视化 | 处于加攻/加速光环范围内的塔，顶部显示金色向上箭头 |
+| 敌方 debuff 可视化 | 敌人头顶显示对应 debuff 小图标（↓ 减速/破甲、✦ 眩晕、❄ 冻结） |
+
 ### 验证状态
 - `tsc --noEmit`：零错误
-- `vite build`：成功，`dist/index.html` 79.49 kB（gzip 23.09 kB）
+- `vite build`：成功，`dist/index.html` 82.32 kB（gzip 23.87 kB）

@@ -135,6 +135,8 @@ export interface TowerDef {
   auraRadius?: number;
   auraValue?: number;
   auraTarget?: 'enemy' | 'ally';
+  // support / 控制塔：命中 debuff 持续时间（秒）
+  debuffDuration?: number;
   color: string;
   size: number;
 }
@@ -179,6 +181,12 @@ export interface Projectile {
   splashRadius: number;
   sourceTowerId: number;
   alive: boolean;
+  // 命中 debuff（support / 控制塔）
+  debuff?: {
+    type: BuffType;
+    value: number;
+    duration: number;
+  };
   // 视觉
   color: string;
   size: number;

@@ -1,9 +1,10 @@
 // 战斗系统：伤害计算、投射物移动、死亡处理
 import type { GameState } from '../game/State';
-import type { Enemy, AttackType } from '../types';
+import type { Enemy, AttackType, BuffType } from '../types';
 import { getDamageMultiplier } from '../data/armor';
 import { addExp } from '../entities/HeroTower';
 import { createDeathEffect, createHitEffect, createSplashEffect } from '../entities/Effect';
+import { applyBuff, sumBuffValue } from '../utils/BuffUtil';
 
 /**
  * 对敌人施加伤害（含护甲克制、魔免判定、死亡处理）
@@ -15,20 +16,29 @@ export function applyDamage(
   damage: number,
   attackType: AttackType,
   sourceTowerId: number,
+  debuffType?: BuffType,
+  debuffValue?: number,
+  debuffDuration?: number,
 ): void {
   if (!enemy.alive) return;
 
-  // 魔免敌人受魔法攻击伤害为 0
+  // 魔免敌人受魔法攻击伤害为 0，且不承受该次攻击附带的 debuff
   if (enemy.abilities.includes('magicImmune') && attackType === 'magic') {
     return;
   }
 
-  // 计算实际伤害（护甲克制系数）
+  // 计算实际伤害（护甲克制系数 + 减甲加成）
   const multiplier = getDamageMultiplier(attackType, enemy.armor);
-  const actualDamage = damage * multiplier;
+  const armorBreak = sumBuffValue(enemy, 'armorBreak');
+  const actualDamage = damage * multiplier * (1 + armorBreak * 0.1);
 
   enemy.hp -= actualDamage;
   enemy.hitFlash = 0.1;
+
+  // 命中 debuff（support / 控制塔）
+  if (debuffType != null) {
+    applyBuff(enemy, debuffType, debuffValue ?? 0, debuffDuration ?? 0, String(sourceTowerId));
+  }
 
   // 死亡处理
   if (enemy.hp <= 0) {
@@ -66,7 +76,16 @@ export function update(state: GameState, dt: number): void {
           const dx = e.x - proj.x;
           const dy = e.y - proj.y;
           if (dx * dx + dy * dy <= r2) {
-            applyDamage(state, e, proj.damage * 0.6, proj.attackType, proj.sourceTowerId);
+            applyDamage(
+              state,
+              e,
+              proj.damage * 0.6,
+              proj.attackType,
+              proj.sourceTowerId,
+              proj.debuff?.type,
+              proj.debuff?.value,
+              proj.debuff?.duration,
+            );
           }
         }
         state.addEffect(createSplashEffect(proj.x, proj.y, proj.splashRadius, proj.color));
@@ -85,14 +104,32 @@ export function update(state: GameState, dt: number): void {
       // 命中
       if (proj.splashRadius > 0) {
         // 溅射：主目标全额，范围内其他敌人 0.6 倍衰减
-        applyDamage(state, target, proj.damage, proj.attackType, proj.sourceTowerId);
+        applyDamage(
+          state,
+          target,
+          proj.damage,
+          proj.attackType,
+          proj.sourceTowerId,
+          proj.debuff?.type,
+          proj.debuff?.value,
+          proj.debuff?.duration,
+        );
         const r2 = proj.splashRadius * proj.splashRadius;
         for (const e of state.enemies) {
           if (!e.alive || e === target) continue;
           const ex = e.x - target.x;
           const ey = e.y - target.y;
           if (ex * ex + ey * ey <= r2) {
-            applyDamage(state, e, proj.damage * 0.6, proj.attackType, proj.sourceTowerId);
+            applyDamage(
+              state,
+              e,
+              proj.damage * 0.6,
+              proj.attackType,
+              proj.sourceTowerId,
+              proj.debuff?.type,
+              proj.debuff?.value,
+              proj.debuff?.duration,
+            );
           }
         }
         state.addEffect(
@@ -100,7 +137,16 @@ export function update(state: GameState, dt: number): void {
         );
       } else {
         // 单体伤害
-        applyDamage(state, target, proj.damage, proj.attackType, proj.sourceTowerId);
+        applyDamage(
+          state,
+          target,
+          proj.damage,
+          proj.attackType,
+          proj.sourceTowerId,
+          proj.debuff?.type,
+          proj.debuff?.value,
+          proj.debuff?.duration,
+        );
         state.addEffect(createHitEffect(target.x, target.y, proj.color));
       }
       proj.alive = false;
