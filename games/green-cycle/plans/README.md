@@ -9,7 +9,7 @@
 | 001  | 为 8 个核心系统补单元测试 | P1 | M | — | TODO |
 | 002  | 修复 Game.syncUI 每帧 60Hz DOM 重写 | P1 | M | 001 (强烈建议) | TODO |
 | 003  | 清理 4 个小型技术债 | P1 | S | — | TODO |
-| 004  | 加 GitHub Actions CI 与 pre-commit 钩子 | P2 | S | — | TODO |
+| 004  | 加 GitHub Actions CI 与 pre-commit 钩子 | P2 | S | — | IN PROGRESS |
 
 状态取值：`TODO` | `IN PROGRESS` | `DONE` | `BLOCKED`（附一行原因）| `REJECTED`（附一行理由 —— 发现被独立修复或方案放弃）
 
