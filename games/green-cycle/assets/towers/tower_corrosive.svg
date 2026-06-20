@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- 酸液气泡/蒸汽 -->
+  <rect x="24" y="4" width="8" height="4" fill="#76FF03"/>
+  <rect x="28" y="8" width="8" height="4" fill="#8BC34A"/>
+  <rect x="20" y="8" width="4" height="4" fill="#76FF03"/>
+  <rect x="40" y="8" width="4" height="4" fill="#76FF03"/>
+  <!-- 腐蚀金属桶上部 -->
+  <rect x="20" y="12" width="24" height="4" fill="#558B2F"/>
+  <rect x="16" y="16" width="32" height="4" fill="#455A64"/>
+  <!-- 桶口/酸液表面 -->
+  <rect x="20" y="20" width="24" height="4" fill="#76FF03"/>
+  <rect x="24" y="24" width="16" height="4" fill="#8BC34A"/>
+  <!-- 腐蚀金属桶中部 -->
+  <rect x="16" y="28" width="32" height="4" fill="#455A64"/>
+  <rect x="16" y="32" width="32" height="4" fill="#455A64"/>
+  <rect x="16" y="36" width="32" height="4" fill="#455A64"/>
+  <!-- 腐蚀裂痕/锈迹 -->
+  <rect x="16" y="28" width="4" height="4" fill="#558B2F"/>
+  <rect x="44" y="32" width="4" height="4" fill="#558B2F"/>
+  <rect x="16" y="36" width="4" height="4" fill="#2E7D32"/>
+  <rect x="40" y="36" width="4" height="4" fill="#558B2F"/>
+  <!-- 酸液滴落痕迹 -->
+  <rect x="20" y="28" width="4" height="4" fill="#76FF03"/>
+  <rect x="44" y="28" width="4" height="4" fill="#8BC34A"/>
+  <!-- 腐蚀金属桶下部 -->
+  <rect x="16" y="40" width="32" height="4" fill="#455A64"/>
+  <rect x="16" y="44" width="32" height="4" fill="#37474F"/>
+  <rect x="16" y="40" width="4" height="4" fill="#2E7D32"/>
+  <rect x="44" y="40" width="4" height="4" fill="#2E7D32"/>
+  <!-- 底座上层 -->
+  <rect x="16" y="48" width="32" height="4" fill="#455A64"/>
+  <rect x="16" y="48" width="4" height="4" fill="#2E7D32"/>
+  <rect x="44" y="48" width="4" height="4" fill="#2E7D32"/>
+  <!-- 底座中层 -->
+  <rect x="12" y="52" width="40" height="4" fill="#37474F"/>
+  <rect x="12" y="52" width="4" height="4" fill="#263238"/>
+  <rect x="48" y="52" width="4" height="4" fill="#263238"/>
+  <!-- 底座下层 -->
+  <rect x="8" y="56" width="48" height="4" fill="#263238"/>
+  <rect x="8" y="56" width="4" height="4" fill="#1B2327"/>
+  <rect x="52" y="56" width="4" height="4" fill="#1B2327"/>
+  <!-- 底座最底层 -->
+  <rect x="4" y="60" width="56" height="4" fill="#1B2327"/>
+</svg>

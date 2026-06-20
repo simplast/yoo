@@ -42,6 +42,12 @@ export const CONFIG = {
   // PF
   PF_PERFECT_BONUS: 50, // 连续 PF 额外金币
 
+  // 无尽模式
+  ENDLESS_HP_SCALE: 0.3, // 每 50 波循环血量加成
+  ENDLESS_COUNT_SCALE: 0.2, // 每 50 波循环数量加成
+  ENDLESS_REWARD_SCALE: 0.15, // 每 50 波循环奖励加成
+  ENDLESS_MAX_ENEMIES: 20, // 无尽模式同屏上限
+
   // 存档
   SAVE_KEY: 'greenCycle_v1',
 } as const;

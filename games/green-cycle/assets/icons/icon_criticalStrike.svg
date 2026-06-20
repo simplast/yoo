@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <!-- 冲击火花 红色 -->
+  <rect x="12" y="2" width="2" height="2" fill="#FF0000"/>
+  <rect x="18" y="2" width="2" height="2" fill="#FF0000"/>
+  <rect x="10" y="3" width="2" height="2" fill="#CC0000"/>
+  <rect x="20" y="3" width="2" height="2" fill="#CC0000"/>
+  <rect x="8" y="5" width="2" height="2" fill="#CC0000"/>
+  <rect x="22" y="5" width="2" height="2" fill="#CC0000"/>
+  <rect x="6" y="8" width="2" height="2" fill="#8B0000"/>
+  <rect x="24" y="8" width="2" height="2" fill="#8B0000"/>
+  <!-- 冲击火花 白色 -->
+  <rect x="10" y="2" width="2" height="1" fill="#FFFFFF"/>
+  <rect x="20" y="2" width="2" height="1" fill="#FFFFFF"/>
+  <rect x="8" y="4" width="2" height="1" fill="#FFFFFF"/>
+  <rect x="22" y="4" width="2" height="1" fill="#FFFFFF"/>
+  <!-- 刀刃主体 深灰 -->
+  <rect x="15" y="4" width="2" height="2" fill="#A9A9A9"/>
+  <rect x="14" y="5" width="4" height="2" fill="#808080"/>
+  <rect x="13" y="6" width="6" height="2" fill="#808080"/>
+  <rect x="12" y="7" width="8" height="2" fill="#808080"/>
+  <rect x="11" y="9" width="10" height="2" fill="#808080"/>
+  <rect x="12" y="11" width="8" height="1" fill="#808080"/>
+  <rect x="13" y="12" width="6" height="1" fill="#808080"/>
+  <rect x="14" y="13" width="4" height="1" fill="#808080"/>
+  <rect x="15" y="14" width="2" height="1" fill="#A9A9A9"/>
+  <!-- 刀刃左侧高光 -->
+  <rect x="14" y="5" width="1" height="2" fill="#A9A9A9"/>
+  <rect x="13" y="6" width="1" height="2" fill="#A9A9A9"/>
+  <rect x="12" y="7" width="1" height="2" fill="#A9A9A9"/>
+  <rect x="11" y="9" width="1" height="2" fill="#A9A9A9"/>
+  <rect x="12" y="11" width="1" height="1" fill="#A9A9A9"/>
+  <rect x="13" y="12" width="1" height="1" fill="#A9A9A9"/>
+  <rect x="14" y="13" width="1" height="1" fill="#A9A9A9"/>
+  <!-- 刀刃右侧阴影 -->
+  <rect x="18" y="6" width="1" height="2" fill="#696969"/>
+  <rect x="19" y="7" width="1" height="2" fill="#696969"/>
+  <rect x="20" y="9" width="1" height="2" fill="#696969"/>
+  <rect x="19" y="11" width="1" height="1" fill="#696969"/>
+  <rect x="18" y="12" width="1" height="1" fill="#696969"/>
+  <rect x="17" y="13" width="1" height="1" fill="#696969"/>
+  <!-- 刀柄 -->
+  <rect x="15" y="14" width="2" height="4" fill="#A9A9A9"/>
+  <rect x="15" y="15" width="1" height="2" fill="#A9A9A9"/>
+  <!-- 护手 -->
+  <rect x="14" y="18" width="4" height="2" fill="#808080"/>
+  <!-- 握柄 -->
+  <rect x="15" y="20" width="2" height="2" fill="#A9A9A9"/>
+  <rect x="15" y="20" width="1" height="2" fill="#A9A9A9"/>
+  <!-- 柄头 -->
+  <rect x="14" y="22" width="4" height="2" fill="#808080"/>
+  <!-- 惊叹号 红色 -->
+  <rect x="15" y="7" width="2" height="2" fill="#FF0000"/>
+  <rect x="15" y="9" width="2" height="2" fill="#FF0000"/>
+  <rect x="15" y="10" width="2" height="1" fill="#CC0000"/>
+  <rect x="14" y="6" width="1" height="1" fill="#FF0000"/>
+  <rect x="17" y="6" width="1" height="1" fill="#FF0000"/>
+  <rect x="14" y="8" width="1" height="1" fill="#FF0000"/>
+  <rect x="17" y="8" width="1" height="1" fill="#FF0000"/>
+  <!-- 惊叹号圆点 -->
+  <rect x="15" y="12" width="2" height="2" fill="#FF0000"/>
+  <rect x="14" y="12" width="1" height="1" fill="#FF0000"/>
+  <rect x="17" y="12" width="1" height="1" fill="#FF0000"/>
+  <!-- 惊叹号顶部高光 -->
+  <rect x="15" y="6" width="2" height="1" fill="#FF0000"/>
+</svg>

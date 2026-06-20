@@ -1,18 +1,50 @@
 // 波次系统：管理波次启动、敌人生成、波次结算
 import type { GameState } from '../game/State';
+import type { WaveDef } from '../types';
 import { WAVES } from '../data/waves';
 import { CONFIG } from '../config';
 import { createEnemy } from '../entities/Enemy';
+import { audio } from '../audio/Audio';
 
 // 模块级变量：记录当前波次开始时 enemies 是否为空（用于 PF 判定）
 let waveStartEnemiesEmpty = true;
+
+/**
+ * 根据当前波次生成无尽模式波次模板
+ * - 超过 TOTAL_WAVES 后循环使用 WAVES，每循环一次强度递增
+ */
+function generateEndlessWave(waveIndex: number): WaveDef {
+  const total = CONFIG.TOTAL_WAVES;
+  const cycle = Math.floor((waveIndex - 1) / total); // 0,1,2...
+  const templateIndex = ((waveIndex - 1) % total) + 1;
+  const template = WAVES[templateIndex - 1];
+
+  const hpMul = 1 + CONFIG.ENDLESS_HP_SCALE * cycle;
+  const countMul = 1 + CONFIG.ENDLESS_COUNT_SCALE * cycle;
+  const rewardMul = 1 + CONFIG.ENDLESS_REWARD_SCALE * cycle;
+
+  return {
+    ...template,
+    index: waveIndex,
+    spawns: template.spawns.map((s) => ({
+      ...s,
+      count: Math.max(1, Math.floor(s.count * countMul)),
+      interval: Math.max(0.3, s.interval / (1 + cycle * 0.1)),
+    })),
+    rewardGold: Math.floor(template.rewardGold * rewardMul),
+    rewardWood: Math.floor(template.rewardWood * rewardMul),
+    hint: `无尽 ${waveIndex} 波 — ${template.hint}`,
+  };
+}
 
 /**
  * 启动下一波：waveIndex++，构建 spawnQueue，设置 Boss 计时
  */
 function startNextWave(state: GameState): void {
   state.waveIndex++;
-  const wave = WAVES[state.waveIndex - 1];
+  const wave = state.endless && state.waveIndex > CONFIG.TOTAL_WAVES
+    ? generateEndlessWave(state.waveIndex)
+    : WAVES[state.waveIndex - 1];
   if (!wave) return;
 
   state.currentWave = wave;
@@ -39,6 +71,7 @@ function startNextWave(state: GameState): void {
   if (wave.isBoss) {
     state.bossTimer = wave.bossTimer ?? 0;
     state.bossAlive = true;
+    audio.playBossWarn();
   }
 }
 
@@ -76,8 +109,8 @@ function endWave(state: GameState): void {
   state.currentWave = null;
   state.spawnQueue = [];
 
-  // 胜利判定
-  if (state.waveIndex >= CONFIG.TOTAL_WAVES) {
+  // 胜利判定（无尽模式继续）
+  if (state.waveIndex >= CONFIG.TOTAL_WAVES && !state.endless) {
     state.phase = 'won';
     return;
   }
@@ -107,6 +140,13 @@ export function update(state: GameState, dt: number): void {
   for (const task of state.spawnQueue) {
     if (!task.spawned && task.spawnAt <= elapsed) {
       const enemy = createEnemy(task.enemyId, state.path, state.difficulty);
+      // 无尽模式超过 50 波后应用额外血量加成
+      if (state.endless && state.waveIndex > CONFIG.TOTAL_WAVES) {
+        const cycle = Math.floor((state.waveIndex - 1) / CONFIG.TOTAL_WAVES);
+        const hpMul = 1 + CONFIG.ENDLESS_HP_SCALE * cycle;
+        enemy.hp *= hpMul;
+        enemy.maxHp *= hpMul;
+      }
       state.addEnemy(enemy);
       task.spawned = true;
     }

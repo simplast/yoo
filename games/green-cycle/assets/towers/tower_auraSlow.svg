@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- Base -->
+  <rect x="16" y="48" width="32" height="4" fill="#00004B"/>
+  <rect x="12" y="52" width="8" height="4" fill="#00004B"/>
+  <rect x="20" y="52" width="24" height="4" fill="#000080"/>
+  <rect x="44" y="52" width="8" height="4" fill="#00004B"/>
+  <rect x="8" y="56" width="8" height="4" fill="#00004B"/>
+  <rect x="16" y="56" width="32" height="4" fill="#000080"/>
+  <rect x="48" y="56" width="8" height="4" fill="#00004B"/>
+  <rect x="4" y="60" width="8" height="4" fill="#00004B"/>
+  <rect x="12" y="60" width="40" height="4" fill="#000080"/>
+  <rect x="52" y="60" width="8" height="4" fill="#00004B"/>
+
+  <!-- Ice Crystals on Base -->
+  <rect x="8" y="52" width="4" height="4" fill="#00CED1"/>
+  <rect x="52" y="52" width="4" height="4" fill="#00CED1"/>
+
+  <!-- Tower Body - Hourglass Shape -->
+  <rect x="18" y="40" width="28" height="8" fill="#4169E1"/>
+  <rect x="22" y="40" width="20" height="8" fill="#00CED1"/>
+  <rect x="22" y="32" width="20" height="8" fill="#4169E1"/>
+  <rect x="26" y="32" width="12" height="8" fill="#87CEEB"/>
+  <rect x="26" y="28" width="12" height="4" fill="#4169E1"/>
+  <rect x="28" y="24" width="8" height="4" fill="#00CED1"/>
+  <rect x="26" y="20" width="12" height="4" fill="#4169E1"/>
+  <rect x="22" y="16" width="20" height="4" fill="#00CED1"/>
+  <rect x="18" y="12" width="28" height="4" fill="#4169E1"/>
+  <rect x="22" y="12" width="20" height="4" fill="#87CEEB"/>
+  <rect x="18" y="8" width="28" height="4" fill="#00CED1"/>
+
+  <!-- Hourglass Sand Top -->
+  <rect x="24" y="12" width="16" height="4" fill="#ADD8E6"/>
+  <rect x="26" y="16" width="12" height="4" fill="#ADD8E6"/>
+
+  <!-- Hourglass Sand Bottom -->
+  <rect x="26" y="28" width="12" height="4" fill="#ADD8E6"/>
+  <rect x="24" y="32" width="16" height="4" fill="#ADD8E6"/>
+
+  <!-- Hourglass Sand Stream -->
+  <rect x="30" y="20" width="4" height="4" fill="#ADD8E6"/>
+  <rect x="30" y="24" width="4" height="4" fill="#ADD8E6"/>
+
+  <!-- Snowflake Top -->
+  <rect x="28" y="0" width="8" height="8" fill="#87CEEB"/>
+  <rect x="20" y="4" width="8" height="4" fill="#00CED1"/>
+  <rect x="36" y="4" width="8" height="4" fill="#00CED1"/>
+  <rect x="24" y="8" width="4" height="4" fill="#ADD8E6"/>
+  <rect x="36" y="8" width="4" height="4" fill="#ADD8E6"/>
+
+  <!-- Frost Effect Left -->
+  <rect x="4" y="16" width="4" height="4" fill="#00CED1"/>
+  <rect x="8" y="24" width="4" height="4" fill="#87CEEB"/>
+  <rect x="4" y="32" width="4" height="4" fill="#00CED1"/>
+
+  <!-- Frost Effect Right -->
+  <rect x="56" y="16" width="4" height="4" fill="#00CED1"/>
+  <rect x="52" y="24" width="4" height="4" fill="#87CEEB"/>
+  <rect x="56" y="32" width="4" height="4" fill="#00CED1"/>
+</svg>

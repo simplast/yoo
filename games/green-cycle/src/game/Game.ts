@@ -1,6 +1,6 @@
 // 游戏主控：状态机、系统调度、输入处理、UI 同步
 import { CONFIG } from '../config';
-import type { Difficulty, GamePhase, Tower, Vec2 } from '../types';
+import type { Difficulty, GamePhase, Tower, Vec2, SaveData } from '../types';
 import { TOWERS } from '../data/towers';
 import { RECIPES } from '../data/recipes';
 import { Path } from '../utils/Path';
@@ -10,6 +10,7 @@ import { Renderer } from '../render/Renderer';
 import { InputManager } from '../input/InputManager';
 import { audio } from '../audio/Audio';
 import { matchRecipe, executeCombine } from '../utils/RecipeUtil';
+import { SaveManager } from '../utils/SaveManager';
 
 import * as WaveSystem from '../systems/WaveSystem';
 import * as MovementSystem from '../systems/MovementSystem';
@@ -66,9 +67,16 @@ export class Game {
   // UI 元素引用
   private ui: UIElements;
 
+  // 本地存档
+  private saveData: SaveData;
+
+  // 菜单显示时的回调（用于外部同步解锁状态与排行榜）
+  onShowMenu?: () => void;
+
   constructor(canvas: HTMLCanvasElement, ui: UIElements) {
     this.canvas = canvas;
     this.ui = ui;
+    this.saveData = SaveManager.load() ?? SaveManager.getDefault();
     const path = Path.createLoopPath(
       CONFIG.WORLD_WIDTH,
       CONFIG.WORLD_HEIGHT,
@@ -95,6 +103,11 @@ export class Game {
     this.syncUI();
   }
 
+  /** 获取当前存档数据（供外部菜单同步解锁状态） */
+  getSaveData(): SaveData {
+    return this.saveData;
+  }
+
   // ===== 生命周期 =====
 
   start() {
@@ -103,13 +116,13 @@ export class Game {
   }
 
   /** 开始新对局 */
-  startGame(difficulty: Difficulty) {
+  startGame(difficulty: Difficulty, endless = false) {
     audio.init();
     audio.resume();
     resetEntityId();
     const path = this.state.path;
     this.state = new GameState(path);
-    this.state.initDifficulty(difficulty);
+    this.state.initDifficulty(difficulty, endless);
     this.state.phase = 'battling';
     this.state.waveTimer = 3; // 3 秒后第一波
     this.state.selectedTowerId = -1;
@@ -397,7 +410,7 @@ export class Game {
 
     const { recipe, materials } = matched;
     if (executeCombine(state, recipe, materials)) {
-      audio.playUpgrade();
+      audio.playCombine();
       const resultTower = state.getTowerById(state.selectedTowerId);
       if (resultTower) this.showTowerInfo(resultTower);
       this.syncTowerPanel();
@@ -428,6 +441,55 @@ export class Game {
     }
   }
 
+  // ===== 存档/解锁 =====
+
+  /** 保存当前存档 */
+  private saveProgress(): void {
+    SaveManager.save(this.saveData);
+  }
+
+  /**
+   * 记录对局结果并保存
+   * - 胜利：解锁下一难度 / 无尽模式
+   * - 失败/无尽结束：更新排行榜与 bestPf
+   */
+  private recordResult(won: boolean): void {
+    const state = this.state;
+    const diff = state.difficulty;
+
+    // 更新 bestPf
+    if (state.pf > this.saveData.bestPf) {
+      this.saveData.bestPf = state.pf;
+    }
+
+    // 解锁下一难度 / 无尽模式
+    if (won) {
+      const unlocks = this.saveData.unlocks;
+      if (diff === 'easy' && !unlocks.difficulties.includes('normal')) {
+        unlocks.difficulties.push('normal');
+      } else if (diff === 'normal' && !unlocks.difficulties.includes('hard')) {
+        unlocks.difficulties.push('hard');
+      } else if (diff === 'hard' && !unlocks.endlessUnlocked) {
+        unlocks.endlessUnlocked = true;
+      }
+    }
+
+    // 无尽模式记录排行榜
+    if (state.endless || won) {
+      const score = state.endless ? state.waveIndex * 100 + state.pf * 10 : state.pf * 100;
+      this.saveData.leaderboard.endless.push({
+        wave: state.waveIndex,
+        score,
+        date: Date.now(),
+      });
+      // 按分数降序保留前 10
+      this.saveData.leaderboard.endless.sort((a, b) => b.score - a.score);
+      this.saveData.leaderboard.endless = this.saveData.leaderboard.endless.slice(0, 10);
+    }
+
+    this.saveProgress();
+  }
+
   // ===== 全局技能 =====
 
   useSkill(type: 'blast' | 'slow' | 'summon') {
@@ -440,11 +502,11 @@ export class Game {
       for (const e of [...state.enemies]) {
         CombatSystem.applyDamage(state, e, dmg, 'chaos', -1);
       }
-      audio.playSkill();
+      audio.playSkillBlast();
     } else if (type === 'slow' && state.skillSlowCd <= 0) {
       state.skillSlowCd = CONFIG.SKILL_SLOW_CD;
       state.globalSlowTimer = CONFIG.SKILL_SLOW_DURATION;
-      audio.playSkill();
+      audio.playSkillSlow();
     } else if (type === 'summon' && state.skillSummonCd <= 0) {
       state.skillSummonCd = CONFIG.SKILL_SUMMON_CD;
       // 在路径中点召唤临时高伤炮台
@@ -462,7 +524,7 @@ export class Game {
         if (idx >= 0) state.towers.splice(idx, 1);
         if (state.summonTowerId === t.instanceId) state.summonTowerId = -1;
       }, CONFIG.SKILL_SUMMON_DURATION * 1000);
-      audio.playSkill();
+      audio.playSkillSummon();
     }
   }
 
@@ -506,7 +568,7 @@ export class Game {
     ui.statGold.textContent = String(Math.floor(state.gold));
     ui.statWood.textContent = String(Math.floor(state.wood));
     ui.statPop.textContent = `${state.pop}/${state.popMax}`;
-    ui.statWave.textContent = `${state.waveIndex}/${CONFIG.TOTAL_WAVES}`;
+    ui.statWave.textContent = state.endless ? `无尽 ${state.waveIndex} 波` : `${state.waveIndex}/${CONFIG.TOTAL_WAVES}`;
     ui.statPf.textContent = String(state.pf);
     // 压力条
     ui.pressureFill.style.width = `${Math.min(100, state.pressure * 100)}%`;
@@ -538,14 +600,22 @@ export class Game {
     }
     // 结束遮罩
     if (state.phase === 'won' || state.phase === 'lost') {
+      const won = state.phase === 'won';
+      this.recordResult(won);
       ui.overlay.classList.remove('hide');
       ui.overlayTitle.textContent = '绿色循环圈';
-      ui.overlaySub.textContent = state.phase === 'won' ? '🎉 通关成功！' : '💀 防线崩溃';
+      const bestPf = this.saveData.bestPf;
+      const endlessRecords = this.saveData.leaderboard.endless.slice(0, 3);
+      const recordText = endlessRecords.length > 0
+        ? `\n最佳 PF: ${bestPf} | 无尽榜: ${endlessRecords.map((r) => `${r.wave}波/${r.score}分`).join(', ')}`
+        : `\n最佳 PF: ${bestPf}`;
+      ui.overlaySub.textContent = (won ? '🎉 通关成功！' : '💀 防线崩溃') + recordText;
       ui.diffRow.style.display = 'flex';
       ui.startBtn.textContent = '再来一局';
-      if (state.phase === 'won') audio.playWin();
+      if (won) audio.playWin();
       else audio.playLose();
       state.phase = 'menu'; // 防止重复触发
+      this.onShowMenu?.();
     }
   }
 
@@ -712,13 +782,21 @@ export class Game {
     const state = this.state;
     ui.towerPanel.innerHTML = '';
     const defIds = Object.keys(TOWERS);
+    const categoryIcon: Record<string, string> = {
+      basic: '⚔',
+      support: '❄',
+      aura: '✦',
+      growth: '⭐',
+      special: '⚡',
+    };
     for (const id of defIds) {
       const def = TOWERS[id];
       const btn = document.createElement('button');
-      btn.className = 'tower-btn';
+      btn.className = `tower-btn cat-${def.category}`;
       btn.dataset.towerId = id;
       const cost = def.levels[0].upgradeCost;
-      btn.innerHTML = `<span class="name">${def.name}</span><span class="cost">💰${cost}</span><span class="pop">🏠${def.popCost}</span>`;
+      const icon = categoryIcon[def.category] ?? '•';
+      btn.innerHTML = `<span class="icon">${icon}</span><span class="name">${def.name}</span><span class="cost">💰${cost}</span><span class="pop">🏠${def.popCost}</span>`;
       btn.disabled = state.gold < cost || state.pop + def.popCost > state.popMax;
       btn.addEventListener('click', () => {
         audio.init();
@@ -744,6 +822,8 @@ export interface UIElements {
   overlayTitle: HTMLElement;
   overlaySub: HTMLElement;
   diffRow: HTMLElement;
+  endlessBtn: HTMLButtonElement;
+  leaderboard: HTMLElement;
   startBtn: HTMLButtonElement;
   statGold: HTMLElement;
   statWood: HTMLElement;

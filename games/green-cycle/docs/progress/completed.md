@@ -1,7 +1,7 @@
 # 已完成功能清单
 
 > 本文档跟踪《绿色循环圈》已完成的功能里程碑。
-> 最后更新：M6 阶段完成
+> 最后更新：M9 阶段完成
 
 ## 里程碑总览
 
@@ -11,8 +11,8 @@
 | M5 | 成长塔技能系统 | ✅ 完成 |
 | M6 | 辅助/光环/控制塔 | ✅ 完成 |
 | M7 | 合成系统 | ✅ 完成 |
-| M8 | 存档与难度 | ⏳ 待开发 |
-| M9 | 音效/UI/性能 | ⏳ 待开发 |
+| M8 | 存档与难度 | ✅ 完成 |
+| M9 | 音效/UI/性能 | ✅ 完成 |
 
 ---
 
@@ -160,3 +160,60 @@
 ### 验证状态
 - `tsc --noEmit`：零错误
 - `vite build`：成功，`../../public/games/green-cycle/index.html` 90.56 kB（gzip 26.09 kB）
+
+---
+
+## M8：存档与难度
+
+### 新增文件
+- `src/utils/SaveManager.ts` — localStorage 存档读写、版本校验、默认值合并
+
+### 修改文件
+| 文件 | 改动 |
+|------|------|
+| `src/config.ts` | 新增无尽模式缩放常量 `ENDLESS_HP_SCALE`/`ENDLESS_COUNT_SCALE`/`ENDLESS_REWARD_SCALE`/`ENDLESS_MAX_ENEMIES`；存档键 `SAVE_KEY` |
+| `src/types.ts` | 新增 `SaveData` 类型：设置、解锁、排行榜、最佳 PF |
+| `src/game/State.ts` | 新增 `endless` 标记；`initDifficulty` 支持无尽模式人口/同屏上限 |
+| `src/systems/WaveSystem.ts` | 新增 `generateEndlessWave`：50 波后循环模板并随周期缩放血量/数量/奖励；胜利条件适配无尽 |
+| `src/game/Game.ts` | 集成 `SaveManager`；`recordResult` 解锁下一难度/无尽模式并写入排行榜；`startGame` 支持无尽参数；游戏结束显示最佳 PF 与榜单；新增 `onShowMenu` 回调 |
+| `index.html` | 菜单新增无尽模式切换按钮、排行榜区域与相关样式 |
+| `src/main.ts` | 绑定无尽模式按钮；根据存档同步难度解锁与无尽开关；渲染排行榜；游戏结束回调刷新菜单 |
+
+### 机制实装
+| 机制 | 说明 |
+|------|------|
+| 本地存档 | 使用 `localStorage` 持久化，版本号不匹配时回退默认值 |
+| 难度解锁 | 通关简单→普通→困难→无尽，依次解锁 |
+| 无尽模式 | 通关困难后解锁；50 波后循环波次，每循环血量+30%、数量+20%、奖励+15% |
+| 排行榜 | 记录无尽/通关分数，保留前 10 条，按分数排序 |
+| 菜单同步 | 未解锁难度按钮禁用；未解锁无尽模式按钮禁用并显示“关” |
+
+### 验证状态
+- `tsc --noEmit`：零错误
+- `vite build`：成功，`../../public/games/green-cycle/index.html` 95.20 kB（gzip 27.58 kB）
+
+---
+
+## M9：音效/UI/性能
+
+### 修改文件
+| 文件 | 改动 |
+|------|------|
+| `src/audio/Audio.ts` | 新增 `playSkillBlast`/`playSkillSlow`/`playSkillSummon`/`playCrit`/`playCombine` 专属音效 |
+| `src/systems/TowerAISystem.ts` | 成长塔暴击时调用 `audio.playCrit()`；每帧构建敌人 Quadtree，`selectTarget` 改为范围查询 |
+| `src/systems/WaveSystem.ts` | Boss 波开始时调用 `audio.playBossWarn()` |
+| `src/game/Game.ts` | 三个全局技能分别播放对应音效；合成成功播放 `playCombine()`；塔面板按分类渲染图标与颜色 |
+| `src/render/MapRenderer.ts` | 静态地图层（草地/跑道/出怪口）缓存到离屏 canvas，仅路径变化时重建 |
+| `index.html` | 塔面板分类色/图标、技能按钮 active 缩放发光、波次横幅入场+脉冲发光动画 |
+
+### 机制实装
+| 机制 | 说明 |
+|------|------|
+| 专属音效 | 神力一击（爆炸下降）、全屏减速（冰冷下降）、召唤支援（上扬号角）、暴击（清脆高亮）、合成（魔法琶音）、Boss 警报（已有低沉长音） |
+| Quadtree 索敌 | `TowerAISystem.update` 构建敌人四叉树，`selectTarget` 按塔射程查询，替代线性遍历 |
+| 地图离屏缓存 | 静态层一次绘制到 `<canvas>`，每帧 `drawImage`；动态建造高亮仍实时绘制 |
+| UI 美化 | 塔按钮左侧分类色条+图标；技能按钮悬停/激活缩放发光；波次横幅带入场缩放与发光脉冲 |
+
+### 验证状态
+- `tsc --noEmit`：零错误
+- `vite build`：成功，`../../public/games/green-cycle/index.html` 99.29 kB（gzip 28.84 kB）

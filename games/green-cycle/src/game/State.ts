@@ -54,6 +54,7 @@ export class GameState {
   // ===== 状态机 =====
   phase: GamePhase = 'menu';
   difficulty: Difficulty = 'normal';
+  endless = false; // 是否无尽模式
 
   // ===== 压力/上限 =====
   maxEnemies: number = CONFIG.MAX_ENEMIES_NORMAL;
@@ -172,13 +173,15 @@ export class GameState {
   }
 
   // ===== 初始化难度 =====
-  initDifficulty(diff: Difficulty) {
+  initDifficulty(diff: Difficulty, endless = false) {
     this.difficulty = diff;
+    this.endless = endless;
     this.gold = CONFIG.START_GOLD[diff];
     this.wood = CONFIG.START_WOOD[diff];
     this.popMax = CONFIG.START_POP[diff] + CONFIG.DIFF_POP[diff];
-    this.maxEnemies =
-      (diff === 'easy' ? 50 : diff === 'normal' ? 40 : 35);
+    this.maxEnemies = endless
+      ? CONFIG.ENDLESS_MAX_ENEMIES
+      : (diff === 'easy' ? 50 : diff === 'normal' ? 40 : 35);
   }
 
   /** 获取资源快照 */

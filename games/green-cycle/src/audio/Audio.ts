@@ -275,12 +275,71 @@ class GameAudio {
     }
   }
 
-  /** 技能：扫频 */
+  /** 通用技能：扫频 */
   playSkill(): void {
     if (!this.ctx) return;
     try {
       this.playSweep(220, 1760, 0.4, 'sawtooth', 0.2);
       this.playSweep(440, 2640, 0.4, 'square', 0.12);
+    } catch {
+      // 忽略
+    }
+  }
+
+  /** 神力一击：爆炸式快速下降 */
+  playSkillBlast(): void {
+    if (!this.ctx) return;
+    try {
+      this.playSweep(880, 110, 0.35, 'sawtooth', 0.25);
+      this.playNoise(0.3, 0.18, 1200);
+    } catch {
+      // 忽略
+    }
+  }
+
+  /** 全屏减速：冰冷下降 */
+  playSkillSlow(): void {
+    if (!this.ctx) return;
+    try {
+      this.playSweep(1320, 330, 0.5, 'sine', 0.2);
+      this.playNoise(0.4, 0.1, 600);
+    } catch {
+      // 忽略
+    }
+  }
+
+  /** 召唤支援：上扬号角 */
+  playSkillSummon(): void {
+    if (!this.ctx) return;
+    try {
+      this.playTone(523, 0.2, 'square', 0.18);
+      setTimeout(() => this.playTone(784, 0.25, 'square', 0.2), 120);
+      setTimeout(() => this.playTone(1047, 0.35, 'square', 0.22), 240);
+    } catch {
+      // 忽略
+    }
+  }
+
+  /** 暴击：清脆高亮 + 噪声 */
+  playCrit(): void {
+    if (!this.ctx) return;
+    try {
+      this.playTone(1760, 0.08, 'square', 0.18);
+      this.playTone(2093, 0.12, 'square', 0.16);
+      this.playNoise(0.08, 0.08, 3000);
+    } catch {
+      // 忽略
+    }
+  }
+
+  /** 合成成功：魔法上升琶音 */
+  playCombine(): void {
+    if (!this.ctx) return;
+    try {
+      this.playTone(659, 0.12, 'sine', 0.18);
+      setTimeout(() => this.playTone(988, 0.12, 'sine', 0.18), 80);
+      setTimeout(() => this.playTone(1319, 0.2, 'sine', 0.2), 160);
+      this.playSweep(880, 1760, 0.3, 'sine', 0.1);
     } catch {
       // 忽略
     }

@@ -8,6 +8,9 @@ import { createHitEffect, createDamageText } from '../entities/Effect';
 import { applyDamage } from './CombatSystem';
 import { applyPassiveOnAttack } from './SkillSystem';
 import { dist2 } from '../utils/MathUtil';
+import { Quadtree } from '../utils/Quadtree';
+import { CONFIG } from '../config';
+import { audio } from '../audio/Audio';
 
 /**
  * 获取塔的战斗属性（成长塔用 getHeroStat，普通塔用 getTowerStat）
@@ -61,11 +64,16 @@ function getHitDebuff(tower: Tower): { type: BuffType; value: number; duration: 
  * nearest: 距离最近 / first: pathProgress 最大 / strongest: hp 最高
  * weakest: hp 最低 / priority: 优先 boss/auraHaste，否则 nearest
  */
-function selectTarget(state: GameState, tower: Tower, range: number): Enemy | undefined {
+function selectTarget(qt: Quadtree, tower: Tower, range: number): Enemy | undefined {
   const range2 = range * range;
+  const raw = qt.retrieve(tower.x, tower.y, range);
+  // 去重（同一对象不会被重复插入，但防御性去重）
+  const seen = new Set<number>();
   const candidates: Enemy[] = [];
-  for (const e of state.enemies) {
-    if (!e.alive) continue;
+  for (const ref of raw) {
+    const e = ref as Enemy;
+    if (!e.alive || seen.has(e.instanceId)) continue;
+    seen.add(e.instanceId);
     const dx = e.x - tower.x;
     const dy = e.y - tower.y;
     if (dx * dx + dy * dy <= range2) {
@@ -112,6 +120,14 @@ function selectTarget(state: GameState, tower: Tower, range: number): Enemy | un
 }
 
 export function update(state: GameState, dt: number): void {
+  // 构建敌人四叉树，加速范围查询
+  const qt = new Quadtree({ x: 0, y: 0, w: CONFIG.WORLD_WIDTH, h: CONFIG.WORLD_HEIGHT });
+  for (const e of state.enemies) {
+    if (e.alive) {
+      qt.insert({ x: e.x, y: e.y, ref: e });
+    }
+  }
+
   for (const tower of state.towers) {
     // 光环塔不攻击（由 AuraSystem / 友方光环加成处理）
     if (tower.category === 'aura') continue;
@@ -132,10 +148,11 @@ export function update(state: GameState, dt: number): void {
       const passive = applyPassiveOnAttack(tower, damage);
       damage = passive.damage;
       isCrit = passive.isCrit;
+      if (isCrit) audio.playCrit();
     }
 
     // 索敌
-    const target = selectTarget(state, tower, range);
+    const target = selectTarget(qt, tower, range);
     if (!target) continue;
 
     // 重置冷却

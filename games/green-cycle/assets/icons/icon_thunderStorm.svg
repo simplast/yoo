@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" shape-rendering="crispEdges">
+  <!-- 风暴云 顶部亮灰 -->
+  <rect x="11" y="2" width="10" height="2" fill="#C0C0C0"/>
+  <rect x="10" y="3" width="12" height="1" fill="#C0C0C0"/>
+  <!-- 风暴云 中层 -->
+  <rect x="9" y="4" width="14" height="2" fill="#A9A9A9"/>
+  <!-- 风暴云 主体深灰 -->
+  <rect x="8" y="5" width="16" height="3" fill="#808080"/>
+  <!-- 风暴云 下层 -->
+  <rect x="9" y="8" width="14" height="2" fill="#A9A9A9"/>
+  <rect x="10" y="9" width="12" height="1" fill="#A9A9A9"/>
+  <!-- 云底 -->
+  <rect x="11" y="10" width="10" height="2" fill="#C0C0C0"/>
+  <!-- 云层高光 -->
+  <rect x="12" y="2" width="6" height="1" fill="#D3D3D3"/>
+  <rect x="10" y="4" width="4" height="1" fill="#BEBEBE"/>
+  <rect x="10" y="8" width="4" height="1" fill="#BEBEBE"/>
+  <!-- 中央闪电 外侧光晕 -->
+  <rect x="14" y="12" width="3" height="1" fill="#00BFFF"/>
+  <rect x="13" y="13" width="3" height="1" fill="#00BFFF"/>
+  <rect x="12" y="14" width="3" height="1" fill="#00BFFF"/>
+  <rect x="13" y="15" width="3" height="1" fill="#00BFFF"/>
+  <rect x="14" y="16" width="3" height="1" fill="#00BFFF"/>
+  <rect x="13" y="17" width="3" height="1" fill="#00BFFF"/>
+  <rect x="12" y="18" width="3" height="1" fill="#00BFFF"/>
+  <rect x="11" y="19" width="3" height="1" fill="#00BFFF"/>
+  <rect x="12" y="20" width="3" height="1" fill="#00BFFF"/>
+  <rect x="13" y="21" width="3" height="1" fill="#00BFFF"/>
+  <rect x="14" y="22" width="3" height="1" fill="#00BFFF"/>
+  <rect x="15" y="23" width="3" height="1" fill="#00BFFF"/>
+  <rect x="14" y="24" width="3" height="1" fill="#00BFFF"/>
+  <rect x="13" y="25" width="3" height="1" fill="#00BFFF"/>
+  <rect x="12" y="26" width="3" height="1" fill="#00BFFF"/>
+  <rect x="13" y="27" width="3" height="1" fill="#00BFFF"/>
+  <rect x="14" y="28" width="3" height="1" fill="#00BFFF"/>
+  <!-- 中央闪电 主体 -->
+  <rect x="15" y="12" width="2" height="1" fill="#00FFFF"/>
+  <rect x="14" y="13" width="2" height="1" fill="#00FFFF"/>
+  <rect x="13" y="14" width="2" height="1" fill="#00FFFF"/>
+  <rect x="14" y="15" width="2" height="1" fill="#00FFFF"/>
+  <rect x="15" y="16" width="2" height="1" fill="#00FFFF"/>
+  <rect x="14" y="17" width="2" height="1" fill="#00FFFF"/>
+  <rect x="13" y="18" width="2" height="1" fill="#00FFFF"/>
+  <rect x="12" y="19" width="2" height="1" fill="#00FFFF"/>
+  <rect x="13" y="20" width="2" height="1" fill="#00FFFF"/>
+  <rect x="14" y="21" width="2" height="1" fill="#00FFFF"/>
+  <rect x="15" y="22" width="2" height="1" fill="#00FFFF"/>
+  <rect x="16" y="23" width="2" height="1" fill="#00FFFF"/>
+  <rect x="15" y="24" width="2" height="1" fill="#00FFFF"/>
+  <rect x="14" y="25" width="2" height="1" fill="#00FFFF"/>
+  <rect x="13" y="26" width="2" height="1" fill="#00FFFF"/>
+  <rect x="14" y="27" width="2" height="1" fill="#00FFFF"/>
+  <rect x="15" y="28" width="2" height="1" fill="#00FFFF"/>
+  <!-- 左闪电 外侧光晕 -->
+  <rect x="8" y="14" width="3" height="1" fill="#00BFFF"/>
+  <rect x="7" y="15" width="3" height="1" fill="#00BFFF"/>
+  <rect x="8" y="16" width="3" height="1" fill="#00BFFF"/>
+  <rect x="9" y="17" width="3" height="1" fill="#00BFFF"/>
+  <rect x="8" y="18" width="3" height="1" fill="#00BFFF"/>
+  <rect x="7" y="19" width="3" height="1" fill="#00BFFF"/>
+  <rect x="6" y="20" width="3" height="1" fill="#00BFFF"/>
+  <rect x="7" y="21" width="3" height="1" fill="#00BFFF"/>
+  <rect x="8" y="22" width="3" height="1" fill="#00BFFF"/>
+  <rect x="9" y="23" width="3" height="1" fill="#00BFFF"/>
+  <rect x="8" y="24" width="3" height="1" fill="#00BFFF"/>
+  <!-- 左闪电 主体 -->
+  <rect x="9" y="14" width="2" height="1" fill="#00FFFF"/>
+  <rect x="8" y="15" width="2" height="1" fill="#00FFFF"/>
+  <rect x="9" y="16" width="2" height="1" fill="#00FFFF"/>
+  <rect x="10" y="17" width="2" height="1" fill="#00FFFF"/>
+  <rect x="9" y="18" width="2" height="1" fill="#00FFFF"/>
+  <rect x="8" y="19" width="2" height="1" fill="#00FFFF"/>
+  <rect x="7" y="20" width="2" height="1" fill="#00FFFF"/>
+  <rect x="8" y="21" width="2" height="1" fill="#00FFFF"/>
+  <rect x="9" y="22" width="2" height="1" fill="#00FFFF"/>
+  <rect x="10" y="23" width="2" height="1" fill="#00FFFF"/>
+  <rect x="9" y="24" width="2" height="1" fill="#00FFFF"/>
+  <!-- 右闪电 外侧光晕 -->
+  <rect x="20" y="14" width="3" height="1" fill="#00BFFF"/>
+  <rect x="21" y="15" width="3" height="1" fill="#00BFFF"/>
+  <rect x="20" y="16" width="3" height="1" fill="#00BFFF"/>
+  <rect x="19" y="17" width="3" height="1" fill="#00BFFF"/>
+  <rect x="20" y="18" width="3" height="1" fill="#00BFFF"/>
+  <rect x="21" y="19" width="3" height="1" fill="#00BFFF"/>
+  <rect x="22" y="20" width="3" height="1" fill="#00BFFF"/>
+  <rect x="21" y="21" width="3" height="1" fill="#00BFFF"/>
+  <rect x="20" y="22" width="3" height="1" fill="#00BFFF"/>
+  <rect x="19" y="23" width="3" height="1" fill="#00BFFF"/>
+  <rect x="20" y="24" width="3" height="1" fill="#00BFFF"/>
+  <!-- 右闪电 主体 -->
+  <rect x="21" y="14" width="2" height="1" fill="#00FFFF"/>
+  <rect x="22" y="15" width="2" height="1" fill="#00FFFF"/>
+  <rect x="21" y="16" width="2" height="1" fill="#00FFFF"/>
+  <rect x="20" y="17" width="2" height="1" fill="#00FFFF"/>
+  <rect x="21" y="18" width="2" height="1" fill="#00FFFF"/>
+  <rect x="22" y="19" width="2" height="1" fill="#00FFFF"/>
+  <rect x="23" y="20" width="2" height="1" fill="#00FFFF"/>
+  <rect x="22" y="21" width="2" height="1" fill="#00FFFF"/>
+  <rect x="21" y="22" width="2" height="1" fill="#00FFFF"/>
+  <rect x="20" y="23" width="2" height="1" fill="#00FFFF"/>
+  <rect x="21" y="24" width="2" height="1" fill="#00FFFF"/>
+  <!-- 闪电末端黄色高亮 -->
+  <rect x="15" y="28" width="2" height="1" fill="#FFFF00"/>
+  <rect x="9" y="24" width="2" height="1" fill="#FFFF00"/>
+  <rect x="21" y="24" width="2" height="1" fill="#FFFF00"/>
+  <!-- 雨滴 -->
+  <rect x="7" y="27" width="2" height="1" fill="#00FFFF"/>
+  <rect x="12" y="27" width="2" height="1" fill="#00FFFF"/>
+  <rect x="17" y="27" width="2" height="1" fill="#00FFFF"/>
+  <rect x="22" y="27" width="2" height="1" fill="#00FFFF"/>
+  <rect x="9" y="29" width="2" height="1" fill="#00BFFF"/>
+  <rect x="14" y="29" width="2" height="1" fill="#00BFFF"/>
+  <rect x="19" y="29" width="2" height="1" fill="#00BFFF"/>
+  <rect x="24" y="29" width="2" height="1" fill="#00BFFF"/>
+  <rect x="7" y="30" width="2" height="2" fill="#00FFFF"/>
+  <rect x="12" y="30" width="2" height="2" fill="#00FFFF"/>
+  <rect x="17" y="30" width="2" height="2" fill="#00FFFF"/>
+  <rect x="22" y="30" width="2" height="2" fill="#00FFFF"/>
+</svg>

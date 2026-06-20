@@ -22,6 +22,8 @@ function init(): void {
     overlayTitle: $('overlay').querySelector('h1') as HTMLElement,
     overlaySub: $('overlay-sub'),
     diffRow: $('diff-row'),
+    endlessBtn: $btn('endless-btn'),
+    leaderboard: $('leaderboard'),
     startBtn: $btn('start-btn'),
     statGold: $('stat-gold'),
     statWood: $('stat-wood'),
@@ -67,8 +69,9 @@ function init(): void {
 
   const game = new Game(canvas, ui);
 
-  // 当前选择的难度
+  // 当前选择的难度与无尽模式
   let selectedDiff: Difficulty = 'normal';
+  let endlessMode = false;
 
   // 难度选择
   ui.diffRow.querySelectorAll<HTMLButtonElement>('.diff-btn').forEach((btn) => {
@@ -79,10 +82,48 @@ function init(): void {
     });
   });
 
+  // 无尽模式切换
+  ui.endlessBtn.addEventListener('click', () => {
+    if (ui.endlessBtn.disabled) return;
+    endlessMode = !endlessMode;
+    ui.endlessBtn.textContent = `无尽模式: ${endlessMode ? '开' : '关'}`;
+    ui.endlessBtn.classList.toggle('active', endlessMode);
+  });
+
   // 开始按钮
   ui.startBtn.addEventListener('click', () => {
-    game.startGame(selectedDiff);
+    game.startGame(selectedDiff, endlessMode);
   });
+
+  // 同步菜单解锁/排行榜状态
+  function syncMenu() {
+    const save = game.getSaveData();
+    const unlocked = save.unlocks.difficulties;
+    ui.diffRow.querySelectorAll<HTMLButtonElement>('.diff-btn').forEach((btn) => {
+      const diff = btn.dataset.diff as Difficulty;
+      btn.disabled = !unlocked.includes(diff);
+    });
+    const endlessUnlocked = save.unlocks.endlessUnlocked;
+    ui.endlessBtn.disabled = !endlessUnlocked;
+    ui.endlessBtn.textContent = `无尽模式: ${endlessMode && endlessUnlocked ? '开' : '关'}`;
+    ui.endlessBtn.classList.toggle('active', endlessMode && endlessUnlocked);
+
+    // 渲染排行榜
+    const records = save.leaderboard.endless.slice(0, 5);
+    if (records.length === 0) {
+      ui.leaderboard.innerHTML = '<div class="lb-title">无尽排行榜</div><div class="lb-empty">暂无记录</div>';
+    } else {
+      ui.leaderboard.innerHTML = '<div class="lb-title">无尽排行榜</div>' +
+        records.map((r, i) => {
+          const date = new Date(r.date);
+          const dateStr = `${date.getMonth() + 1}/${date.getDate()}`;
+          return `<div class="lb-row">${i + 1}. ${r.wave}波 / ${r.score}分 — ${dateStr}</div>`;
+        }).join('');
+    }
+  }
+
+  syncMenu();
+  game.onShowMenu = syncMenu;
 
   // 速度控制
   ui.speedBtns.forEach((btn) => {

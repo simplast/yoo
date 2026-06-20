@@ -68,8 +68,18 @@
       font-size: 13px; z-index: 10; pointer-events: none;
       display: none; text-align: center;
     }
-    #wave-banner.show { display: block; animation: pulse 1s ease-in-out infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+    #wave-banner.show {
+      display: block;
+      animation: banner-in 0.4s ease-out, pulse 1.2s ease-in-out infinite 0.4s;
+      box-shadow: 0 0 12px rgba(124,252,0,0.3);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    @keyframes banner-in {
+      0% { transform: translateX(-50%) scale(0.8); opacity: 0; }
+      100% { transform: translateX(-50%) scale(1); opacity: 1; }
+    }
+    @keyframes pulse { 0%,100%{opacity:1; text-shadow: 0 0 4px var(--accent);} 50%{opacity:0.7; text-shadow: 0 0 12px var(--accent);} }
     #tower-panel {
       position: absolute; bottom: 0; left: 0; right: 0;
       background: linear-gradient(0deg, rgba(0,0,0,0.9), rgba(0,0,0,0.5));
@@ -80,6 +90,7 @@
     .tower-btn {
       flex: 0 0 auto; min-width: 88px; padding: 6px 8px;
       background: var(--panel); border: 1px solid var(--panel-border);
+      border-left-width: 4px;
       border-radius: 3px; color: var(--text); cursor: pointer;
       font-family: inherit; font-size: 11px; text-align: center;
       transition: all 0.1s;
@@ -87,9 +98,16 @@
     .tower-btn:hover { border-color: var(--accent); background: #243a24; }
     .tower-btn.active { border-color: var(--accent); box-shadow: 0 0 8px var(--accent); }
     .tower-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .tower-btn .icon { font-size: 14px; display: block; margin-bottom: 2px; }
     .tower-btn .name { font-weight: bold; color: var(--accent); display: block; }
     .tower-btn .cost { color: var(--gold); font-size: 10px; }
     .tower-btn .pop { color: var(--text); font-size: 10px; }
+    /* 塔分类色 */
+    .tower-btn.cat-basic { border-left-color: #8B4513; }
+    .tower-btn.cat-support { border-left-color: #4FA3FF; }
+    .tower-btn.cat-aura { border-left-color: #FFD700; }
+    .tower-btn.cat-growth { border-left-color: #B266FF; }
+    .tower-btn.cat-special { border-left-color: #33CC33; }
     #skills {
       position: absolute; bottom: 70px; right: 12px;
       display: flex; flex-direction: column; gap: 6px; z-index: 10;
@@ -100,9 +118,11 @@
       color: var(--text); cursor: pointer; font-size: 18px;
       display: flex; align-items: center; justify-content: center;
       position: relative; font-family: inherit;
+      transition: all 0.15s;
     }
-    .skill-btn:hover { border-color: var(--accent); }
-    .skill-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .skill-btn:hover { border-color: var(--accent); transform: scale(1.08); }
+    .skill-btn.active { border-color: var(--accent); box-shadow: 0 0 10px var(--accent); transform: scale(1.05); }
+    .skill-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .skill-btn .cd {
       position: absolute; bottom: -2px; right: -2px;
       background: #000; color: var(--accent);
@@ -198,6 +218,28 @@
     }
     .menu-btn:hover { background: var(--accent); color: #000; }
     .diff-btn.active { background: var(--accent); color: #000; }
+    .menu-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: #555; color: #888; }
+    .menu-btn:disabled:hover { background: var(--panel); color: #888; }
+    #leaderboard {
+      font-size: 12px; color: var(--text); text-align: center;
+      max-height: 120px; overflow-y: auto; line-height: 1.6;
+      min-width: 260px;
+    }
+    #leaderboard .lb-title { color: var(--accent); margin-bottom: 4px; }
+    #leaderboard .lb-row { font-size: 11px; color: #aaa; }
+    #leaderboard .lb-empty { font-size: 11px; color: #666; }
+    .mode-btn {
+      border-color: var(--magic) !important;
+      color: var(--magic) !important;
+    }
+    .mode-btn.active {
+      background: var(--magic) !important;
+      color: #000 !important;
+    }
+    .mode-btn:disabled {
+      border-color: #555 !important;
+      color: #888 !important;
+    }
     #speed-controls {
       position: absolute; top: 50px; left: 12px;
       display: flex; gap: 4px; z-index: 10;
@@ -282,7 +324,14 @@
         <button class="menu-btn diff-btn" data-diff="hard">困难</button>
       </div>
       <div class="menu-row">
+        <button class="menu-btn mode-btn" id="endless-btn" disabled>无尽模式: 关</button>
+      </div>
+      <div class="menu-row">
         <button class="menu-btn" id="start-btn">开始游戏</button>
+      </div>
+      <div id="leaderboard">
+        <div class="lb-title">无尽排行榜</div>
+        <div class="lb-empty">暂无记录</div>
       </div>
       <div id="overlay-tip" style="font-size:12px;color:#888;max-width:400px;text-align:center;line-height:1.6;">
         怪物沿循环圈道无限跑动，建造防御塔击杀它们。<br>

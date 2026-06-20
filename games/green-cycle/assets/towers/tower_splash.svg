@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- 炮口火焰/火花 -->
+  <rect x="28" y="4" width="8" height="4" fill="#FF6600"/>
+  <rect x="24" y="8" width="16" height="4" fill="#FF8C00"/>
+  <!-- 粗短炮管（朝上） -->
+  <rect x="24" y="12" width="16" height="4" fill="#CD7F32"/>
+  <rect x="20" y="16" width="24" height="4" fill="#B87333"/>
+  <rect x="20" y="20" width="24" height="4" fill="#CD7F32"/>
+  <!-- 炮管底部 -->
+  <rect x="24" y="24" width="16" height="4" fill="#9A6320"/>
+  <!-- 炮管连接环 -->
+  <rect x="20" y="28" width="24" height="4" fill="#D4782F"/>
+  <rect x="16" y="32" width="32" height="4" fill="#CD7F32"/>
+  <!-- 塔身上部 -->
+  <rect x="20" y="36" width="24" height="4" fill="#B87333"/>
+  <rect x="16" y="40" width="32" height="4" fill="#CD7F32"/>
+  <!-- 塔身中部 -->
+  <rect x="20" y="44" width="24" height="4" fill="#B87333"/>
+  <!-- 塔身铜色装饰线 -->
+  <rect x="16" y="40" width="4" height="4" fill="#D4782F"/>
+  <rect x="44" y="40" width="4" height="4" fill="#D4782F"/>
+  <!-- 底座上层 -->
+  <rect x="16" y="48" width="32" height="4" fill="#8B5E3C"/>
+  <!-- 底座中层 -->
+  <rect x="12" y="52" width="40" height="4" fill="#6B3A2A"/>
+  <rect x="12" y="52" width="4" height="4" fill="#5C3317"/>
+  <rect x="48" y="52" width="4" height="4" fill="#5C3317"/>
+  <!-- 底座下层 -->
+  <rect x="8" y="56" width="48" height="4" fill="#5C3317"/>
+  <rect x="8" y="56" width="4" height="4" fill="#3E200A"/>
+  <rect x="52" y="56" width="4" height="4" fill="#3E200A"/>
+  <!-- 底座最底层 -->
+  <rect x="4" y="60" width="56" height="4" fill="#3E200A"/>
+</svg>
