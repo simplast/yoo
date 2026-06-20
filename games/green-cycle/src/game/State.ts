@@ -66,6 +66,10 @@ export class GameState {
   pendingBuildTowerId: string | null = null; // 选中要建造的塔 def id
   buildCells: BuildCell[][] = []; // [col][row]
 
+  // ===== 友方光环缓存（每帧由 AuraSystem 预计算）=====
+  /** 每座塔的友方光环加成：instanceId → { damageMult, speedMult, hasAura } */
+  allyAuraCache: Map<number, { damageMult: number; speedMult: number; hasAura: boolean }> = new Map();
+
   // ===== 框选 =====
   selectBox: { start: Vec2; end: Vec2 } | null = null; // 世界坐标，仅绘制用
 

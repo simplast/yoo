@@ -44,4 +44,35 @@ export function update(state: GameState, _dt: number): void {
       }
     }
   }
+
+  // ===== 预计算友方光环加成缓存（供 TowerAISystem 和渲染层共用）=====
+  state.allyAuraCache.clear();
+
+  // 收集所有友方光环塔
+  const allyAuras = state.towers.filter(
+    (t) => t.category === 'aura' && t.auraTarget === 'ally' && t.auraRadius != null && t.auraValue != null,
+  );
+
+  if (allyAuras.length === 0) return; // 无友方光环塔，缓存为空 Map（敌方光环已在前面处理完毕，安全退出）
+
+  for (const tower of state.towers) {
+    if (tower.category === 'aura') continue; // 光环塔自身不受加成
+    let damageMult = 1;
+    let speedMult = 1;
+    let hasAura = false;
+    for (const aura of allyAuras) {
+      const dx = aura.x - tower.x;
+      const dy = aura.y - tower.y;
+      if (dx * dx + dy * dy > (aura.auraRadius as number) * (aura.auraRadius as number)) continue;
+      hasAura = true;
+      if (aura.id === 'auraDamage') {
+        damageMult *= 1 + (aura.auraValue as number);
+      } else if (aura.id === 'auraHaste') {
+        speedMult *= 1 + (aura.auraValue as number);
+      }
+    }
+    if (hasAura) {
+      state.allyAuraCache.set(tower.instanceId, { damageMult, speedMult, hasAura });
+    }
+  }
 }
