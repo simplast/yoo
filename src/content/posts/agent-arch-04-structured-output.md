@@ -4,14 +4,16 @@ description: 'LLM 默认返回自由文本，但你的应用需要 JSON、需要
 pubDate: 2026-06-19
 category: 'AI 工程'
 tags: ['Structured Output', 'Zod', 'Pydantic', 'JSON Schema', 'Agent']
+series: 'Agent 工程实战'
+seriesOrder: 4
 draft: false
 ---
 
-> **Agent 架构实战**系列第 4 篇。前置阅读：[第 3 篇：Agent 的工具系统](/posts/agent-arch-03-tool-design)。
+> **Agent 工程实战**系列第 4 篇。前置阅读：[第 3 篇：Agent 的工具系统](/posts/agent-arch-03-tool-design)。
 
 ## 为什么不能让 LLM 直接返回 JSON
 
-在第 3 篇的 Agent Loop 实现中，模型返回的是 Tool Call 格式——OpenAI SDK 帮我们处理了结构化解析。但很多场景下，你需要模型直接返回结构化数据，而不是调用工具。比如：
+在第 2 篇的 Agent Loop 实现中，模型返回的是 Tool Call 格式——OpenAI SDK 帮我们处理了结构化解析。但很多场景下，你需要模型直接返回结构化数据，而不是调用工具。比如：
 
 - 对一段代码做静态分析，返回 `{ severity, message, line }` 的问题列表
 - 让 Agent 做出决策，返回 `{ action: "search", query: "..." }`
@@ -425,7 +427,7 @@ except Exception as e:
 
 ### 问题：自由文本决策的困境
 
-回顾第 3 篇的最小 Agent Loop，模型的决策是通过 tool calling 实现的——如果返回 tool call 就执行工具，如果返回纯文本就结束循环。这在简单场景下够用，但当你需要更精细的控制时，问题就来了：
+回顾第 2 篇的最小 Agent Loop，模型的决策是通过 tool calling 实现的——如果返回 tool call 就执行工具，如果返回纯文本就结束循环。这在简单场景下够用，但当你需要更精细的控制时，问题就来了：
 
 ```python
 # 自由文本决策 —— 解析噩梦

@@ -4,10 +4,12 @@ description: '工具是 Agent 的执行能力边界。本文从 Anthropic 的工
 pubDate: 2026-06-19
 category: 'AI 工程'
 tags: ['Tool Design', 'Agent', 'Zod', 'Pydantic', '工具系统']
+series: 'Agent 工程实战'
+seriesOrder: 3
 draft: false
 ---
 
-> **Agent 架构实战** 系列第 3 篇。前置阅读：[第 2 篇：构建第一个 Agent Loop](/posts/agent-arch-02-first-loop)。
+> **Agent 工程实战** 系列第 3 篇。前置阅读：[第 2 篇：构建第一个 Agent Loop](/posts/agent-arch-02-first-loop)。
 
 ## 工具决定了 Agent 能做什么
 

@@ -4,6 +4,8 @@ description: '逐一拆解 Claude Code、OpenAI Agents SDK、Google ADK、LangGr
 pubDate: 2026-06-19
 category: 'AI 工程'
 tags: ['Agent Loop', 'Claude Code', 'OpenAI Agents SDK', 'Google ADK', 'LangGraph']
+series: 'Agent Loop 深度调研'
+seriesOrder: 2
 draft: false
 ---
 

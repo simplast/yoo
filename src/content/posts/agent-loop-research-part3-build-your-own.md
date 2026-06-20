@@ -4,6 +4,8 @@ description: '基于前两篇的调研结论，手把手实现一个生产级 Ag
 pubDate: 2026-06-19
 category: 'AI 工程'
 tags: ['Agent Loop', '实操', 'Python', '自建 Agent', 'Harness']
+series: 'Agent Loop 深度调研'
+seriesOrder: 3
 draft: false
 ---
 

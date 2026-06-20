@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts', ({ data }) => !data.draft);
+  const seriesNames = [...new Set(posts.map((p) => p.data.series).filter(Boolean))] as string[];
+  return seriesNames.map((series) => ({
+    params: { series },
+    props: {
+      series,
+      posts: posts
+        .filter((p) => p.data.series === series)
+        .sort((a, b) => (a.data.seriesOrder ?? 0) - (b.data.seriesOrder ?? 0)),
+    },
+  }));
+}
+
+const { series, posts } = Astro.props;
+const formatDate = (date: Date) =>
+  date.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' });
+---
+
+<BaseLayout title={series} description={`${series} 系列文章`}>
+  <a href="/series" class="back-link">← 全部系列</a>
+  <h1 class="page-title">{series}</h1>
+  <p class="page-subtitle">共 {posts.length} 篇</p>
+  <ol class="series-post-list">
+    {posts.map((post, i) => (
+      <li class="series-post-item">
+        <span class="series-post-number">{post.data.seriesOrder ?? i + 1}</span>
+        <div class="series-post-content">
+          <h2 class="post-item-title">
+            <a href={`/posts/${post.slug}/`}>{post.data.title}</a>
+          </h2>
+          <div class="post-item-meta">
+            <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+          </div>
+          {post.data.description && <p class="post-item-description">{post.data.description}</p>}
+        </div>
+      </li>
+    ))}
+  </ol>
+</BaseLayout>

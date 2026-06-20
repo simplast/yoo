@@ -4,6 +4,8 @@ description: '当一个 Agent 无法胜任所有工作时，你需要多个 Agen
 pubDate: 2026-06-19
 category: 'AI 工程'
 tags: ['Multi-Agent', 'Supervisor', 'Handoff', 'LangGraph', '编排']
+series: 'Agent 工程实战'
+seriesOrder: 9
 draft: false
 ---
 

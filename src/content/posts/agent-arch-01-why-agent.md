@@ -1,13 +1,15 @@
 ---
 title: '为什么需要 Agent？从 API 调用到自主循环'
-description: '从一次真实的 LLM API 调用失败说起，理解 Agent 解决了什么问题，以及 Agent Loop 的核心思想。'
+description: '从一次真实的 LLM API 调用失败说起，理解 Agent 解决了什么问题，以及 Agent 工程（LLM + Tools + Loop）的核心概念。'
 pubDate: 2026-06-19
 category: 'AI 工程'
 tags: ['Agent', 'LLM', 'Agent Loop', '架构设计']
+series: 'Agent 工程实战'
+seriesOrder: 1
 draft: false
 ---
 
-> **Agent 架构实战**系列第 1 篇。本系列面向有编程基础但没开发过 Agent 的程序员，侧重实操而非概念。
+> **Agent 工程实战**系列第 1 篇。本系列面向有编程基础但没开发过 Agent 的程序员，侧重实操而非概念。
 
 ## 一次真实的"API 调用不够用"
 
@@ -433,7 +435,7 @@ const result = await runAgent(
 console.log(result);
 ```
 
-结构和 Python 版本完全一致——循环、判断、执行、追加结果。Agent Loop 的核心思想与语言无关。
+结构和 Python 版本完全一致——循环、判断、执行、追加结果。Agent 工程的核心机制与语言无关。
 
 ## 决策指南：什么时候该用 Agent，什么时候不该
 

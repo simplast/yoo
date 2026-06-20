@@ -4,11 +4,23 @@ import PostLayout from '../../layouts/PostLayout.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts', ({ data }) => !data.draft);
-  return posts.map((post) => ({ params: { slug: post.slug }, props: post }));
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post, allPosts: posts } }));
 }
 
-const post = Astro.props;
+const { post, allPosts } = Astro.props;
 const { Content } = await post.render();
+
+// Find prev/next in same series
+let prevPost = null;
+let nextPost = null;
+if (post.data.series) {
+  const seriesPosts = allPosts
+    .filter((p) => p.data.series === post.data.series)
+    .sort((a, b) => (a.data.seriesOrder ?? 0) - (b.data.seriesOrder ?? 0));
+  const idx = seriesPosts.findIndex((p) => p.slug === post.slug);
+  if (idx > 0) prevPost = seriesPosts[idx - 1];
+  if (idx < seriesPosts.length - 1) nextPost = seriesPosts[idx + 1];
+}
 ---
 
 <PostLayout
@@ -18,6 +30,10 @@ const { Content } = await post.render();
   updatedDate={post.data.updatedDate}
   category={post.data.category}
   tags={post.data.tags}
+  series={post.data.series}
+  seriesOrder={post.data.seriesOrder}
+  prevPost={prevPost}
+  nextPost={nextPost}
 >
   <Content />
 </PostLayout>

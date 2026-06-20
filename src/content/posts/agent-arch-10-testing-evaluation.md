@@ -4,10 +4,12 @@ description: 'Agent 是非确定性的，传统单元测试不够用。本文讲
 pubDate: 2026-06-19
 category: 'AI 工程'
 tags: ['Testing', 'Evaluation', 'Agent', 'pass@k', '可观测性']
+series: 'Agent 工程实战'
+seriesOrder: 10
 draft: false
 ---
 
-> 本文是"Agent 架构实战"系列的第 10 篇（完结篇）。前置阅读：[第 9 篇：多 Agent 编排](/posts/agent-arch-9-multi-agent)。
+> 本文是"Agent 工程实战"系列的第 10 篇（完结篇）。前置阅读：[第 9 篇：多 Agent 编排](/posts/agent-arch-9-multi-agent)。
 
 ## 为什么 Agent 难测试
 
@@ -1070,7 +1072,7 @@ jobs:
 
 ## 系列完结：回顾与展望
 
-这是"Agent 架构实战"系列的最后一篇。让我们回顾整个系列的知识图谱：
+这是"Agent 工程实战"系列的最后一篇。让我们回顾整个系列的知识图谱：
 
 ```
 第 1 篇  Agent 架构概览：从 Prompt 到自主系统

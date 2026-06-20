@@ -1,13 +1,17 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 
+interface SeriesPost { slug: string; data: { title: string; seriesOrder?: number } }
 interface Props {
   title: string; description?: string;
   pubDate: Date; updatedDate?: Date;
   category: string; tags?: string[];
+  series?: string; seriesOrder?: number;
+  prevPost?: SeriesPost | null; nextPost?: SeriesPost | null;
 }
 
-const { title, description, pubDate, updatedDate, category, tags = [] } = Astro.props;
+const { title, description, pubDate, updatedDate, category, tags = [],
+  series, seriesOrder, prevPost, nextPost } = Astro.props;
 const formatDate = (date: Date) =>
   date.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' });
 ---
@@ -16,6 +20,12 @@ const formatDate = (date: Date) =>
   <a href="/" class="back-link">← 返回</a>
   <article>
     <header class="post-header">
+      {series && (
+        <div class="series-badge">
+          <a href={`/series/${encodeURIComponent(series)}`}>{series}</a>
+          {seriesOrder && <span class="series-order">#{seriesOrder}</span>}
+        </div>
+      )}
       <h1 class="post-title">{title}</h1>
       <div class="post-meta">
         <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time>
@@ -26,5 +36,21 @@ const formatDate = (date: Date) =>
       </div>
     </header>
     <div class="post-body"><slot /></div>
+    {(prevPost || nextPost) && (
+      <nav class="series-nav">
+        {prevPost && (
+          <a href={`/posts/${prevPost.slug}/`} class="series-nav-link series-nav-prev">
+            <span class="series-nav-label">← 上一篇</span>
+            <span class="series-nav-title">{prevPost.data.title}</span>
+          </a>
+        )}
+        {nextPost && (
+          <a href={`/posts/${nextPost.slug}/`} class="series-nav-link series-nav-next">
+            <span class="series-nav-label">下一篇 →</span>
+            <span class="series-nav-title">{nextPost.data.title}</span>
+          </a>
+        )}
+      </nav>
+    )}
   </article>
 </BaseLayout>

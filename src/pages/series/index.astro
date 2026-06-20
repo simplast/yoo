@@ -1,0 +1,27 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const posts = await getCollection('posts', ({ data }) => !data.draft);
+const seriesMap = new Map<string, number>();
+posts.forEach((post) => {
+  if (post.data.series) {
+    seriesMap.set(post.data.series, (seriesMap.get(post.data.series) ?? 0) + 1);
+  }
+});
+const seriesList = [...seriesMap.entries()].sort((a, b) => b[1] - a[1]);
+---
+
+<BaseLayout title="系列" description="按系列浏览文章">
+  <a href="/" class="back-link">← 返回</a>
+  <h1 class="page-title">系列</h1>
+  <p class="page-subtitle">共 {seriesList.length} 个系列</p>
+  <div class="category-grid">
+    {seriesList.map(([name, count]) => (
+      <a href={`/series/${encodeURIComponent(name)}`} class="category-card">
+        <div class="category-card-name">{name}</div>
+        <div class="category-card-count">{count} 篇文章</div>
+      </a>
+    ))}
+  </div>
+</BaseLayout>

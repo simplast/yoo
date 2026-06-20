@@ -4,6 +4,8 @@ description: 'Agent 不应该在所有情况下都自主行动。本文讲解如
 pubDate: 2026-06-19
 category: 'AI 工程'
 tags: ['Human-in-the-Loop', 'HITL', 'interrupt', 'LangGraph', 'Agent']
+series: 'Agent 工程实战'
+seriesOrder: 8
 draft: false
 ---
 
