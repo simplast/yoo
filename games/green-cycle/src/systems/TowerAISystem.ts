@@ -9,7 +9,6 @@ import { applyDamage } from './CombatSystem';
 import { applyPassiveOnAttack } from './SkillSystem';
 import { dist2 } from '../utils/MathUtil';
 import { Quadtree } from '../utils/Quadtree';
-import { CONFIG } from '../config';
 import { audio } from '../audio/Audio';
 
 /**
@@ -96,13 +95,14 @@ function selectTarget(qt: Quadtree, tower: Tower, range: number): Enemy | undefi
 }
 
 export function update(state: GameState, dt: number): void {
-  // 构建敌人四叉树，加速范围查询
-  const qt = new Quadtree({ x: 0, y: 0, w: CONFIG.WORLD_WIDTH, h: CONFIG.WORLD_HEIGHT });
+  // 清空并重建共享四叉树（供本系统 + CombatSystem + SkillSystem 复用）
+  state.enemyQuadtree.clear();
   for (const e of state.enemies) {
     if (e.alive) {
-      qt.insert({ x: e.x, y: e.y, ref: e });
+      state.enemyQuadtree.insert({ x: e.x, y: e.y, ref: e });
     }
   }
+  const qt = state.enemyQuadtree;
 
   for (const tower of state.towers) {
     // 光环塔不攻击（由 AuraSystem / 友方光环加成处理）

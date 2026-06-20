@@ -12,6 +12,7 @@ import type {
 } from '../types';
 import { CONFIG } from '../config';
 import { Path } from '../utils/Path';
+import { Quadtree } from '../utils/Quadtree';
 
 /** 待出生的敌人队列项 */
 export interface SpawnTask {
@@ -69,6 +70,9 @@ export class GameState {
   // ===== 友方光环缓存（每帧由 AuraSystem 预计算）=====
   /** 每座塔的友方光环加成：instanceId → { damageMult, speedMult, hasAura } */
   allyAuraCache: Map<number, { damageMult: number; speedMult: number; hasAura: boolean }> = new Map();
+
+  // ===== 帧级共享四叉树（每帧由 TowerAISystem 构建，供 Combat/Skill 复用）=====
+  enemyQuadtree: Quadtree = new Quadtree({ x: 0, y: 0, w: CONFIG.WORLD_WIDTH, h: CONFIG.WORLD_HEIGHT });
 
   // ===== 框选 =====
   selectBox: { start: Vec2; end: Vec2 } | null = null; // 世界坐标，仅绘制用
