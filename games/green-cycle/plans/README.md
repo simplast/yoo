@@ -21,6 +21,8 @@ row when done.
 | 009  | 为普通波增加时间压力与清场奖励 | P3 | M | 004 | DONE (merged `eaf2d25`) |
 | 010  | 扩展木材获取渠道 | P3 | S | 004 | DONE (merged `99da51a`) |
 | 011  | 扩充合成配方系统 | P3 | M | 004, 010 | DONE (merged `1d230a4`) |
+| 012  | 经济-合成循环打磨（清场提速、精英木材、freeze改growth、配方预览） | P1 | L | 004, 010, 011 | DONE (verified `b1ec2db`) |
+| 013  | 敌人特性与塔克制体系（隐形/飞行/分裂机制实装） | P1 | XL | 004, 012 | DONE (verified `b1ec2db`) |
 
 Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJECTED (with one-line rationale)
 
@@ -34,6 +36,8 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
 - **009 requires 004**：玩法机制改动需测试基线验证不破坏现有波次/经济逻辑。
 - **010 requires 004**：数据表改动需测试基线验证。
 - **011 requires 004 + 010**：合成配方扩充需木材获取改善（010）后才有实际可玩性，且需 RecipeUtil 测试覆盖。
+- **012 requires 004 + 010 + 011**：经济-合成打磨在 011 配方基础上调优清场计时、精英木材、freeze 塔 growth 化、配方预览面板。
+- **013 requires 004 + 012**：敌人特性实装依赖 012 完成后 freeze 塔类别稳定，且需测试基线保护。
 
 ## Recommended execution batches
 
@@ -52,6 +56,10 @@ Status values: TODO | IN PROGRESS | DONE | BLOCKED (with one-line reason) | REJE
 **第四批（玩法调优）**：009 + 010 → 011
 - 009（清场奖励）和 010（木材渠道）可并行。
 - 011（合成配方）依赖 010 完成后木材经济才合理。
+
+**第五批（里程碑一·二，玩法深化）**：012 → 013
+- 012（经济-合成打磨）在 011 基础上深化清场节奏、木材经济、配方预览。
+- 013（敌人特性克制）依赖 012 完成后 freeze 塔类别稳定，实现隐形/飞行/分裂三大机制。
 
 ## Findings considered and rejected
 

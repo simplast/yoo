@@ -61,6 +61,7 @@ function init(): void {
     tiCombineSection: $('ti-combine-section'),
     tiCombineInfo: $('ti-combine-info'),
     tiCombineBtn: $btn('ti-combine-btn'),
+    tiRecipeList: $('ti-recipe-list'),
     skillBlast: $btn('skill-blast'),
     skillSlow: $btn('skill-slow'),
     skillSummon: $btn('skill-summon'),

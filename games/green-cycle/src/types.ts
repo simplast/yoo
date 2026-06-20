@@ -89,6 +89,8 @@ export interface Enemy extends EnemyDef {
   auraFlags: number;
   // 受击闪烁
   hitFlash: number;
+  // 分裂子怪标记（避免无限分裂）
+  _splitChild?: boolean;
 }
 
 // ===== Buff/Debuff =====
@@ -139,6 +141,10 @@ export interface TowerDef {
   debuffDuration?: number;
   color: string;
   size: number;
+  // 真视：可索敌隐形敌人
+  trueSight?: boolean;
+  // 对空：可索敌/命中飞行敌人
+  antiAir?: boolean;
 }
 
 // ===== 塔实例（运行时） =====

@@ -53,6 +53,10 @@ function selectTarget(qt: Quadtree, tower: Tower, range: number): Enemy | undefi
     const dx = e.x - tower.x;
     const dy = e.y - tower.y;
     if (dx * dx + dy * dy <= range2) {
+      // 隐形敌人：无 trueSight 的塔不可索敌
+      if (e.abilities.includes('invisible') && !tower.trueSight) continue;
+      // 飞行敌人：无 antiAir 的塔不可索敌
+      if (e.abilities.includes('flying') && !tower.antiAir) continue;
       candidates.push(e);
     }
   }
@@ -78,11 +82,18 @@ function selectTarget(qt: Quadtree, tower: Tower, range: number): Enemy | undefi
         replace = e.hp < best.hp;
         break;
       case 'priority': {
-        // 优先 boss/auraHaste，同优先级内取最近
-        const ePri = e.abilities.includes('boss') || e.abilities.includes('auraHaste');
-        const bestPri = best.abilities.includes('boss') || best.abilities.includes('auraHaste');
+        const getPriority = (enemy: Enemy): number => {
+          if (enemy.abilities.includes('boss')) return 5;
+          if (enemy.abilities.includes('flying')) return 4;
+          if (enemy.abilities.includes('invisible')) return 3;
+          if (enemy.abilities.includes('split')) return 2;
+          if (enemy.abilities.includes('auraHaste')) return 1;
+          return 0;
+        };
+        const ePri = getPriority(e);
+        const bestPri = getPriority(best);
         if (ePri !== bestPri) {
-          replace = ePri;
+          replace = ePri > bestPri;
         } else {
           replace = dist2(tower.x, tower.y, e.x, e.y) < dist2(tower.x, tower.y, best.x, best.y);
         }

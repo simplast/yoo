@@ -3,6 +3,7 @@ import type { GameState } from '../game/State';
 import type { Enemy, AttackType, BuffType } from '../types';
 import { getDamageMultiplier } from '../data/armor';
 import { addExp } from '../entities/HeroTower';
+import { createEnemy } from '../entities/Enemy';
 import { createDeathEffect, createHitEffect, createSplashEffect } from '../entities/Effect';
 import { applyBuff, sumBuffValue } from '../utils/BuffUtil';
 
@@ -42,6 +43,20 @@ export function applyDamage(
 
   // 死亡处理
   if (enemy.hp <= 0) {
+    // 分裂处理：splitter 死亡时生成 2 个子怪
+    if (enemy.abilities.includes('split') && !enemy._splitChild) {
+      for (let i = 0; i < 2; i++) {
+        const child = createEnemy(enemy.id, state.path, state.difficulty, state.enemyPool);
+        child.hp = Math.floor(enemy.maxHp * 0.5);
+        child.maxHp = child.hp;
+        child.pathProgress = enemy.pathProgress;
+        child._splitChild = true;
+        // 子怪位置在父怪附近偏移，避免重叠
+        child.x = enemy.x + (Math.random() - 0.5) * 20;
+        child.y = enemy.y + (Math.random() - 0.5) * 20;
+        state.addEnemy(child);
+      }
+    }
     enemy.alive = false;
     // 死亡特效
     state.addEffect(createDeathEffect(enemy.x, enemy.y, enemy.color, state.effectPool));

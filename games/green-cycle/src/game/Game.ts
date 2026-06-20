@@ -730,6 +730,48 @@ export class Game {
       ui.tiCombineBtn.textContent = '合成';
       ui.tiCombineBtn.disabled = true;
     }
+
+    // 渲染配方列表预览
+    ui.tiRecipeList.innerHTML = '';
+    for (const recipe of RECIPES) {
+      const recipeMatch = matchRecipe(selected, [recipe]);
+      const unlocked = recipeMatch !== null;
+
+      // 生成条件文本：按 towerId + level 分组
+      const groupMap = new Map<string, { towerId: string; level: number; count: number }>();
+      for (const ing of recipe.ingredients) {
+        const lv = ing.level ?? 1;
+        const key = `${ing.towerId}#${lv}`;
+        const existing = groupMap.get(key);
+        if (existing) {
+          existing.count++;
+        } else {
+          groupMap.set(key, { towerId: ing.towerId, level: lv, count: 1 });
+        }
+      }
+      const conditionParts: string[] = [];
+      for (const g of groupMap.values()) {
+        const def = TOWERS[g.towerId];
+        const name = def ? def.name : g.towerId;
+        conditionParts.push(`${g.count}座 ${g.level}级 ${name}`);
+      }
+      const conditionText = conditionParts.join(' + ');
+
+      const resultDef = TOWERS[recipe.result.towerId];
+      const resultName = resultDef ? resultDef.name : recipe.result.towerId;
+      const resultLevel = recipe.result.level ?? 1;
+      const resultText = `${resultName} Lv${resultLevel}`;
+
+      const costParts: string[] = [];
+      if (recipe.cost?.gold) costParts.push(`${recipe.cost.gold}💰`);
+      if (recipe.cost?.wood) costParts.push(`${recipe.cost.wood}🪵`);
+      const costText = costParts.length > 0 ? ` [${costParts.join(' ')}]` : '';
+
+      const div = document.createElement('div');
+      div.className = `recipe-item ${unlocked ? 'unlocked' : 'locked'}`;
+      div.innerHTML = `<span class="recipe-name">${recipe.name}</span>${costText}<br><span class="recipe-condition">${conditionText} → ${resultText}</span>`;
+      ui.tiRecipeList.appendChild(div);
+    }
   }
 
   /** 成长塔：经验条、属性加点、技能树 */
@@ -878,6 +920,7 @@ export interface UIElements {
   tiCombineSection: HTMLElement;
   tiCombineInfo: HTMLElement;
   tiCombineBtn: HTMLButtonElement;
+  tiRecipeList: HTMLElement;
   skillBlast: HTMLButtonElement;
   skillSlow: HTMLButtonElement;
   skillSummon: HTMLButtonElement;

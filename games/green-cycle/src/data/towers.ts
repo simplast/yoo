@@ -80,6 +80,7 @@ export const TOWERS: Record<string, TowerDef> = {
     projectileSpeed: 500,
     splashRadius: 0,
     description: '混乱攻击，无视所有护甲类型',
+    trueSight: true,
     popCost: 1,
     levels: [
       { level: 1, damage: 20, attackSpeed: 0.6, range: 130, upgradeCost: 100 },
@@ -102,6 +103,7 @@ export const TOWERS: Record<string, TowerDef> = {
     projectileSpeed: 0,
     splashRadius: 0,
     description: '魔法即时命中，克制魔法甲',
+    antiAir: true,
     popCost: 1,
     levels: [
       { level: 1, damage: 15, attackSpeed: 1.0, range: 140, upgradeCost: 90 },
@@ -176,6 +178,7 @@ export const TOWERS: Record<string, TowerDef> = {
     projectileSpeed: 0,
     splashRadius: 0,
     description: '魔法冲击，眩晕 1.0/1.2/1.5 秒',
+    antiAir: true,
     popCost: 1,
     levels: [
       { level: 1, damage: 5, attackSpeed: 0.6, range: 100, upgradeCost: 90 },
@@ -194,19 +197,21 @@ export const TOWERS: Record<string, TowerDef> = {
   freeze: {
     id: 'freeze',
     name: '冰冻塔',
-    category: 'special',
+    category: 'growth',
     attackType: 'magic',
     targetStrategy: 'nearest',
     projectileSpeed: 300,
     splashRadius: 0,
     description: '冰冻攻击，冻结 1.5/2.0/2.5 秒',
-    popCost: 1,
+    popCost: 2,
     levels: [
       { level: 1, damage: 4, attackSpeed: 0.7, range: 110, upgradeCost: 85 },
       { level: 2, damage: 6, attackSpeed: 0.8, range: 120, upgradeCost: 75 },
       { level: 3, damage: 10, attackSpeed: 0.9, range: 130, upgradeCost: 95 },
+      { level: 4, damage: 15, attackSpeed: 1.0, range: 140, upgradeCost: 110 },
+      { level: 5, damage: 22, attackSpeed: 1.1, range: 150, upgradeCost: 130 },
     ],
-    maxLevel: 3,
+    maxLevel: 30,
     auraType: 'freeze',
     auraValue: 1.5,
     auraTarget: 'enemy',
@@ -289,6 +294,7 @@ export const TOWERS: Record<string, TowerDef> = {
     projectileSpeed: 500,
     splashRadius: 0,
     description: '神圣攻击成长塔，克制神圣甲，可学审判之光、圣盾',
+    trueSight: true,
     popCost: 2,
     levels: [
       { level: 1, damage: 15, attackSpeed: 1.0, range: 130, upgradeCost: 200 },
@@ -333,6 +339,7 @@ export const TOWERS: Record<string, TowerDef> = {
     projectileSpeed: 0,
     splashRadius: 0,
     description: '魔法即时命中成长塔，可学闪电链、雷暴',
+    antiAir: true,
     popCost: 2,
     levels: [
       { level: 1, damage: 14, attackSpeed: 0.9, range: 140, upgradeCost: 200 },

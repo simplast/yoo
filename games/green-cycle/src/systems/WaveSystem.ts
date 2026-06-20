@@ -113,10 +113,6 @@ function endWave(state: GameState): void {
   }
 
   // 设置下一波倒计时
-  // 清场奖励：普通波结束后，如果场上有残留敌人，启动清场倒计时
-  if (!wave.isBoss && state.enemies.length > 0) {
-    state.clearBonusTimer = CONFIG.CLEAR_BONUS_TIME;
-  }
   state.waveTimer = CONFIG.WAVE_INTERVAL;
 }
 
@@ -167,6 +163,10 @@ export function update(state: GameState, dt: number): void {
     }
   } else {
     // 非 Boss 波：全部生成即可结束
+    // 清场奖励：非 Boss 非经济波，生成完毕后启动清场倒计时
+    if (!wave.isEconomy && state.clearBonusTimer <= 0) {
+      state.clearBonusTimer = CONFIG.CLEAR_BONUS_TIME;
+    }
     endWave(state);
   }
 }

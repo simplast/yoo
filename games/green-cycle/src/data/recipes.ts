@@ -36,7 +36,7 @@ export const RECIPES: Recipe[] = [
       { towerId: 'jianfa', level: 10 },
     ],
     result: { towerId: 'tianshen', level: 15 },
-    cost: { gold: 500, wood: 10 },
+    cost: { gold: 500, wood: 8 },
   },
   // 2 座 3 级冰霜塔 → 1 级冰冻塔（成长塔，冻结控制）
   {
