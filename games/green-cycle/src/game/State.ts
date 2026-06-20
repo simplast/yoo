@@ -50,6 +50,7 @@ export class GameState {
   // ===== 波次 =====
   waveIndex = 0; // 当前波次（1-based，0=未开始）
   waveTimer = 0; // 下波倒计时秒
+  clearBonusTimer = 0; // 清场奖励倒计时，>0 表示有奖励机会，0 表示无活跃倒计时
   waveActive = false; // 当前波是否还有未出生/未清完的怪
   currentWave: WaveDef | null = null;
   spawnQueue: SpawnTask[] = [];

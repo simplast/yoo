@@ -32,6 +32,9 @@ export const CONFIG = {
   // 波次
   TOTAL_WAVES: 50,
   WAVE_INTERVAL: 12, // 秒
+  // 清场奖励：波次结束后，在 WAVE_INTERVAL 内清空所有残留敌人给予额外金币
+  CLEAR_BONUS_TIME: 8, // 清场倒计时秒数（小于 WAVE_INTERVAL，留 4 秒缓冲）
+  CLEAR_BONUS_GOLD: 30, // 清场奖励金币（每波固定）
   WAVE_BOSS: [15, 25, 35, 45, 50],
 
   // 全局技能 CD（秒）

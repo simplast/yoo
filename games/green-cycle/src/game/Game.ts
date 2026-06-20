@@ -590,6 +590,13 @@ export class Game {
     } else {
       ui.nextWaveInfo.textContent = '已完成';
     }
+    // 清场奖励倒计时（覆盖下波信息显示）
+    if (state.clearBonusTimer > 0) {
+      ui.nextWaveInfo.textContent = `清场奖励 ${Math.ceil(state.clearBonusTimer)}s +${CONFIG.CLEAR_BONUS_GOLD}G`;
+      ui.nextWaveInfo.style.color = '#FFD700';
+    } else {
+      ui.nextWaveInfo.style.color = '';
+    }
     // 波次横幅
     if (state.waveActive && state.currentWave && state.gameTime - state.waveStartTime < 3) {
       ui.waveBanner.textContent = `第 ${state.waveIndex} 波 — ${state.currentWave.hint}`;

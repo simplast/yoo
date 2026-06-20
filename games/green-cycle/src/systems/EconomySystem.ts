@@ -1,4 +1,5 @@
 // 经济系统：技能 CD、全局减速、压力、失败/Boss 超时判定
+import { CONFIG } from '../config';
 import type { GameState } from '../game/State';
 
 export function update(state: GameState, dt: number): void {
@@ -27,6 +28,17 @@ export function update(state: GameState, dt: number): void {
       if (tower) state.removeTower(tower);
       state.summonTowerId = -1;
     }
+  }
+
+  // ===== 清场奖励倒计时 =====
+  if (state.clearBonusTimer > 0) {
+    state.clearBonusTimer = Math.max(0, state.clearBonusTimer - dt);
+    // 倒计时内清空所有敌人 → 发放奖励
+    if (state.enemies.length === 0) {
+      state.gold += CONFIG.CLEAR_BONUS_GOLD;
+      state.clearBonusTimer = 0;
+    }
+    // 倒计时到期未清空 → 无奖励，倒计时归零（Math.max 已处理）
   }
 
   // ===== 更新压力 =====

@@ -113,6 +113,10 @@ function endWave(state: GameState): void {
   }
 
   // 设置下一波倒计时
+  // 清场奖励：普通波结束后，如果场上有残留敌人，启动清场倒计时
+  if (!wave.isBoss && state.enemies.length > 0) {
+    state.clearBonusTimer = CONFIG.CLEAR_BONUS_TIME;
+  }
   state.waveTimer = CONFIG.WAVE_INTERVAL;
 }
 
