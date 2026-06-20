@@ -46,14 +46,12 @@ export function applyPassiveOnAttack(
  * 查找塔射程内最强敌人（hp 最高）
  */
 function findStrongestInRange(state: GameState, tower: Tower, range: number): Enemy | undefined {
-  const range2 = range * range;
+  const candidates = state.enemyQuadtree.retrieve(tower.x, tower.y, range);
   let best: Enemy | undefined;
-  for (const e of state.enemies) {
-    if (!e.alive) continue;
-    const dx = e.x - tower.x;
-    const dy = e.y - tower.y;
-    if (dx * dx + dy * dy > range2) continue;
-    if (!best || e.hp > best.hp) best = e;
+  for (const e of candidates) {
+    const enemy = e as Enemy;
+    if (!enemy.alive) continue;
+    if (!best || enemy.hp > best.hp) best = enemy;
   }
   return best;
 }
@@ -62,13 +60,12 @@ function findStrongestInRange(state: GameState, tower: Tower, range: number): En
  * 查找塔范围内所有敌人
  */
 function findAllInRange(state: GameState, tower: Tower, range: number): Enemy[] {
-  const range2 = range * range;
+  const candidates = state.enemyQuadtree.retrieve(tower.x, tower.y, range);
   const result: Enemy[] = [];
-  for (const e of state.enemies) {
-    if (!e.alive) continue;
-    const dx = e.x - tower.x;
-    const dy = e.y - tower.y;
-    if (dx * dx + dy * dy <= range2) result.push(e);
+  for (const e of candidates) {
+    const enemy = e as Enemy;
+    if (!enemy.alive) continue;
+    result.push(enemy);
   }
   return result;
 }
@@ -83,17 +80,20 @@ function findNearestExcept(
   range2: number,
   excluded: Set<number>,
 ): Enemy | undefined {
+  const radius = Math.sqrt(range2);
+  const candidates = state.enemyQuadtree.retrieve(x, y, radius);
   let best: Enemy | undefined;
   let bestDist = Infinity;
-  for (const e of state.enemies) {
-    if (!e.alive || excluded.has(e.instanceId)) continue;
-    const dx = e.x - x;
-    const dy = e.y - y;
+  for (const e of candidates) {
+    const enemy = e as Enemy;
+    if (!enemy.alive || excluded.has(enemy.instanceId)) continue;
+    const dx = enemy.x - x;
+    const dy = enemy.y - y;
     const d2 = dx * dx + dy * dy;
-    if (d2 > range2) continue;
+    if (d2 > range2) continue; // retrieve 用圆形相交，需精确过滤
     if (d2 < bestDist) {
       bestDist = d2;
-      best = e;
+      best = enemy;
     }
   }
   return best;

@@ -70,23 +70,20 @@ export function update(state: GameState, dt: number): void {
     if (!target || !target.alive) {
       // 溅射投射物在当前位置爆炸
       if (proj.splashRadius > 0) {
-        const r2 = proj.splashRadius * proj.splashRadius;
-        for (const e of state.enemies) {
-          if (!e.alive) continue;
-          const dx = e.x - proj.x;
-          const dy = e.y - proj.y;
-          if (dx * dx + dy * dy <= r2) {
-            applyDamage(
-              state,
-              e,
-              proj.damage * 0.6,
-              proj.attackType,
-              proj.sourceTowerId,
-              proj.debuff?.type,
-              proj.debuff?.value,
-              proj.debuff?.duration,
-            );
-          }
+        const splashEnemies = state.enemyQuadtree.retrieve(proj.x, proj.y, proj.splashRadius);
+        for (const e of splashEnemies) {
+          const enemy = e as Enemy;
+          if (!enemy.alive) continue;
+          applyDamage(
+            state,
+            enemy,
+            proj.damage * 0.6,
+            proj.attackType,
+            proj.sourceTowerId,
+            proj.debuff?.type,
+            proj.debuff?.value,
+            proj.debuff?.duration,
+          );
         }
         state.addEffect(createSplashEffect(proj.x, proj.y, proj.splashRadius, proj.color));
       }
@@ -114,23 +111,20 @@ export function update(state: GameState, dt: number): void {
           proj.debuff?.value,
           proj.debuff?.duration,
         );
-        const r2 = proj.splashRadius * proj.splashRadius;
-        for (const e of state.enemies) {
-          if (!e.alive || e === target) continue;
-          const ex = e.x - target.x;
-          const ey = e.y - target.y;
-          if (ex * ex + ey * ey <= r2) {
-            applyDamage(
-              state,
-              e,
-              proj.damage * 0.6,
-              proj.attackType,
-              proj.sourceTowerId,
-              proj.debuff?.type,
-              proj.debuff?.value,
-              proj.debuff?.duration,
-            );
-          }
+        const splashEnemies = state.enemyQuadtree.retrieve(target.x, target.y, proj.splashRadius);
+        for (const e of splashEnemies) {
+          const enemy = e as Enemy;
+          if (!enemy.alive || enemy === target) continue;
+          applyDamage(
+            state,
+            enemy,
+            proj.damage * 0.6,
+            proj.attackType,
+            proj.sourceTowerId,
+            proj.debuff?.type,
+            proj.debuff?.value,
+            proj.debuff?.duration,
+          );
         }
         state.addEffect(createSplashEffect(target.x, target.y, proj.splashRadius, proj.color));
       } else {
