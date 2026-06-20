@@ -518,13 +518,8 @@ export class Game {
       t.maxLevel = 1;
       t.popCost = 0;
       state.summonTowerId = t.instanceId;
+      state.summonTimer = CONFIG.SKILL_SUMMON_DURATION;
       state.towers.push(t);
-      // 简化：定时移除由 EconomySystem 或这里处理
-      setTimeout(() => {
-        const idx = state.towers.indexOf(t);
-        if (idx >= 0) state.towers.splice(idx, 1);
-        if (state.summonTowerId === t.instanceId) state.summonTowerId = -1;
-      }, CONFIG.SKILL_SUMMON_DURATION * 1000);
       audio.playSkillSummon();
     }
   }
