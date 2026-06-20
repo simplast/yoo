@@ -29,10 +29,6 @@ npm run lint         # ESLint 检查
 green-cycle/
 ├── AGENT.md                  # 本文件
 ├── assets/                   # SVG 精灵（towers/icons/projectiles/tiles）
-├── docs/
-│   ├── proposal/             # 初始设计归档
-│   └── progress/             # completed.md + roadmap.md
-├── plans/                    # 001-013 实施计划（全部 DONE）
 ├── src/
 │   ├── config.ts             # 全局常量（50 波、难度系数、经济配置）
 │   ├── types.ts              # 类型契约（Tower/Enemy/Projectile/Recipe 等）
@@ -49,20 +45,6 @@ green-cycle/
 ├── package.json
 └── vite.config.ts            # vite-plugin-singlefile 内联打包
 ```
-
-## 已实现里程碑
-
-| 阶段 | 内容 | 计划 |
-|------|------|------|
-| M0-M4 | MVP 核心玩法（8 系统、50 波、护甲克制、塔系统） | — |
-| M5 | 成长塔技能系统（4 主动 + 2 被动技能） | — |
-| M6 | 辅助/光环/控制塔（冰霜/腐蚀/眩晕/冰冻） | — |
-| M7 | 合成系统（多选/配方匹配/差价返还） | — |
-| M8 | 存档与难度（localStorage/难度解锁/无尽模式） | — |
-| M9 | 音效/UI/性能（Quadtree 索敌/离屏缓存/专属音效） | — |
-| M10 | UI 资源 SVG 化（塔/技能/地块/图标） | — |
-| 里程碑一 | 经济-合成打磨（清场提速/精英木材/freeze改growth/配方预览） | plans/012 |
-| 里程碑二 | 敌人特性克制（隐形/飞行/分裂机制实装） | plans/013 |
 
 ## 关键契约
 
