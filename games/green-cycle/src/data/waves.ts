@@ -366,7 +366,7 @@ export const WAVES: WaveDef[] = [
     isEconomy: true,
     spawns: [{ enemyId: 'economyRabbit', count: 15, interval: 0.5, startDelay: 0 }],
     rewardGold: 60,
-    rewardWood: 1,
+    rewardWood: 2,
     hint: '经济波：击杀兔子获大量金币',
   },
   {
