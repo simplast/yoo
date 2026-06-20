@@ -6,19 +6,19 @@
 
 | 项 | 值 |
 |----|----|
-| 位置 | `/Users/doer/dev/yoo/public/games/green-cycle/` |
+| 位置 | `/Users/doer/dev/yoo/games/green-cycle/` |
 | 技术栈 | TypeScript + Vite + Canvas 2D + Web Audio |
 | 架构 | ECS-lite（集中式状态 + 8 纯函数系统） |
-| 产物 | `dist/index.html` 单文件（JS/CSS 全内联） |
-| 当前进度 | M5 完成（成长塔技能系统），M6-M9 待开发 |
+| 产物 | `public/games/green-cycle/index.html` 单文件（JS/CSS 全内联） |
+| 当前进度 | M6 完成（辅助/光环/控制塔），M7-M9 待开发 |
 
 ## 快速开始
 
 ```bash
-cd public/games/green-cycle
+cd games/green-cycle
 npm install        # 安装依赖
 npx vite           # dev 服务器，端口 5173
-npx vite build     # 构建单文件产物到 dist/
+npx vite build     # 构建单文件产物到 ../../public/games/green-cycle/
 npx tsc --noEmit   # 类型检查
 ```
 
@@ -28,8 +28,8 @@ npx tsc --noEmit   # 类型检查
 
 | 文档 | 说明 |
 |------|------|
-| [已完成功能](docs/progress/completed.md) | M0-M5 各阶段实现的功能清单、文件改动、验证状态 |
-| [下阶段计划](docs/progress/roadmap.md) | M6-M9 任务拆解、涉及文件、关键契约 |
+| [已完成功能](docs/progress/completed.md) | M0-M6 各阶段实现的功能清单、文件改动、验证状态 |
+| [下阶段计划](docs/progress/roadmap.md) | M7-M9 任务拆解、涉及文件、关键契约 |
 | [原始设计文档](docs/proposal/original-design.md) | 项目初始设计稿归档 |
 
 ## 目录结构
@@ -55,5 +55,7 @@ green-cycle/
 │   ├── utils/            # 工具
 │   ├── audio/            # 8-bit 音效
 │   └── input/            # 输入管理
-└── dist/                 # 构建产物
+└── package.json          # 项目配置
 ```
+
+> 构建产物输出到博客目录 `../../public/games/green-cycle/`，由根 `package.json` 的 `build:games` 脚本统一管理。
