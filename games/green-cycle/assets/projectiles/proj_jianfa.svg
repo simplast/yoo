@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- 剑圣弹道：银色剑气刃 + 红色刀柄 + 飞舞残影 -->
+
+  <!-- Trail dots (fading silver motion marks below) -->
+  <rect x="30" y="60" width="4" height="4" fill="#909090"/>
+  <rect x="28" y="56" width="8" height="4" fill="#C0C0C0"/>
+
+  <!-- Handle base (red grip) -->
+  <rect x="24" y="44" width="16" height="4" fill="#CC0000"/>
+  <rect x="24" y="44" width="4" height="4" fill="#FF0000"/>
+  <rect x="36" y="44" width="4" height="4" fill="#FF0000"/>
+  <rect x="28" y="48" width="8" height="4" fill="#333333"/>
+  <rect x="28" y="48" width="4" height="4" fill="#CC0000"/>
+
+  <!-- Guard (sword crossguard) -->
+  <rect x="20" y="40" width="24" height="4" fill="#333333"/>
+  <rect x="20" y="40" width="4" height="4" fill="#555555"/>
+  <rect x="40" y="40" width="4" height="4" fill="#555555"/>
+
+  <!-- Blade (silver, vertical) -->
+  <rect x="28" y="8" width="8" height="32" fill="#909090"/>
+  <rect x="28" y="8" width="4" height="32" fill="#D3D3D3"/>
+  <rect x="32" y="8" width="4" height="32" fill="#FFFFFF"/>
+
+  <!-- Blade tip (pointing up) -->
+  <rect x="28" y="0" width="8" height="4" fill="#D3D3D3"/>
+  <rect x="28" y="0" width="4" height="4" fill="#FFFFFF"/>
+  <rect x="32" y="0" width="4" height="4" fill="#909090"/>
+
+  <!-- Side blade accents (red edge) -->
+  <rect x="24" y="12" width="4" height="20" fill="#CC0000"/>
+  <rect x="36" y="12" width="4" height="20" fill="#CC0000"/>
+  <rect x="24" y="32" width="4" height="4" fill="#909090"/>
+  <rect x="36" y="32" width="4" height="4" fill="#909090"/>
+</svg>

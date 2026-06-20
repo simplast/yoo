@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- 冰霜塔弹道：蓝色冰晶飞弹 + 中心白光 -->
+
+  <!-- Trail dots (fading cyan motion marks below) -->
+  <rect x="30" y="60" width="4" height="4" fill="#80DEEA"/>
+  <rect x="28" y="56" width="8" height="4" fill="#4DD0E1"/>
+
+  <!-- Top crystal point -->
+  <rect x="28" y="4" width="8" height="4" fill="#FFFFFF"/>
+  <rect x="24" y="8" width="16" height="4" fill="#E0F7FA"/>
+  <rect x="28" y="8" width="8" height="4" fill="#FFFFFF"/>
+
+  <!-- Crystal upper (light blue) -->
+  <rect x="20" y="12" width="24" height="4" fill="#B2EBF2"/>
+  <rect x="16" y="16" width="32" height="4" fill="#80DEEA"/>
+  <rect x="20" y="20" width="24" height="4" fill="#B2EBF2"/>
+
+  <!-- Crystal mid (mid blue) -->
+  <rect x="16" y="24" width="32" height="4" fill="#4DD0E1"/>
+  <rect x="20" y="28" width="24" height="4" fill="#26C6DA"/>
+
+  <!-- White ice core (center highlight) -->
+  <rect x="24" y="32" width="16" height="4" fill="#FFFFFF"/>
+  <rect x="20" y="36" width="24" height="4" fill="#E0F7FA"/>
+  <rect x="24" y="40" width="16" height="4" fill="#B2EBF2"/>
+
+  <!-- Crystal lower (mid blue) -->
+  <rect x="20" y="44" width="24" height="4" fill="#26C6DA"/>
+
+  <!-- Crystal bottom point -->
+  <rect x="24" y="48" width="16" height="4" fill="#4DD0E1"/>
+  <rect x="28" y="52" width="8" height="4" fill="#80DEEA"/>
+</svg>

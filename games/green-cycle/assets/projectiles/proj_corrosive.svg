@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- 腐蚀塔弹道：酸液球 + 气泡 + 滴落痕迹 -->
+
+  <!-- Trail dots (fading green motion marks below) -->
+  <rect x="30" y="60" width="4" height="4" fill="#33691E"/>
+  <rect x="28" y="56" width="8" height="4" fill="#558B2F"/>
+
+  <!-- Top bubbles (rising) -->
+  <rect x="28" y="4" width="8" height="4" fill="#BFFF00"/>
+  <rect x="24" y="8" width="4" height="4" fill="#BFFF00"/>
+  <rect x="36" y="8" width="4" height="4" fill="#BFFF00"/>
+  <rect x="20" y="12" width="4" height="4" fill="#76FF03"/>
+
+  <!-- Acid blob outer (dark green rim) -->
+  <rect x="20" y="16" width="24" height="4" fill="#33691E"/>
+  <rect x="16" y="20" width="32" height="4" fill="#33691E"/>
+  <rect x="12" y="24" width="40" height="4" fill="#33691E"/>
+  <rect x="12" y="28" width="40" height="4" fill="#33691E"/>
+  <rect x="12" y="32" width="40" height="4" fill="#33691E"/>
+  <rect x="12" y="36" width="40" height="4" fill="#33691E"/>
+  <rect x="16" y="40" width="32" height="4" fill="#33691E"/>
+  <rect x="20" y="44" width="24" height="4" fill="#33691E"/>
+
+  <!-- Acid blob main (mid green) -->
+  <rect x="20" y="20" width="24" height="4" fill="#558B2F"/>
+  <rect x="16" y="24" width="32" height="4" fill="#558B2F"/>
+  <rect x="16" y="28" width="32" height="4" fill="#558B2F"/>
+  <rect x="16" y="32" width="32" height="4" fill="#558B2F"/>
+  <rect x="16" y="36" width="32" height="4" fill="#558B2F"/>
+  <rect x="20" y="40" width="24" height="4" fill="#558B2F"/>
+
+  <!-- Acid blob inner (light green) -->
+  <rect x="20" y="24" width="24" height="4" fill="#76FF03"/>
+  <rect x="16" y="28" width="32" height="4" fill="#76FF03"/>
+  <rect x="16" y="32" width="32" height="4" fill="#76FF03"/>
+  <rect x="20" y="36" width="24" height="4" fill="#76FF03"/>
+
+  <!-- Bright bubble highlights -->
+  <rect x="20" y="24" width="8" height="4" fill="#BFFF00"/>
+  <rect x="16" y="28" width="8" height="4" fill="#BFFF00"/>
+  <rect x="24" y="32" width="4" height="4" fill="#BFFF00"/>
+
+  <!-- Bottom drip -->
+  <rect x="28" y="48" width="8" height="4" fill="#558B2F"/>
+</svg>

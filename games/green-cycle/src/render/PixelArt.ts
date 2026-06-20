@@ -263,12 +263,26 @@ export function drawTower(
 }
 
 /**
- * 绘制投射物：小方块，按 p.color
+ * 绘制投射物：优先使用 SVG 精灵（assets/projectiles/proj_*.svg），
+ * 未加载完成则回退为按 p.color 的小方块。
+ * - 传入 towerDefId 时按塔风格绘制
+ * - SVG 按 16px 渲染（视觉更清晰），回退按 p.size 渲染
  */
 export function drawProjectile(
   ctx: CanvasRenderingContext2D,
   p: Projectile,
+  towerDefId?: string,
 ): void {
+  // 尝试使用 SVG 精灵绘制
+  if (towerDefId) {
+    const img = getSvgImage(towerDefId, 'projectile');
+    if (img && img.complete && img.naturalWidth > 0) {
+      const s = 16;
+      ctx.drawImage(img, p.x - s / 2, p.y - s / 2, s, s);
+      return;
+    }
+  }
+  // 回退：按 p.color 的小方块
   const s = Math.max(2, p.size);
   ctx.fillStyle = p.color;
   ctx.fillRect(p.x - s / 2, p.y - s / 2, s, s);

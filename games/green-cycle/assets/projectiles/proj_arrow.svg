@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- 箭塔弹道：木质箭矢 + 银色箭头 + 白色羽尾 -->
+  <!-- Trail dots (fading brown motion marks below) -->
+  <rect x="30" y="60" width="4" height="4" fill="#A0784A"/>
+  <rect x="28" y="56" width="8" height="4" fill="#8B5A2B"/>
+
+  <!-- Fletching (white feathers) -->
+  <rect x="24" y="48" width="16" height="4" fill="#B0B0B0"/>
+  <rect x="20" y="52" width="24" height="4" fill="#FFFFFF"/>
+  <rect x="20" y="52" width="4" height="4" fill="#B0B0B0"/>
+  <rect x="40" y="52" width="4" height="4" fill="#B0B0B0"/>
+
+  <!-- Shaft base (above fletching) -->
+  <rect x="24" y="44" width="16" height="4" fill="#8B5A2B"/>
+  <rect x="28" y="44" width="4" height="4" fill="#C49A6C"/>
+
+  <!-- Arrow Shaft (wooden, brown) -->
+  <rect x="28" y="12" width="8" height="32" fill="#8B5A2B"/>
+  <rect x="28" y="12" width="4" height="32" fill="#C49A6C"/>
+
+  <!-- Arrow Tip (silver, pointing up) -->
+  <rect x="28" y="8" width="8" height="4" fill="#6B6B6B"/>
+  <rect x="24" y="4" width="16" height="4" fill="#9E9E9E"/>
+  <rect x="28" y="4" width="8" height="4" fill="#C0C0C0"/>
+  <rect x="28" y="0" width="8" height="4" fill="#C0C0C0"/>
+</svg>

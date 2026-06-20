@@ -44,10 +44,11 @@ export function drawEntities(
     }
   }
 
-  // 投射物
+  // 投射物（按来源塔的 def id 选择 SVG 精灵）
   for (const p of state.projectiles) {
     if (!p.alive) continue;
-    drawProjectile(ctx, p);
+    const tower = state.getTowerById(p.sourceTowerId);
+    drawProjectile(ctx, p, tower?.id);
   }
 
   // 特效（非 damageText，粒子在实体之上）

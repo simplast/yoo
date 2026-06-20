@@ -40,6 +40,17 @@ import tile_path from '../../assets/tiles/tile_path.svg?raw';
 import tile_buildable from '../../assets/tiles/tile_buildable.svg?raw';
 import tile_blocked from '../../assets/tiles/tile_blocked.svg?raw';
 
+// ===== projectiles =====
+import proj_arrow from '../../assets/projectiles/proj_arrow.svg?raw';
+import proj_cannon from '../../assets/projectiles/proj_cannon.svg?raw';
+import proj_splash from '../../assets/projectiles/proj_splash.svg?raw';
+import proj_chaos from '../../assets/projectiles/proj_chaos.svg?raw';
+import proj_frost from '../../assets/projectiles/proj_frost.svg?raw';
+import proj_corrosive from '../../assets/projectiles/proj_corrosive.svg?raw';
+import proj_freeze from '../../assets/projectiles/proj_freeze.svg?raw';
+import proj_tianshen from '../../assets/projectiles/proj_tianshen.svg?raw';
+import proj_jianfa from '../../assets/projectiles/proj_jianfa.svg?raw';
+
 const towerSvgs: Record<string, string> = {
   arrow: tower_arrow,
   cannon: tower_cannon,
@@ -82,6 +93,18 @@ const tileSvgs: Record<string, string> = {
   blocked: tile_blocked,
 };
 
+const projectileSvgs: Record<string, string> = {
+  arrow: proj_arrow,
+  cannon: proj_cannon,
+  splash: proj_splash,
+  chaos: proj_chaos,
+  frost: proj_frost,
+  corrosive: proj_corrosive,
+  freeze: proj_freeze,
+  tianshen: proj_tianshen,
+  jianfa: proj_jianfa,
+};
+
 /** 获取塔 SVG 字符串，未找到返回空串 */
 export function getTowerSvg(id: string): string {
   return towerSvgs[id] ?? '';
@@ -105,12 +128,13 @@ function svgToDataUrl(svg: string): string {
 }
 
 /** 获取 SVG 对应的 Image 对象（缓存），用于 canvas drawImage */
-export function getSvgImage(id: string, source: 'tower' | 'icon' | 'tile'): HTMLImageElement | null {
+export function getSvgImage(id: string, source: 'tower' | 'icon' | 'tile' | 'projectile'): HTMLImageElement | null {
   const key = `${source}:${id}`;
   const svg =
     source === 'tower' ? towerSvgs[id] :
     source === 'icon' ? iconSvgs[id] :
-    tileSvgs[id];
+    source === 'tile' ? tileSvgs[id] :
+    projectileSvgs[id];
   if (!svg) return null;
 
   let img = imageCache[key];
@@ -124,10 +148,11 @@ export function getSvgImage(id: string, source: 'tower' | 'icon' | 'tile'): HTML
 
 /** 等待关键图片加载完成（可选，首次绘制前调用） */
 export function preloadImages(): Promise<void> {
-  const allIds: { id: string; source: 'tower' | 'icon' | 'tile' }[] = [
+  const allIds: { id: string; source: 'tower' | 'icon' | 'tile' | 'projectile' }[] = [
     ...Object.keys(towerSvgs).map((id) => ({ id, source: 'tower' as const })),
     ...Object.keys(iconSvgs).map((id) => ({ id, source: 'icon' as const })),
     ...Object.keys(tileSvgs).map((id) => ({ id, source: 'tile' as const })),
+    ...Object.keys(projectileSvgs).map((id) => ({ id, source: 'projectile' as const })),
   ];
   return Promise.all(
     allIds.map(

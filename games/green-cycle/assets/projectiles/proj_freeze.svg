@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- 冰冻塔弹道：青色冰晶球 + 雪花颗粒 -->
+
+  <!-- Trail dots (fading cyan motion marks below) -->
+  <rect x="30" y="60" width="4" height="4" fill="#008B8B"/>
+  <rect x="28" y="56" width="8" height="4" fill="#00BFFF"/>
+
+  <!-- Snow particles (around the orb) -->
+  <rect x="28" y="0" width="4" height="4" fill="#FFFFFF"/>
+  <rect x="4" y="20" width="4" height="4" fill="#FFFFFF"/>
+  <rect x="56" y="20" width="4" height="4" fill="#FFFFFF"/>
+  <rect x="4" y="40" width="4" height="4" fill="#FFFFFF"/>
+  <rect x="56" y="40" width="4" height="4" fill="#FFFFFF"/>
+  <rect x="0" y="28" width="4" height="4" fill="#E0FFFF"/>
+  <rect x="60" y="28" width="4" height="4" fill="#E0FFFF"/>
+
+  <!-- Outer dark cyan ring -->
+  <rect x="20" y="12" width="24" height="4" fill="#008B8B"/>
+  <rect x="16" y="16" width="32" height="4" fill="#008B8B"/>
+  <rect x="12" y="20" width="40" height="4" fill="#008B8B"/>
+  <rect x="12" y="24" width="40" height="4" fill="#008B8B"/>
+  <rect x="12" y="28" width="40" height="4" fill="#008B8B"/>
+  <rect x="12" y="32" width="40" height="4" fill="#008B8B"/>
+  <rect x="12" y="36" width="40" height="4" fill="#008B8B"/>
+  <rect x="12" y="40" width="40" height="4" fill="#008B8B"/>
+  <rect x="16" y="44" width="32" height="4" fill="#008B8B"/>
+  <rect x="20" y="48" width="24" height="4" fill="#008B8B"/>
+
+  <!-- Mid cyan layer -->
+  <rect x="20" y="16" width="24" height="4" fill="#00BFFF"/>
+  <rect x="16" y="20" width="32" height="4" fill="#00BFFF"/>
+  <rect x="16" y="24" width="32" height="4" fill="#00BFFF"/>
+  <rect x="16" y="28" width="32" height="4" fill="#00BFFF"/>
+  <rect x="16" y="32" width="32" height="4" fill="#00BFFF"/>
+  <rect x="16" y="36" width="32" height="4" fill="#00BFFF"/>
+  <rect x="16" y="40" width="32" height="4" fill="#00BFFF"/>
+  <rect x="20" y="44" width="24" height="4" fill="#00BFFF"/>
+
+  <!-- Light cyan layer -->
+  <rect x="20" y="20" width="24" height="4" fill="#00FFFF"/>
+  <rect x="16" y="24" width="32" height="4" fill="#00FFFF"/>
+  <rect x="16" y="28" width="32" height="4" fill="#00FFFF"/>
+  <rect x="16" y="32" width="32" height="4" fill="#00FFFF"/>
+  <rect x="16" y="36" width="32" height="4" fill="#00FFFF"/>
+  <rect x="20" y="40" width="24" height="4" fill="#00FFFF"/>
+
+  <!-- White center core -->
+  <rect x="24" y="24" width="16" height="4" fill="#E0FFFF"/>
+  <rect x="20" y="28" width="24" height="4" fill="#FFFFFF"/>
+  <rect x="24" y="32" width="16" height="4" fill="#E0FFFF"/>
+</svg>

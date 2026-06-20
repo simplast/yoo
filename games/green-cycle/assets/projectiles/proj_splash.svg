@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" shape-rendering="crispEdges">
+  <!-- 群攻塔弹道：橙色爆裂弹 + 顶部火焰 -->
+
+  <!-- Trail dots (fading orange motion marks below) -->
+  <rect x="30" y="60" width="4" height="4" fill="#8B4500"/>
+  <rect x="28" y="56" width="8" height="4" fill="#CC6600"/>
+
+  <!-- Fuse (small dark line below flame) -->
+  <rect x="28" y="16" width="8" height="4" fill="#1A1A1A"/>
+
+  <!-- Top flame (yellow core) -->
+  <rect x="28" y="0" width="8" height="4" fill="#FFCC00"/>
+  <rect x="24" y="4" width="16" height="4" fill="#FFCC00"/>
+  <rect x="28" y="4" width="8" height="4" fill="#FFFFFF"/>
+
+  <!-- Top flame (orange outer) -->
+  <rect x="20" y="8" width="24" height="4" fill="#FF6600"/>
+  <rect x="24" y="12" width="16" height="4" fill="#FF6600"/>
+
+  <!-- Bomb body (dark outer ring, stair-stepped circle) -->
+  <rect x="24" y="20" width="16" height="4" fill="#8B4500"/>
+  <rect x="20" y="24" width="24" height="4" fill="#8B4500"/>
+  <rect x="16" y="28" width="32" height="4" fill="#8B4500"/>
+  <rect x="16" y="32" width="32" height="4" fill="#8B4500"/>
+  <rect x="16" y="36" width="32" height="4" fill="#8B4500"/>
+  <rect x="20" y="40" width="24" height="4" fill="#8B4500"/>
+  <rect x="24" y="44" width="16" height="4" fill="#8B4500"/>
+  <rect x="28" y="48" width="8" height="4" fill="#8B4500"/>
+
+  <!-- Bomb body (orange main) -->
+  <rect x="24" y="24" width="16" height="4" fill="#CC6600"/>
+  <rect x="20" y="28" width="24" height="4" fill="#CC6600"/>
+  <rect x="20" y="32" width="24" height="4" fill="#CC6600"/>
+  <rect x="20" y="36" width="24" height="4" fill="#CC6600"/>
+  <rect x="24" y="40" width="16" height="4" fill="#CC6600"/>
+  <rect x="28" y="44" width="8" height="4" fill="#CC6600"/>
+
+  <!-- Bomb highlight (light orange, upper-left) -->
+  <rect x="20" y="28" width="8" height="4" fill="#FF8C00"/>
+  <rect x="16" y="32" width="8" height="4" fill="#FF8C00"/>
+</svg>
