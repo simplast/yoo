@@ -20,31 +20,6 @@ function getStat(tower: Tower): { damage: number; attackSpeed: number; range: nu
 }
 
 /**
- * 计算友方光环加成：返回 { damageMult, speedMult }
- * auraDamage 加攻击，auraHaste 加攻速
- */
-function getAllyAuraBonus(
-  state: GameState,
-  tower: Tower,
-): { damageMult: number; speedMult: number } {
-  let damageMult = 1;
-  let speedMult = 1;
-  for (const aura of state.towers) {
-    if (aura.category !== 'aura' || aura.auraTarget !== 'ally') continue;
-    if (aura.auraRadius == null || aura.auraValue == null) continue;
-    const dx = aura.x - tower.x;
-    const dy = aura.y - tower.y;
-    if (dx * dx + dy * dy > aura.auraRadius * aura.auraRadius) continue;
-    if (aura.id === 'auraDamage') {
-      damageMult *= 1 + aura.auraValue;
-    } else if (aura.id === 'auraHaste') {
-      speedMult *= 1 + aura.auraValue;
-    }
-  }
-  return { damageMult, speedMult };
-}
-
-/**
  * 提取 support / 控制塔的命中 debuff 信息
  * 条件：有 auraType、auraTarget 为 enemy、无 auraRadius（非光环塔）
  */
@@ -138,7 +113,7 @@ export function update(state: GameState, dt: number): void {
 
     // 取属性并应用友方光环加成
     const baseStat = getStat(tower);
-    const auraBonus = getAllyAuraBonus(state, tower);
+    const auraBonus = state.allyAuraCache.get(tower.instanceId) ?? { damageMult: 1, speedMult: 1 };
     let damage = baseStat.damage * auraBonus.damageMult;
     const attackSpeed = baseStat.attackSpeed * auraBonus.speedMult;
     const range = baseStat.range;
