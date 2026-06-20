@@ -1,6 +1,7 @@
 # 绿色循环圈 — 原始设计文档
 
 > 本文档为项目初始设计稿的归档存档，记录了 M0-M5 阶段的完整设计与实现总结。
+> M6 已在 [docs/progress/completed.md](../progress/completed.md) 中记录。
 > 后续开发以 [docs/progress/](../progress/) 下的文档为准。
 
 ## 项目位置
@@ -54,9 +55,8 @@ src/
 - `vite build`：成功，`dist/index.html` 单文件
 - dev 服务器：`cd green-cycle && npx vite`，端口 5173
 
-## 下阶段任务（M6-M9 完整版）
+## 下阶段任务（M7-M9 完整版）
 
-- **M6 辅助/光环/控制塔**：完善冰霜/腐蚀塔的 debuff 持续叠加，光环塔友方加成可视化，新增控制塔（眩晕/冰冻）。`systems/AuraSystem.ts` 目前只处理敌方光环，需扩展。
 - **M7 合成系统**：实现 `data/recipes.ts` 的配方合成 UI 和逻辑（选中多塔合成）。数据已有 3 配方，需实现合成交互。
 - **M8 存档与难度**：实现 `utils/SaveManager.ts` 的存档读写（难度解锁/无尽模式/排行榜），`config.ts` 已有无尽模式常量。
 - **M9 音效/UI/性能**：音效细化、UI 美化、Quadtree 索敌优化（`utils/Quadtree.ts` 已实现但 `TowerAISystem` 未接入）、离屏 canvas 缓存地图。
