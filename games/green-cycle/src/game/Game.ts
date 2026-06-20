@@ -1,13 +1,15 @@
 // 游戏主控：状态机、系统调度、输入处理、UI 同步
 import { CONFIG } from '../config';
-import type { Difficulty, GamePhase, Tower } from '../types';
+import type { Difficulty, GamePhase, Tower, Vec2 } from '../types';
 import { TOWERS } from '../data/towers';
+import { RECIPES } from '../data/recipes';
 import { Path } from '../utils/Path';
 import { GameState } from './State';
 import { Loop } from './Loop';
 import { Renderer } from '../render/Renderer';
 import { InputManager } from '../input/InputManager';
 import { audio } from '../audio/Audio';
+import { matchRecipe, executeCombine } from '../utils/RecipeUtil';
 
 import * as WaveSystem from '../systems/WaveSystem';
 import * as MovementSystem from '../systems/MovementSystem';
@@ -110,9 +112,13 @@ export class Game {
     this.state.initDifficulty(difficulty);
     this.state.phase = 'battling';
     this.state.waveTimer = 3; // 3 秒后第一波
+    this.state.selectedTowerId = -1;
+    this.state.selectedTowerIds = [];
+    this.state.selectBox = null;
     this.initBuildCells();
     this.state.speed = 1;
     this.ui.overlay.classList.add('hide');
+    this.ui.towerInfo.classList.remove('show');
     this.syncTowerPanel();
     this.syncUI();
   }
@@ -172,37 +178,115 @@ export class Game {
     const state = this.state;
     const input = this.input;
 
-    // 右键取消建造/选择
+    // 右键取消建造/选择/多选
     if (input.consumeRightClick()) {
       state.pendingBuildTowerId = null;
       state.selectedTowerId = -1;
+      state.selectedTowerIds = [];
+      state.selectBox = null;
       this.ui.towerInfo.classList.remove('show');
       this.ui.towerPanel.querySelectorAll('.tower-btn').forEach((b) => b.classList.remove('active'));
       return;
     }
 
+    // 框选结束
+    const box = input.consumeSelectBox();
+    if (box) {
+      this.handleSelectBox(box.start, box.end, input.state.shiftDown);
+      return;
+    }
+
+    // 实时框选矩形（用于渲染）
+    if (input.state.isDragging && input.state.dragStartWorld) {
+      state.selectBox = {
+        start: input.state.dragStartWorld,
+        end: input.state.mouseWorld,
+      };
+    } else {
+      state.selectBox = null;
+    }
+
     // 左键点击
     if (input.consumeClick()) {
-      const { mouseWorld } = input.state;
+      const { mouseWorld, shiftDown } = input.state;
       // 优先：正在建造模式 → 尝试建塔
       if (state.pendingBuildTowerId) {
         this.tryBuild(mouseWorld.x, mouseWorld.y);
         // shift 连续建造
-        if (!input.state.shiftDown) {
+        if (!shiftDown) {
           state.pendingBuildTowerId = null;
           this.ui.towerPanel.querySelectorAll('.tower-btn').forEach((b) => b.classList.remove('active'));
         }
         return;
       }
-      // 否则：选择塔
+      // 否则：选择/多选塔
       const tower = state.getTowerAt(mouseWorld.x, mouseWorld.y);
       if (tower) {
-        state.selectedTowerId = tower.instanceId;
-        this.showTowerInfo(tower);
+        this.handleTowerClick(tower, shiftDown);
       } else {
         state.selectedTowerId = -1;
+        state.selectedTowerIds = [];
         this.ui.towerInfo.classList.remove('show');
       }
+    }
+  }
+
+  /** 处理点击塔：Shift 多选，普通单选 */
+  private handleTowerClick(tower: Tower, shiftDown: boolean) {
+    const state = this.state;
+    if (shiftDown) {
+      const idx = state.selectedTowerIds.indexOf(tower.instanceId);
+      if (idx >= 0) {
+        state.selectedTowerIds.splice(idx, 1);
+        if (state.selectedTowerId === tower.instanceId) {
+          state.selectedTowerId = state.selectedTowerIds.length > 0
+            ? state.selectedTowerIds[state.selectedTowerIds.length - 1]
+            : -1;
+        }
+      } else {
+        // 将当前主选移入多选（如果存在）
+        if (state.selectedTowerId >= 0 && !state.selectedTowerIds.includes(state.selectedTowerId)) {
+          state.selectedTowerIds.push(state.selectedTowerId);
+        }
+        state.selectedTowerIds.push(tower.instanceId);
+        state.selectedTowerId = tower.instanceId;
+      }
+    } else {
+      state.selectedTowerId = tower.instanceId;
+      state.selectedTowerIds = [];
+    }
+    this.showTowerInfo(tower);
+  }
+
+  /** 处理框选结束 */
+  private handleSelectBox(start: Vec2, end: Vec2, shiftDown: boolean) {
+    const state = this.state;
+    const minX = Math.min(start.x, end.x);
+    const maxX = Math.max(start.x, end.x);
+    const minY = Math.min(start.y, end.y);
+    const maxY = Math.max(start.y, end.y);
+
+    const boxed = state.towers.filter(
+      (t) => t.x >= minX && t.x <= maxX && t.y >= minY && t.y <= maxY,
+    );
+
+    if (!shiftDown) {
+      state.selectedTowerIds = [];
+    }
+
+    for (const t of boxed) {
+      if (!state.selectedTowerIds.includes(t.instanceId)) {
+        state.selectedTowerIds.push(t.instanceId);
+      }
+    }
+
+    if (state.selectedTowerIds.length > 0) {
+      state.selectedTowerId = state.selectedTowerIds[state.selectedTowerIds.length - 1];
+      const main = state.getTowerById(state.selectedTowerId);
+      if (main) this.showTowerInfo(main);
+    } else {
+      state.selectedTowerId = -1;
+      this.ui.towerInfo.classList.remove('show');
     }
   }
 
@@ -294,8 +378,30 @@ export class Game {
     state.gold += refund;
     state.removeTower(tower);
     state.selectedTowerId = -1;
+    state.selectedTowerIds = [];
     this.ui.towerInfo.classList.remove('show');
     audio.playCoin();
+  }
+
+  /** 合成当前选中的塔 */
+  combineSelected() {
+    const state = this.state;
+    if (state.selectedTowerIds.length === 0) return;
+
+    const selectedTowers = state.selectedTowerIds
+      .map((id) => state.getTowerById(id))
+      .filter((t): t is Tower => t !== undefined);
+
+    const matched = matchRecipe(selectedTowers, RECIPES);
+    if (!matched) return;
+
+    const { recipe, materials } = matched;
+    if (executeCombine(state, recipe, materials)) {
+      audio.playUpgrade();
+      const resultTower = state.getTowerById(state.selectedTowerId);
+      if (resultTower) this.showTowerInfo(resultTower);
+      this.syncTowerPanel();
+    }
   }
 
   // ===== 成长塔属性/技能 =====
@@ -459,6 +565,14 @@ export class Game {
     const ui = this.ui;
     const state = this.state;
     ui.towerInfo.classList.add('show');
+
+    // 多选状态：显示合成面板
+    if (state.selectedTowerIds.length > 0) {
+      this.showCombineInfo();
+      return;
+    }
+
+    // 单选：常规塔信息
     ui.tiName.textContent = tower.name;
     ui.tiLevel.textContent = `${tower.level}/${tower.maxLevel}`;
     const stat = tower.isGrowth ? getHeroStat(tower) : getTowerStat(tower);
@@ -475,6 +589,9 @@ export class Game {
       ui.tiUpgrade.textContent = `升级 (${nextCost}💰)`;
       ui.tiUpgrade.disabled = state.gold < nextCost;
     }
+    ui.tiUpgrade.style.display = 'block';
+    ui.tiSell.style.display = 'block';
+    ui.tiCombineSection.style.display = 'none';
 
     // 成长塔扩展面板
     if (tower.isGrowth) {
@@ -483,6 +600,46 @@ export class Game {
       ui.tiExpSection.style.display = 'none';
       ui.tiAttrSection.style.display = 'none';
       ui.tiSkillSection.style.display = 'none';
+    }
+  }
+
+  /** 显示合成面板（多选状态） */
+  private showCombineInfo() {
+    const ui = this.ui;
+    const state = this.state;
+    const selected = state.selectedTowerIds
+      .map((id) => state.getTowerById(id))
+      .filter((t): t is Tower => t !== undefined);
+
+    ui.tiName.textContent = `已选中 ${selected.length} 座塔`;
+    ui.tiLevel.textContent = '';
+    ui.tiDmg.textContent = '';
+    ui.tiAs.textContent = '';
+    ui.tiRange.textContent = '';
+    ui.tiType.textContent = '';
+    ui.tiUpgrade.style.display = 'none';
+    ui.tiSell.style.display = 'none';
+    ui.tiExpSection.style.display = 'none';
+    ui.tiAttrSection.style.display = 'none';
+    ui.tiSkillSection.style.display = 'none';
+    ui.tiCombineSection.style.display = 'block';
+
+    const matched = matchRecipe(selected, RECIPES);
+    if (matched) {
+      const { recipe, materials } = matched;
+      const materialValue = materials.reduce((sum, t) => sum + t.totalSpent, 0);
+      const resultDef = TOWERS[recipe.result.towerId];
+      const resultLevel = recipe.result.level ?? 1;
+      const resultValue = resultDef.levels[Math.min(resultLevel, resultDef.levels.length) - 1].upgradeCost;
+      const netCost = (recipe.cost?.gold ?? 0) + resultValue - materialValue;
+      const costText = netCost > 0 ? `需支付 ${netCost}💰` : `返还 ${-netCost}💰`;
+      ui.tiCombineInfo.innerHTML = `可合成：<span style="color:var(--accent)">${recipe.name}</span><br>${resultDef.name} Lv${resultLevel}<br>${costText}${recipe.cost?.wood ? ` / ${recipe.cost.wood}🪵` : ''}`;
+      ui.tiCombineBtn.textContent = '合成';
+      ui.tiCombineBtn.disabled = false;
+    } else {
+      ui.tiCombineInfo.textContent = '未匹配到可用配方';
+      ui.tiCombineBtn.textContent = '合成';
+      ui.tiCombineBtn.disabled = true;
     }
   }
 
@@ -621,6 +778,10 @@ export interface UIElements {
   tiSkillSection: HTMLElement;
   tiSkillPts: HTMLElement;
   tiSkillList: HTMLElement;
+  // 合成面板
+  tiCombineSection: HTMLElement;
+  tiCombineInfo: HTMLElement;
+  tiCombineBtn: HTMLButtonElement;
   skillBlast: HTMLButtonElement;
   skillSlow: HTMLButtonElement;
   skillSummon: HTMLButtonElement;

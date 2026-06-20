@@ -8,6 +8,7 @@ import type {
   Difficulty,
   GamePhase,
   Resources,
+  Vec2,
 } from '../types';
 import { CONFIG } from '../config';
 import { Path } from '../utils/Path';
@@ -60,8 +61,12 @@ export class GameState {
 
   // ===== 选中/建造 =====
   selectedTowerId = -1;
+  selectedTowerIds: number[] = []; // 多选合成用（保持 selectedTowerId 为最后主选）
   pendingBuildTowerId: string | null = null; // 选中要建造的塔 def id
   buildCells: BuildCell[][] = []; // [col][row]
+
+  // ===== 框选 =====
+  selectBox: { start: Vec2; end: Vec2 } | null = null; // 世界坐标，仅绘制用
 
   // ===== 全局技能 CD =====
   skillBlastCd = 0;
@@ -110,7 +115,14 @@ export class GameState {
       this.pop -= t.popCost;
       this.markCell(t.x, t.y, false);
       if (this.selectedTowerId === t.instanceId) this.selectedTowerId = -1;
+      const multiIdx = this.selectedTowerIds.indexOf(t.instanceId);
+      if (multiIdx >= 0) this.selectedTowerIds.splice(multiIdx, 1);
     }
+  }
+
+  /** 判断塔是否处于多选列表中 */
+  isTowerSelected(id: number): boolean {
+    return this.selectedTowerId === id || this.selectedTowerIds.includes(id);
   }
 
   /** 标记/解除格子占用 */

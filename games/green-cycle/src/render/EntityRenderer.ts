@@ -37,9 +37,10 @@ export function drawEntities(
   // 塔（光环范围圈由 drawTower 内部处理）
   for (const t of state.towers) {
     drawTower(ctx, t, hasAllyAura(state, t));
-    // 选中塔：射程圈 + 高亮边框
-    if (state.selectedTowerId === t.instanceId) {
-      drawSelectionRing(ctx, t);
+    // 选中塔：主选显示射程圈，所有选中塔高亮边框
+    if (state.isTowerSelected(t.instanceId)) {
+      const isMain = state.selectedTowerId === t.instanceId;
+      drawSelectionRing(ctx, t, isMain);
     }
   }
 
@@ -65,25 +66,30 @@ export function drawEntities(
 
 /**
  * 画选中塔的射程圈（虚线圆，半径=getTowerStat(t).range）+ 高亮边框
+ * - showRange=true 时画射程圈（主选塔）
+ * - 多选塔仅画高亮边框，颜色用青色区分
  */
 function drawSelectionRing(
   ctx: CanvasRenderingContext2D,
   tower: Tower,
+  showRange: boolean,
 ): void {
   const stat = getTowerStat(tower);
   const range = stat.range;
   ctx.save();
   // 射程圈（白色虚线）
-  ctx.strokeStyle = 'rgba(255,255,255,0.7)';
-  ctx.lineWidth = 1.5;
-  ctx.setLineDash([6, 4]);
-  ctx.beginPath();
-  ctx.arc(tower.x, tower.y, range, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.setLineDash([]);
-  // 高亮边框
+  if (showRange) {
+    ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([6, 4]);
+    ctx.beginPath();
+    ctx.arc(tower.x, tower.y, range, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  // 高亮边框：主选白色，多选青色
   const half = Math.floor(tower.size / 2);
-  ctx.strokeStyle = '#FFFFFF';
+  ctx.strokeStyle = showRange ? '#FFFFFF' : '#00FFFF';
   ctx.lineWidth = 2;
   ctx.strokeRect(
     tower.x - half - 2,

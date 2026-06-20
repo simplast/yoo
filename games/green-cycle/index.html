@@ -165,6 +165,22 @@
       width: auto; min-width: 40px; margin: 0; padding: 2px 6px;
       font-size: 10px; flex: 0 0 auto;
     }
+    #tower-info .combine-section {
+      margin-top: 6px; padding-top: 6px;
+      border-top: 1px solid var(--panel-border);
+    }
+    #tower-info .combine-section .section-title {
+      color: var(--accent); font-size: 11px; margin-bottom: 4px;
+    }
+    #tower-info #ti-combine-info {
+      font-size: 10px; line-height: 1.5; margin-bottom: 4px;
+    }
+    #tower-info #ti-combine-btn {
+      background: linear-gradient(180deg, #2a4a2a, #1a2a1a);
+    }
+    #tower-info #ti-combine-btn:disabled {
+      opacity: 0.5; cursor: not-allowed;
+    }
     #overlay {
       position: absolute; inset: 0; background: rgba(0,0,0,0.85);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
@@ -239,6 +255,11 @@
       <div id="ti-skill-section" class="skill-section" style="display:none">
         <div class="section-title">技能点: <span id="ti-skill-pts">0</span></div>
         <div id="ti-skill-list"></div>
+      </div>
+      <div id="ti-combine-section" class="combine-section" style="display:none">
+        <div class="section-title">合成</div>
+        <div id="ti-combine-info">未匹配到可用配方</div>
+        <button id="ti-combine-btn">合成</button>
       </div>
       <button id="ti-upgrade">升级</button>
       <button id="ti-sell" class="sell">出售</button>

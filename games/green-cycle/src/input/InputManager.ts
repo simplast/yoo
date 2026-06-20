@@ -17,6 +17,12 @@ export interface InputState {
   /** 本帧右键按下（消费后清除） */
   justRightClicked: boolean;
   wheelDelta: number;
+  /** 框选：拖拽起点（世界坐标），非拖拽时为 null */
+  dragStartWorld: Vec2 | null;
+  /** 框选：是否处于拖拽状态（移动超过阈值） */
+  isDragging: boolean;
+  /** 本帧刚完成框选（消费后清除） */
+  justFinishedSelectBox: boolean;
 }
 
 /**
@@ -37,6 +43,14 @@ export class InputManager {
   // 本帧内发生的 pointerdown 标记（update 时转为 justClicked）
   private pointerDownThisFrame = false;
   private pointerRightDownThisFrame = false;
+  // 本帧完成的框选标记（update 时转为 justFinishedSelectBox）
+  private selectBoxFinishedThisFrame = false;
+
+  // 拖拽起点（世界坐标）
+  private dragStartWorld: Vec2 | null = null;
+
+  // 拖拽判定阈值（世界坐标像素）
+  private static readonly DRAG_THRESHOLD = 8;
 
   // 按键集合
   private keysDown: Set<string> = new Set();
@@ -71,6 +85,9 @@ export class InputManager {
       justClicked: false,
       justRightClicked: false,
       wheelDelta: 0,
+      dragStartWorld: null,
+      isDragging: false,
+      justFinishedSelectBox: false,
     };
 
     // 绑定监听器
@@ -113,8 +130,10 @@ export class InputManager {
     // 将本帧的 pointerdown 转为 justClicked
     this.state.justClicked = this.pointerDownThisFrame;
     this.state.justRightClicked = this.pointerRightDownThisFrame;
+    this.state.justFinishedSelectBox = this.selectBoxFinishedThisFrame;
     this.pointerDownThisFrame = false;
     this.pointerRightDownThisFrame = false;
+    this.selectBoxFinishedThisFrame = false;
 
     // 触发按键回调
     if (this.onKeyPress && this.keysPressedThisFrame.size > 0) {
@@ -152,6 +171,22 @@ export class InputManager {
       return true;
     }
     return false;
+  }
+
+  /**
+   * 消费框选结束事件：返回框选起点/终点（世界坐标）并清除标记
+   */
+  consumeSelectBox(): { start: Vec2; end: Vec2 } | null {
+    if (this.state.justFinishedSelectBox && this.dragStartWorld) {
+      const start = { ...this.dragStartWorld };
+      const end = { ...this.state.mouseWorld };
+      this.state.justFinishedSelectBox = false;
+      this.state.dragStartWorld = null;
+      this.dragStartWorld = null;
+      return { start, end };
+    }
+    this.state.justFinishedSelectBox = false;
+    return null;
   }
 
   /**
@@ -214,24 +249,47 @@ export class InputManager {
     if (e.button === 0) {
       this.state.mouseDown = true;
       this.pointerDownThisFrame = true;
+      this.state.isDragging = false;
+      this.rawX = e.clientX;
+      this.rawY = e.clientY;
+      this.updateMouseWorld();
+      this.dragStartWorld = { ...this.state.mouseWorld };
+      this.state.dragStartWorld = this.dragStartWorld;
     } else if (e.button === 2) {
       this.state.mouseRightDown = true;
       this.pointerRightDownThisFrame = true;
+      this.rawX = e.clientX;
+      this.rawY = e.clientY;
+      this.updateMouseWorld();
     }
-    this.rawX = e.clientX;
-    this.rawY = e.clientY;
-    this.updateMouseWorld();
   }
 
   private handlePointerMove(e: PointerEvent): void {
     this.rawX = e.clientX;
     this.rawY = e.clientY;
     this.updateMouseWorld();
+    // 拖拽检测
+    if (this.state.mouseDown && this.dragStartWorld) {
+      const dx = this.state.mouseWorld.x - this.dragStartWorld.x;
+      const dy = this.state.mouseWorld.y - this.dragStartWorld.y;
+      if (Math.hypot(dx, dy) > InputManager.DRAG_THRESHOLD) {
+        this.state.isDragging = true;
+      }
+    }
   }
 
   private handlePointerUp(e: PointerEvent): void {
     if (e.button === 0) {
       this.state.mouseDown = false;
+      // 若处于拖拽状态，本帧标记框选结束，并取消点击
+      if (this.state.isDragging && this.dragStartWorld) {
+        this.selectBoxFinishedThisFrame = true;
+        this.pointerDownThisFrame = false;
+        this.state.justClicked = false;
+      }
+      this.state.isDragging = false;
+      this.dragStartWorld = null;
+      this.state.dragStartWorld = null;
     } else if (e.button === 2) {
       this.state.mouseRightDown = false;
     }
@@ -281,6 +339,9 @@ export class InputManager {
     this.state.mouseRightDown = false;
     this.state.shiftDown = false;
     this.state.ctrlDown = false;
+    this.state.isDragging = false;
+    this.state.dragStartWorld = null;
+    this.dragStartWorld = null;
     this.keysDown.clear();
     this.keysPressedThisFrame.clear();
   }

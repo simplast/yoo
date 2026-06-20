@@ -10,7 +10,7 @@
 | 技术栈 | TypeScript + Vite + Canvas 2D + Web Audio |
 | 架构 | ECS-lite（集中式状态 + 8 纯函数系统） |
 | 产物 | `public/games/green-cycle/index.html` 单文件（JS/CSS 全内联） |
-| 当前进度 | M6 完成（辅助/光环/控制塔），M7-M9 待开发 |
+| 当前进度 | M7 完成（合成系统），M8-M9 待开发 |
 
 ## 快速开始
 
@@ -28,8 +28,8 @@ npx tsc --noEmit   # 类型检查
 
 | 文档 | 说明 |
 |------|------|
-| [已完成功能](docs/progress/completed.md) | M0-M6 各阶段实现的功能清单、文件改动、验证状态 |
-| [下阶段计划](docs/progress/roadmap.md) | M7-M9 任务拆解、涉及文件、关键契约 |
+| [已完成功能](docs/progress/completed.md) | 已完成阶段实现的功能清单、文件改动、验证状态 |
+| [下阶段计划](docs/progress/roadmap.md) | 下阶段任务拆解、涉及文件、关键契约 |
 | [原始设计文档](docs/proposal/original-design.md) | 项目初始设计稿归档 |
 
 ## 目录结构

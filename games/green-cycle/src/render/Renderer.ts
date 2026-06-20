@@ -4,7 +4,7 @@ import type { Vec2 } from '../types';
 import { CONFIG } from '../config';
 import { drawMap } from './MapRenderer';
 import { drawEntities } from './EntityRenderer';
-import { drawBuildPreview, drawBossBar, drawAlert } from './UIRenderer';
+import { drawBuildPreview, drawBossBar, drawAlert, drawSelectBox } from './UIRenderer';
 
 /**
  * 渲染器：管理 Canvas 2D 上下文与视图变换
@@ -56,6 +56,7 @@ export class Renderer {
     drawMap(ctx, state);
     drawEntities(ctx, state);
     drawBuildPreview(ctx, state, mouseWorld);
+    drawSelectBox(ctx, state);
     drawBossBar(ctx, state);
     drawAlert(ctx, state);
     ctx.restore();

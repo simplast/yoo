@@ -301,7 +301,8 @@ export function drawEffect(ctx: CanvasRenderingContext2D, e: Effect): void {
       break;
     }
     case 'build':
-    case 'upgrade': {
+    case 'upgrade':
+    case 'combine': {
       if (!e.particles) break;
       for (const p of e.particles) {
         ctx.fillStyle = hexToRgba(p.color, lifeRatio);

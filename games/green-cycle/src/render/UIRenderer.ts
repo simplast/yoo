@@ -7,6 +7,7 @@ import { TOWERS } from '../data/towers';
 // 颜色常量（复用）
 const COLOR_RANGE_OK = 'rgba(80,255,80,0.6)';
 const COLOR_RANGE_NO = 'rgba(255,80,80,0.6)';
+const COLOR_SELECT_BOX = 'rgba(124,252,0,0.5)';
 
 /**
  * 画建造预览：鼠标位置半透明塔投影 + 射程圈
@@ -128,5 +129,30 @@ export function drawAlert(
   ctx.strokeStyle = `rgba(255,0,0,${alpha})`;
   ctx.lineWidth = 8;
   ctx.strokeRect(4, 4, CONFIG.WORLD_WIDTH - 8, CONFIG.WORLD_HEIGHT - 8);
+  ctx.restore();
+}
+
+/**
+ * 画框选矩形
+ * - state.selectBox 存在时绘制半透明绿色虚线框
+ */
+export function drawSelectBox(
+  ctx: CanvasRenderingContext2D,
+  state: GameState,
+): void {
+  if (!state.selectBox) return;
+  const { start, end } = state.selectBox;
+  const x = Math.min(start.x, end.x);
+  const y = Math.min(start.y, end.y);
+  const w = Math.abs(end.x - start.x);
+  const h = Math.abs(end.y - start.y);
+  ctx.save();
+  ctx.strokeStyle = COLOR_SELECT_BOX;
+  ctx.fillStyle = 'rgba(124,252,0,0.1)';
+  ctx.lineWidth = 1.5;
+  ctx.setLineDash([4, 4]);
+  ctx.fillRect(x, y, w, h);
+  ctx.strokeRect(x, y, w, h);
+  ctx.setLineDash([]);
   ctx.restore();
 }

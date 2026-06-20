@@ -55,6 +55,9 @@ function init(): void {
     tiSkillSection: $('ti-skill-section'),
     tiSkillPts: $('ti-skill-pts'),
     tiSkillList: $('ti-skill-list'),
+    tiCombineSection: $('ti-combine-section'),
+    tiCombineInfo: $('ti-combine-info'),
+    tiCombineBtn: $btn('ti-combine-btn'),
     skillBlast: $btn('skill-blast'),
     skillSlow: $btn('skill-slow'),
     skillSummon: $btn('skill-summon'),
@@ -104,6 +107,9 @@ function init(): void {
   ui.tiAddStr.addEventListener('click', () => game.addAttrSelected('str'));
   ui.tiAddAgi.addEventListener('click', () => game.addAttrSelected('agi'));
   ui.tiAddInt.addEventListener('click', () => game.addAttrSelected('int'));
+
+  // 合成按钮
+  ui.tiCombineBtn.addEventListener('click', () => game.combineSelected());
 
   // 启动主循环（菜单状态也运行，处理输入与渲染背景）
   game.start();

@@ -10,7 +10,7 @@
 | M0-M4 | MVP 核心玩法 | ✅ 完成 |
 | M5 | 成长塔技能系统 | ✅ 完成 |
 | M6 | 辅助/光环/控制塔 | ✅ 完成 |
-| M7 | 合成系统 | ⏳ 待开发 |
+| M7 | 合成系统 | ✅ 完成 |
 | M8 | 存档与难度 | ⏳ 待开发 |
 | M9 | 音效/UI/性能 | ⏳ 待开发 |
 
@@ -124,3 +124,39 @@
 ### 验证状态
 - `tsc --noEmit`：零错误
 - `vite build`：成功，`dist/index.html` 82.32 kB（gzip 23.87 kB）
+
+---
+
+## M7：合成系统
+
+### 新增文件
+- `src/utils/RecipeUtil.ts` — 配方匹配、材料查找、合成执行（含差价计算）
+
+### 修改文件
+| 文件 | 改动 |
+|------|------|
+| `src/types.ts` | EffectType 新增 `combine` |
+| `src/game/State.ts` | 新增 `selectedTowerIds` 多选列表、`selectBox` 框选矩形；`removeTower` 同步清理多选；新增 `isTowerSelected` |
+| `src/input/InputManager.ts` | 新增拖拽/框选输入：`dragStartWorld`、`isDragging`、`justFinishedSelectBox`、`consumeSelectBox` |
+| `src/game/Game.ts` | Shift+点击/框选多选、`combineSelected`、合成面板信息、右键清空多选 |
+| `src/entities/Effect.ts` | 新增 `createCombineEffect` 合成成功特效 |
+| `src/render/PixelArt.ts` | `combine` 特效按彩色粒子渲染 |
+| `src/render/EntityRenderer.ts` | 多选塔青色高亮边框，主选塔保留射程圈 |
+| `src/render/UIRenderer.ts` | 新增 `drawSelectBox` 半透明绿色虚线框 |
+| `src/render/Renderer.ts` | 渲染链路加入 `drawSelectBox` |
+| `index.html` | 新增 `#ti-combine-section` 合成面板及样式 |
+| `src/main.ts` | 绑定合成 UI 元素与按钮事件 |
+
+### 机制实装
+| 机制 | 说明 |
+|------|------|
+| 多选交互 | Shift+点击切换单塔选择；拖拽框选批量选中；框内塔加入 `selectedTowerIds` |
+| 配方匹配 | 遍历 `RECIPES`，按 `(towerId, level)` 分组计数，优先匹配数组靠前的配方 |
+| 合成消耗 | 扣除材料塔，生成产物塔；净成本 = 配方金币 + 产物等级成本 - 材料累计投入；负值则返还玩家 |
+| 资源/人口校验 | 金币/木材/人口空间不足时无法合成 |
+| 产物位置 | 生成在第一个材料塔位置，自动继承该格子占用 |
+| 合成 UI | 多选时右侧面板显示选中数量、可合成配方名称/产物/成本、合成按钮 |
+
+### 验证状态
+- `tsc --noEmit`：零错误
+- `vite build`：成功，`../../public/games/green-cycle/index.html` 90.56 kB（gzip 26.09 kB）

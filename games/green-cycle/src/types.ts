@@ -202,7 +202,8 @@ export type EffectType =
   | 'damageText'
   | 'aura'
   | 'lightning' // 闪电链/审判之光：折线连接多点
-  | 'shockwave'; // 剑刃风暴/雷暴：扩散冲击波
+  | 'shockwave' // 剑刃风暴/雷暴：扩散冲击波
+  | 'combine'; // 合成成功：星光粒子
 
 export interface Effect {
   instanceId: number;

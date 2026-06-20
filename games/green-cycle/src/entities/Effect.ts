@@ -259,3 +259,37 @@ export function createShockwaveEffect(x: number, y: number, radius: number, colo
     radius,
   };
 }
+
+/**
+ * 创建合成成功特效
+ * - type='combine'，duration=0.6s，金色+青色旋转星光粒子
+ */
+export function createCombineEffect(x: number, y: number): Effect {
+  const duration = 0.6;
+  const colors = ['#FFD700', '#00FFFF', '#7CFC00', '#FFFFFF'];
+  const count = 12;
+  const particles: Particle[] = [];
+  for (let i = 0; i < count; i++) {
+    const angle = (i / count) * Math.PI * 2;
+    const speed = 60 + Math.random() * 40;
+    particles.push({
+      x,
+      y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed,
+      life: duration,
+      color: colors[i % colors.length],
+    });
+  }
+  return {
+    instanceId: nextEntityId(),
+    type: 'combine',
+    x,
+    y,
+    remaining: duration,
+    duration,
+    alive: true,
+    color: '#FFD700',
+    particles,
+  };
+}
