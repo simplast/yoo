@@ -227,9 +227,7 @@ export const TOWERS: Record<string, TowerDef> = {
     splashRadius: 0,
     description: '友方攻速 +20%',
     popCost: 1,
-    levels: [
-      { level: 1, damage: 0, attackSpeed: 0, range: 100, upgradeCost: 80 },
-    ],
+    levels: [{ level: 1, damage: 0, attackSpeed: 0, range: 100, upgradeCost: 80 }],
     maxLevel: 1,
     auraType: 'haste',
     auraRadius: 100,
@@ -250,9 +248,7 @@ export const TOWERS: Record<string, TowerDef> = {
     splashRadius: 0,
     description: '友方攻击 +20%',
     popCost: 1,
-    levels: [
-      { level: 1, damage: 0, attackSpeed: 0, range: 100, upgradeCost: 80 },
-    ],
+    levels: [{ level: 1, damage: 0, attackSpeed: 0, range: 100, upgradeCost: 80 }],
     maxLevel: 1,
     auraType: 'haste',
     auraRadius: 100,
@@ -272,9 +268,7 @@ export const TOWERS: Record<string, TowerDef> = {
     splashRadius: 0,
     description: '敌方减速 25%',
     popCost: 1,
-    levels: [
-      { level: 1, damage: 0, attackSpeed: 0, range: 110, upgradeCost: 90 },
-    ],
+    levels: [{ level: 1, damage: 0, attackSpeed: 0, range: 110, upgradeCost: 90 }],
     maxLevel: 1,
     auraType: 'slow',
     auraRadius: 110,

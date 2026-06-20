@@ -28,9 +28,7 @@ export class SaveManager {
         settings: { ...def.settings, ...data.settings },
         unlocks: { ...def.unlocks, ...data.unlocks },
         leaderboard: {
-          endless: Array.isArray(data.leaderboard?.endless)
-            ? data.leaderboard!.endless
-            : [],
+          endless: Array.isArray(data.leaderboard?.endless) ? data.leaderboard!.endless : [],
         },
         bestPf: typeof data.bestPf === 'number' ? data.bestPf : 0,
       };

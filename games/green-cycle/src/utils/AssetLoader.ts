@@ -128,13 +128,19 @@ function svgToDataUrl(svg: string): string {
 }
 
 /** 获取 SVG 对应的 Image 对象（缓存），用于 canvas drawImage */
-export function getSvgImage(id: string, source: 'tower' | 'icon' | 'tile' | 'projectile'): HTMLImageElement | null {
+export function getSvgImage(
+  id: string,
+  source: 'tower' | 'icon' | 'tile' | 'projectile',
+): HTMLImageElement | null {
   const key = `${source}:${id}`;
   const svg =
-    source === 'tower' ? towerSvgs[id] :
-    source === 'icon' ? iconSvgs[id] :
-    source === 'tile' ? tileSvgs[id] :
-    projectileSvgs[id];
+    source === 'tower'
+      ? towerSvgs[id]
+      : source === 'icon'
+        ? iconSvgs[id]
+        : source === 'tile'
+          ? tileSvgs[id]
+          : projectileSvgs[id];
   if (!svg) return null;
 
   let img = imageCache[key];

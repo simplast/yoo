@@ -19,12 +19,13 @@ class GameAudio {
     if (this.ctx) return;
     try {
       const Ctor: typeof AudioContext =
-        window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       this.ctx = new Ctor();
       this.masterGain = this.ctx.createGain();
       this.masterGain.gain.value = this.muted ? 0 : this.volume;
       this.masterGain.connect(this.ctx.destination);
-    } catch (e) {
+    } catch {
       // AudioContext 创建失败，静默忽略
       this.ctx = null;
       this.masterGain = null;

@@ -38,9 +38,10 @@ function generateEndlessWave(waveIndex: number): WaveDef {
  */
 function startNextWave(state: GameState): void {
   state.waveIndex++;
-  const wave = state.endless && state.waveIndex > CONFIG.TOTAL_WAVES
-    ? generateEndlessWave(state.waveIndex)
-    : WAVES[state.waveIndex - 1];
+  const wave =
+    state.endless && state.waveIndex > CONFIG.TOTAL_WAVES
+      ? generateEndlessWave(state.waveIndex)
+      : WAVES[state.waveIndex - 1];
   if (!wave) return;
 
   state.currentWave = wave;

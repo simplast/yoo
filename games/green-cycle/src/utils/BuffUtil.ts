@@ -1,5 +1,5 @@
 // Buff 工具：统一处理 debuff 施加与叠加规则
-import type { Enemy, Buff, BuffType } from '../types';
+import type { Enemy, BuffType } from '../types';
 
 export interface DebuffInfo {
   type: BuffType;
@@ -19,9 +19,7 @@ export function applyBuff(
   duration: number,
   source?: string,
 ): void {
-  const existing = enemy.buffs.find(
-    (b) => b.type === type && b.source === source,
-  );
+  const existing = enemy.buffs.find((b) => b.type === type && b.source === source);
   if (existing) {
     existing.value = value;
     existing.remaining = duration;
@@ -34,9 +32,7 @@ export function applyBuff(
  * 计算敌人身上指定类型 buff 的数值总和
  */
 export function sumBuffValue(enemy: Enemy, type: BuffType): number {
-  return enemy.buffs
-    .filter((b) => b.type === type)
-    .reduce((sum, b) => sum + b.value, 0);
+  return enemy.buffs.filter((b) => b.type === type).reduce((sum, b) => sum + b.value, 0);
 }
 
 /**

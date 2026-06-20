@@ -29,7 +29,11 @@ function groupIngredients(ingredients: Recipe['ingredients']): GroupedIngredient
 }
 
 /** 判断塔是否满足单个材料要求 */
-function towerMatchesIngredient(t: Tower, reqTowerId: string, reqLevel: number | undefined): boolean {
+function towerMatchesIngredient(
+  t: Tower,
+  reqTowerId: string,
+  reqLevel: number | undefined,
+): boolean {
   if (t.id !== reqTowerId) return false;
   if (reqLevel !== undefined && t.level !== reqLevel) return false;
   return true;
@@ -89,7 +93,10 @@ function calcResultValue(def: TowerDef, level: number): number {
  * - 返回匹配到的配方及具体材料塔 id 列表
  * - 优先返回 recipes 数组中靠前的配方
  */
-export function matchRecipe(towers: Tower[], recipes: Recipe[]): { recipe: Recipe; materials: Tower[] } | null {
+export function matchRecipe(
+  towers: Tower[],
+  recipes: Recipe[],
+): { recipe: Recipe; materials: Tower[] } | null {
   if (towers.length === 0) return null;
   for (const recipe of recipes) {
     const groups = groupIngredients(recipe.ingredients);
@@ -108,11 +115,7 @@ export function matchRecipe(towers: Tower[], recipes: Recipe[]): { recipe: Recip
  * - 产物生成在第一个材料塔位置
  * - 返回 true 表示合成成功
  */
-export function executeCombine(
-  state: GameState,
-  recipe: Recipe,
-  materials: Tower[],
-): boolean {
+export function executeCombine(state: GameState, recipe: Recipe, materials: Tower[]): boolean {
   if (materials.length === 0) return false;
 
   const resultDef = TOWERS[recipe.result.towerId];
@@ -122,7 +125,10 @@ export function executeCombine(
   const costWood = recipe.cost?.wood ?? 0;
 
   // 材料总价值
-  const materialValue = calcMaterialValue(materials, materials.map((t) => t.instanceId));
+  const materialValue = calcMaterialValue(
+    materials,
+    materials.map((t) => t.instanceId),
+  );
   // 产物等级（默认 1）
   const resultLevel = recipe.result.level ?? 1;
   const resultValue = calcResultValue(resultDef, resultLevel);
@@ -153,9 +159,10 @@ export function executeCombine(
   state.wood -= costWood;
 
   // 创建产物塔
-  const resultTower = resultDef.category === 'growth'
-    ? createHeroTower(resultDef.id, resultX, resultY)
-    : createTower(resultDef.id, resultX, resultY);
+  const resultTower =
+    resultDef.category === 'growth'
+      ? createHeroTower(resultDef.id, resultX, resultY)
+      : createTower(resultDef.id, resultX, resultY);
 
   // 设置产物等级
   if (resultLevel > 1) {

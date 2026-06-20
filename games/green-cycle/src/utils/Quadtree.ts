@@ -135,7 +135,12 @@ export class Quadtree {
       // sw：左下
       new Quadtree({ x, y: y + hh, w: hw, h: hh }, this.maxObjects, this.maxLevels, nextLevel),
       // se：右下
-      new Quadtree({ x: x + hw, y: y + hh, w: hw, h: hh }, this.maxObjects, this.maxLevels, nextLevel),
+      new Quadtree(
+        { x: x + hw, y: y + hh, w: hw, h: hh },
+        this.maxObjects,
+        this.maxLevels,
+        nextLevel,
+      ),
     ];
   }
 

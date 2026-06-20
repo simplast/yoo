@@ -99,15 +99,21 @@ export class GameState {
   }
 
   // ===== 实体增删 =====
-  addEnemy(e: Enemy) { this.enemies.push(e); }
+  addEnemy(e: Enemy) {
+    this.enemies.push(e);
+  }
   addTower(t: Tower) {
     this.towers.push(t);
     this.pop += t.popCost;
     // 标记格子占用
     this.markCell(t.x, t.y, true);
   }
-  addProjectile(p: Projectile) { this.projectiles.push(p); }
-  addEffect(e: Effect) { this.effects.push(e); }
+  addProjectile(p: Projectile) {
+    this.projectiles.push(p);
+  }
+  addEffect(e: Effect) {
+    this.effects.push(e);
+  }
 
   removeEnemy(e: Enemy) {
     const i = this.enemies.indexOf(e);
@@ -146,9 +152,7 @@ export class GameState {
     return this.towers.find((t) => t.instanceId === id);
   }
   getTowerAt(x: number, y: number): Tower | undefined {
-    return this.towers.find(
-      (t) => Math.abs(t.x - x) < t.size && Math.abs(t.y - y) < t.size,
-    );
+    return this.towers.find((t) => Math.abs(t.x - x) < t.size && Math.abs(t.y - y) < t.size);
   }
 
   // ===== 资源操作 =====
@@ -183,9 +187,7 @@ export class GameState {
     this.gold = CONFIG.START_GOLD[diff];
     this.wood = CONFIG.START_WOOD[diff];
     this.popMax = CONFIG.START_POP[diff] + CONFIG.DIFF_POP[diff];
-    this.maxEnemies = endless
-      ? CONFIG.ENDLESS_MAX_ENEMIES
-      : CONFIG.MAX_ENEMIES_BY_DIFF[diff];
+    this.maxEnemies = endless ? CONFIG.ENDLESS_MAX_ENEMIES : CONFIG.MAX_ENEMIES_BY_DIFF[diff];
   }
 
   /** 获取资源快照 */

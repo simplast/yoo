@@ -24,10 +24,7 @@ function hasAllyAura(state: GameState, tower: Tower): boolean {
  * 绘制所有实体
  * 顺序：enemies → towers → projectiles → hit/death/splash effects → damageText
  */
-export function drawEntities(
-  ctx: CanvasRenderingContext2D,
-  state: GameState,
-): void {
+export function drawEntities(ctx: CanvasRenderingContext2D, state: GameState): void {
   // 敌人
   for (const e of state.enemies) {
     if (!e.alive) continue;
@@ -70,11 +67,7 @@ export function drawEntities(
  * - showRange=true 时画射程圈（主选塔）
  * - 多选塔仅画高亮边框，颜色用青色区分
  */
-function drawSelectionRing(
-  ctx: CanvasRenderingContext2D,
-  tower: Tower,
-  showRange: boolean,
-): void {
+function drawSelectionRing(ctx: CanvasRenderingContext2D, tower: Tower, showRange: boolean): void {
   const stat = getTowerStat(tower);
   const range = stat.range;
   ctx.save();
@@ -92,11 +85,6 @@ function drawSelectionRing(
   const half = Math.floor(tower.size / 2);
   ctx.strokeStyle = showRange ? '#FFFFFF' : '#00FFFF';
   ctx.lineWidth = 2;
-  ctx.strokeRect(
-    tower.x - half - 2,
-    tower.y - half - 2,
-    tower.size + 4,
-    tower.size + 4,
-  );
+  ctx.strokeRect(tower.x - half - 2, tower.y - half - 2, tower.size + 4, tower.size + 4);
   ctx.restore();
 }

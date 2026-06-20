@@ -51,12 +51,7 @@ export function drawBuildPreview(
   ctx.fillStyle = ok ? 'rgba(80,255,80,0.5)' : 'rgba(255,80,80,0.5)';
   ctx.fillRect(mouseWorld.x - half, mouseWorld.y - half, def.size, def.size);
   ctx.fillStyle = def.color;
-  ctx.fillRect(
-    mouseWorld.x - half + 4,
-    mouseWorld.y - half + 4,
-    def.size - 8,
-    def.size - 8,
-  );
+  ctx.fillRect(mouseWorld.x - half + 4, mouseWorld.y - half + 4, def.size - 8, def.size - 8);
 
   ctx.restore();
 }
@@ -66,10 +61,7 @@ export function drawBuildPreview(
  * - state.bossAlive 时显示
  * - 找 enemies 中 isBoss 的，画 hp/maxHp 进度条 + 名字 + 倒计时
  */
-export function drawBossBar(
-  ctx: CanvasRenderingContext2D,
-  state: GameState,
-): void {
+export function drawBossBar(ctx: CanvasRenderingContext2D, state: GameState): void {
   if (!state.bossAlive) return;
   // 找 Boss 敌人
   let boss = null;
@@ -118,10 +110,7 @@ export function drawBossBar(
  * - state.isDanger 时显示
  * - 用 Date.now() % 1000 / 1000 控制透明度脉动
  */
-export function drawAlert(
-  ctx: CanvasRenderingContext2D,
-  state: GameState,
-): void {
+export function drawAlert(ctx: CanvasRenderingContext2D, state: GameState): void {
   if (!state.isDanger) return;
   const pulse = (Date.now() % 1000) / 1000;
   const alpha = 0.3 + 0.4 * Math.sin(pulse * Math.PI * 2);
@@ -136,10 +125,7 @@ export function drawAlert(
  * 画框选矩形
  * - state.selectBox 存在时绘制半透明绿色虚线框
  */
-export function drawSelectBox(
-  ctx: CanvasRenderingContext2D,
-  state: GameState,
-): void {
+export function drawSelectBox(ctx: CanvasRenderingContext2D, state: GameState): void {
   if (!state.selectBox) return;
   const { start, end } = state.selectBox;
   const x = Math.min(start.x, end.x);
