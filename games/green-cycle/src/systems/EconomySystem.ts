@@ -25,7 +25,9 @@ export function update(state: GameState, dt: number): void {
     if (state.summonTimer <= 0 && state.summonTowerId !== -1) {
       // 到期移除临时炮台（使用 removeTower 确保选中状态清理）
       const tower = state.towers.find((t) => t.instanceId === state.summonTowerId);
-      if (tower) state.removeTower(tower);
+      if (tower && tower.isTemporary) {
+        state.removeTower(tower);
+      }
       state.summonTowerId = -1;
     }
   }

@@ -28,6 +28,7 @@ describe('EconomySystem.update', () => {
 
   it('summonTimer 到期移除临时塔并重置 summonTowerId', () => {
     const tower = makeTower('arrow', 100, 100);
+    tower.isTemporary = true;
     addTower(state, tower);
     state.summonTowerId = tower.instanceId;
     state.summonTimer = 1;
@@ -35,6 +36,16 @@ describe('EconomySystem.update', () => {
     expect(state.summonTimer).toBe(0);
     expect(state.summonTowerId).toBe(-1);
     expect(state.towers).toHaveLength(0);
+  });
+
+  it('只移除 isTemporary 标记的召唤塔，不会误删普通塔', () => {
+    const normal = makeTower('arrow', 100, 100);
+    addTower(state, normal);
+    state.summonTowerId = normal.instanceId;
+    state.summonTimer = 0.01;
+    update(state, 0.02);
+    expect(state.summonTowerId).toBe(-1);
+    expect(state.towers).toHaveLength(1);
   });
 
   it('clearBonusTimer 到期未清空则不发放奖励', () => {

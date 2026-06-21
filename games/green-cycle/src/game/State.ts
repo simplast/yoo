@@ -74,10 +74,16 @@ export class GameState {
 
   // ===== 友方光环缓存（每帧由 AuraSystem 预计算）=====
   /** 每座塔的友方光环加成：instanceId → { damageMult, speedMult, hasAura } */
-  allyAuraCache: Map<number, { damageMult: number; speedMult: number; hasAura: boolean }> = new Map();
+  allyAuraCache: Map<number, { damageMult: number; speedMult: number; hasAura: boolean }> =
+    new Map();
 
   // ===== 帧级共享四叉树（每帧由 TowerAISystem 构建，供 Combat/Skill 复用）=====
-  enemyQuadtree: Quadtree = new Quadtree({ x: 0, y: 0, w: CONFIG.WORLD_WIDTH, h: CONFIG.WORLD_HEIGHT });
+  enemyQuadtree: Quadtree = new Quadtree({
+    x: 0,
+    y: 0,
+    w: CONFIG.WORLD_WIDTH,
+    h: CONFIG.WORLD_HEIGHT,
+  });
 
   // ===== 对象池（减少 GC 压力）=====
   enemyPool: Pool<Enemy>;
@@ -110,18 +116,50 @@ export class GameState {
 
   // ===== 游戏速度 =====
   speed = 1; // 1/2/3
-  accumulator = 0; // 固定步长累加
 
   constructor(path: Path) {
     this.path = path;
     this.enemyPool = new Pool<Enemy>(
-      () => ({ ...ENEMIES['grunt'], instanceId: 0, hp: 0, maxHp: 0, pathProgress: 0, speed: 0, x: 0, y: 0, alive: false, buffs: [], auraFlags: 0, hitFlash: 0, rewardGold: 0 }),
+      () => ({
+        ...ENEMIES['grunt'],
+        instanceId: 0,
+        hp: 0,
+        maxHp: 0,
+        pathProgress: 0,
+        speed: 0,
+        x: 0,
+        y: 0,
+        alive: false,
+        buffs: [],
+        auraFlags: 0,
+        hitFlash: 0,
+        rewardGold: 0,
+      }),
       (e) => resetEnemy(e),
       20,
     );
     this.projectilePool = new Pool<Projectile>(
-      () => ({ instanceId: 0, x: 0, y: 0, targetId: 0, speed: 0, damage: 0, attackType: 'normal', splashRadius: 0, sourceTowerId: 0, alive: false, color: '', size: 0 }),
-      (p) => { p.alive = false; p.x = 0; p.y = 0; p.targetId = 0; p.debuff = undefined; },
+      () => ({
+        instanceId: 0,
+        x: 0,
+        y: 0,
+        targetId: 0,
+        speed: 0,
+        damage: 0,
+        attackType: 'normal',
+        splashRadius: 0,
+        sourceTowerId: 0,
+        alive: false,
+        color: '',
+        size: 0,
+      }),
+      (p) => {
+        p.alive = false;
+        p.x = 0;
+        p.y = 0;
+        p.targetId = 0;
+        p.debuff = undefined;
+      },
       30,
     );
     this.effectPool = new Pool<Effect>(
