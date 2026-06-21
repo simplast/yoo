@@ -16,7 +16,12 @@ import { nextEntityId } from './Entity';
  * - 初始位置取 path.getPosition(0)，pathProgress=0
  * - speed=baseSpeed，alive=true，buffs=[]，hitFlash=0，auraFlags=0
  */
-export function createEnemy(defId: string, path: Path, difficulty: Difficulty, pool?: Pool<Enemy>): Enemy {
+export function createEnemy(
+  defId: string,
+  path: Path,
+  difficulty: Difficulty,
+  pool?: Pool<Enemy>,
+): Enemy {
   const def = ENEMIES[defId];
   if (!def) {
     throw new Error(`[createEnemy] 未找到敌人定义: ${defId}`);
@@ -66,4 +71,5 @@ export function resetEnemy(e: Enemy): void {
   e.buffs.length = 0;
   e.auraFlags = 0;
   e.hitFlash = 0;
+  e._splitChild = undefined;
 }
