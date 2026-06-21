@@ -14,7 +14,7 @@
     "lint:fix": "eslint src/ --fix",
     "format": "prettier --write 'src/**/*.ts' '*.json' '*.js' '*.ts'",
     "format:check": "prettier --check 'src/**/*.ts' '*.json' '*.js' '*.ts'",
-    "prepare": "husky || true"
+    "prepare": "cd ../.. && husky || true"
   },
   "lint-staged": {
     "src/**/*.ts": [
