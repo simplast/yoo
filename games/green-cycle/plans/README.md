@@ -12,7 +12,7 @@
 | 004  | 加 GitHub Actions CI 与 pre-commit 钩子                  | P2     | S    | —              | DONE (merged d671d85) |
 | 005  | resetEnemy 清除 `_splitChild` 以让池化 splitter 正常分裂 | P1     | S    | —              | DONE                  |
 | 006  | 修复 6 个文件的 prettier --check                         | P1     | S    | —              | DONE                  |
-| 007   | 提取 resetProjectile 工厂函数                                        | P1     | S    | —              | IN PROGRESS           |
+| 007  | 提取 resetProjectile 工厂函数                            | P1     | S    | —              | DONE                  |
 | 008  | 设置 UI（音量/画质）— spike + 接线                       | P2     | S    | —              | TODO                  |
 | 008b | 设置 UI 落地：overlay 音量+画质控件 + 画质运行时分支     | P2     | M    | 008            | TODO                  |
 
