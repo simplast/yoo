@@ -25,6 +25,22 @@ export interface CreateProjectileOpts {
   debuffDuration?: number;
 }
 
+/** 重置投射物运行时字段（对象池复用时调用） */
+export function resetProjectile(p: Projectile): void {
+  p.alive = false;
+  p.x = 0;
+  p.y = 0;
+  p.targetId = 0;
+  p.speed = 0;
+  p.damage = 0;
+  p.attackType = 'normal';
+  p.splashRadius = 0;
+  p.sourceTowerId = 0;
+  p.color = '';
+  p.size = 0;
+  p.debuff = undefined;
+}
+
 /**
  * 创建投射物实例
  * - instanceId = nextEntityId()

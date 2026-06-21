@@ -17,6 +17,7 @@ import { Pool } from '../utils/Pool';
 import { ENEMIES } from '../data/enemies';
 import { resetEnemy } from '../entities/Enemy';
 import { resetEffect } from '../entities/Effect';
+import { resetProjectile } from '../entities/Projectile';
 
 /** 待出生的敌人队列项 */
 export interface SpawnTask {
@@ -153,13 +154,7 @@ export class GameState {
         color: '',
         size: 0,
       }),
-      (p) => {
-        p.alive = false;
-        p.x = 0;
-        p.y = 0;
-        p.targetId = 0;
-        p.debuff = undefined;
-      },
+      (p) => resetProjectile(p),
       30,
     );
     this.effectPool = new Pool<Effect>(
