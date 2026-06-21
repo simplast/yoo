@@ -61,6 +61,16 @@ class GameAudio {
   }
 
   /**
+   * 应用持久化设置（在 startGame 入口调用一次，确保 audio 启动后立即符合用户偏好）
+   */
+  applySettings(settings: { volume: number; muted?: boolean }): void {
+    this.setVolume(settings.volume);
+    if (settings.muted !== undefined) {
+      this.setMuted(settings.muted);
+    }
+  }
+
+  /**
    * 恢复挂起的 AudioContext（浏览器自动挂起时调用）
    */
   resume(): void {
