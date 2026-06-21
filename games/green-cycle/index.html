@@ -231,6 +231,19 @@
     .diff-btn.active { background: var(--accent); color: #000; }
     .menu-btn:disabled { opacity: 0.4; cursor: not-allowed; border-color: #555; color: #888; }
     .menu-btn:disabled:hover { background: var(--panel); color: #888; }
+    #settings-row { gap: 24px; flex-wrap: wrap; }
+    .settings-label {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 12px; color: var(--text);
+    }
+    #volume-slider { width: 140px; accent-color: var(--accent); }
+    #volume-value { color: var(--accent); min-width: 36px; text-align: right; font-size: 11px; }
+    #quality-select {
+      background: var(--panel); color: var(--text);
+      border: 1px solid var(--panel-border); border-radius: 3px;
+      padding: 4px 8px; font-family: inherit; font-size: 12px;
+      cursor: pointer;
+    }
     #leaderboard {
       font-size: 12px; color: var(--text); text-align: center;
       max-height: 120px; overflow-y: auto; line-height: 1.6;
@@ -340,6 +353,20 @@
       </div>
       <div class="menu-row">
         <button class="menu-btn" id="start-btn">开始游戏</button>
+      </div>
+      <div class="menu-row" id="settings-row">
+        <label class="settings-label">
+          音量
+          <input type="range" id="volume-slider" min="0" max="1" step="0.05" />
+          <span id="volume-value">100%</span>
+        </label>
+        <label class="settings-label">
+          画质
+          <select id="quality-select">
+            <option value="high">高</option>
+            <option value="low">低</option>
+          </select>
+        </label>
       </div>
       <div id="leaderboard">
         <div class="lb-title">无尽排行榜</div>

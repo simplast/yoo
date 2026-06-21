@@ -45,6 +45,7 @@ export class Renderer {
    */
   render(state: GameState, mouseWorld: Vec2): void {
     const ctx = this.ctx;
+    const isHighQuality = state.saveData?.settings.quality !== 'low';
     ctx.save();
     // 清屏黑色（覆盖整个 canvas，含 letterbox 黑边）
     ctx.fillStyle = '#000000';
@@ -54,11 +55,11 @@ export class Renderer {
     ctx.scale(this.scale, this.scale);
     // 绘制各层
     drawMap(ctx, state, mouseWorld);
-    drawEntities(ctx, state);
+    drawEntities(ctx, state, isHighQuality);
     drawBuildPreview(ctx, state, mouseWorld);
     drawSelectBox(ctx, state);
-    drawBossBar(ctx, state);
-    drawAlert(ctx, state);
+    if (isHighQuality) drawBossBar(ctx, state);
+    if (isHighQuality) drawAlert(ctx, state);
     ctx.restore();
   }
 

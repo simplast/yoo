@@ -9,6 +9,7 @@ import type {
   GamePhase,
   Resources,
   Vec2,
+  SaveData,
 } from '../types';
 import { CONFIG } from '../config';
 import { Path } from '../utils/Path';
@@ -35,6 +36,9 @@ export interface BuildCell {
 }
 
 export class GameState {
+  // ===== 存档引用（由 Game 构造函数注入，renderer 通过此字段读取画质设置）=====
+  saveData: SaveData | null = null;
+
   // ===== 实体集合 =====
   enemies: Enemy[] = [];
   towers: Tower[] = [];

@@ -5,6 +5,14 @@ import type { Effect, Vec2 } from '../types';
 import type { Pool } from '../utils/Pool';
 import { nextEntityId } from './Entity';
 
+/** 当前画质模式（由 Game.startGame 根据 saveData.settings.quality 设置） */
+let qualityMode: 'low' | 'high' = 'high';
+
+/** 设置画质模式（对象池复用时调用） */
+export function setEffectQuality(q: 'low' | 'high'): void {
+  qualityMode = q;
+}
+
 /** 重置特效对象（对象池复用时调用） */
 export function resetEffect(e: Effect): void {
   e.alive = false;
@@ -58,7 +66,7 @@ export function createDamageText(
  */
 export function createHitEffect(x: number, y: number, color: string, pool?: Pool<Effect>): Effect {
   const duration = 0.2;
-  const count = 4 + Math.floor(Math.random() * 3); // 4-6
+  const count = qualityMode === 'low' ? 2 : 4 + Math.floor(Math.random() * 3); // high: 4-6, low: 2
   const particles: Particle[] = [];
   for (let i = 0; i < count; i++) {
     const angle = Math.random() * Math.PI * 2;
@@ -95,7 +103,7 @@ export function createDeathEffect(
   pool?: Pool<Effect>,
 ): Effect {
   const duration = 0.5;
-  const count = 8;
+  const count = qualityMode === 'low' ? 3 : 8;
   const particles: Particle[] = [];
   for (let i = 0; i < count; i++) {
     const angle = (i / count) * Math.PI * 2;
@@ -128,7 +136,7 @@ export function createDeathEffect(
 export function createBuildEffect(x: number, y: number, pool?: Pool<Effect>): Effect {
   const duration = 0.4;
   const color = '#FFD700';
-  const count = 6;
+  const count = qualityMode === 'low' ? 3 : 6;
   const particles: Particle[] = [];
   for (let i = 0; i < count; i++) {
     // 向上扇形扩散（-π/2 为正上方）
@@ -162,7 +170,7 @@ export function createBuildEffect(x: number, y: number, pool?: Pool<Effect>): Ef
 export function createUpgradeEffect(x: number, y: number, pool?: Pool<Effect>): Effect {
   const duration = 0.5;
   const color = '#FFD700';
-  const count = 8;
+  const count = qualityMode === 'low' ? 4 : 8;
   const particles: Particle[] = [];
   for (let i = 0; i < count; i++) {
     const angle = (i / count) * Math.PI * 2;
@@ -201,7 +209,7 @@ export function createSplashEffect(
   pool?: Pool<Effect>,
 ): Effect {
   const duration = 0.3;
-  const count = 8;
+  const count = qualityMode === 'low' ? 4 : 8;
   const speed = radius / duration; // 在 duration 秒内扩散到 radius
   const particles: Particle[] = [];
   for (let i = 0; i < count; i++) {
@@ -308,7 +316,7 @@ export function createShockwaveEffect(
 export function createCombineEffect(x: number, y: number, pool?: Pool<Effect>): Effect {
   const duration = 0.6;
   const colors = ['#FFD700', '#00FFFF', '#7CFC00', '#FFFFFF'];
-  const count = 12;
+  const count = qualityMode === 'low' ? 6 : 12;
   const particles: Particle[] = [];
   for (let i = 0; i < count; i++) {
     const angle = (i / count) * Math.PI * 2;

@@ -8,7 +8,11 @@ import { drawEnemy, drawTower, drawProjectile, drawEffect } from './PixelArt';
  * 绘制所有实体
  * 顺序：enemies → towers → projectiles → hit/death/splash effects → damageText
  */
-export function drawEntities(ctx: CanvasRenderingContext2D, state: GameState): void {
+export function drawEntities(
+  ctx: CanvasRenderingContext2D,
+  state: GameState,
+  _isHighQuality?: boolean,
+): void {
   // 敌人
   for (const e of state.enemies) {
     if (!e.alive) continue;
