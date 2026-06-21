@@ -35,12 +35,14 @@ describe('CombatSystem.applyDamage', () => {
     state = makeState('hard');
     const enemy = addEnemy(state, makeEnemy(state, 'grunt'));
     const expectedGold = enemy.rewardGold;
+    const expectedWood = enemy.rewardWood;
     const prevGold = state.gold;
+    const prevWood = state.wood;
     applyDamage(state, enemy, 999, 'normal', -1);
     expect(enemy.alive).toBe(false);
     expect(state.kills).toBe(1);
     expect(state.gold).toBe(prevGold + expectedGold);
-    expect(state.wood).toBe(state.wood);
+    expect(state.wood).toBe(prevWood + expectedWood);
   });
 
   it('分裂怪死亡生成 2 个子怪', () => {
