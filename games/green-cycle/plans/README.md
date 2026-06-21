@@ -10,10 +10,10 @@
 | 002  | 修复 Game.syncUI 每帧 60Hz DOM 重写                      | P1     | M    | 001 (强烈建议) | DONE (merged 67a66d5) |
 | 003  | 清理 4 个小型技术债                                      | P1     | S    | —              | DONE (merged 8ac84a8) |
 | 004  | 加 GitHub Actions CI 与 pre-commit 钩子                  | P2     | S    | —              | DONE (merged d671d85) |
-| 005  | resetEnemy 清除 `_splitChild` 以让池化 splitter 正常分裂 | P1     | S    | —              | DONE                  |
-| 006  | 修复 6 个文件的 prettier --check                         | P1     | S    | —              | DONE                  |
-| 007  | 提取 resetProjectile 工厂函数                            | P1     | S    | —              | DONE                  |
-| 008  | 设置 UI（音量/画质）— spike + 接线                       | P2     | S    | —              | DONE                  |
+| 005  | resetEnemy 清除 `_splitChild` 以让池化 splitter 正常分裂 | P1     | S    | —              | DONE (merged e239449) |
+| 006  | 修复 6 个文件的 prettier --check                         | P1     | S    | —              | DONE (merged 6fc5b92) |
+| 007  | 提取 resetProjectile 工厂函数                            | P1     | S    | —              | DONE (merged 0ff5f71) |
+| 008  | 设置 UI（音量/画质）— spike + 接线                       | P2     | S    | —              | DONE (merged ffd7515) |
 | 008b | 设置 UI 落地：overlay 音量+画质控件 + 画质运行时分支     | P2     | M    | 008            | DONE (merged b6f1840) |
 
 状态取值：`TODO` | `IN PROGRESS` | `DONE` | `BLOCKED`（附一行原因）| `REJECTED`（附一行理由 —— 发现被独立修复或方案放弃）
