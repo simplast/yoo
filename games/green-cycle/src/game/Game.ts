@@ -1,5 +1,5 @@
 // 游戏主控：状态机、系统调度、输入处理、UI 同步
-import { CONFIG } from '../config';
+import { CONFIG, type GamePhase } from '../config';
 import type { Difficulty, Tower, Vec2, SaveData } from '../types';
 import { TOWERS } from '../data/towers';
 import { RECIPES } from '../data/recipes';
@@ -36,6 +36,13 @@ import { createBuildEffect, createUpgradeEffect } from '../entities/Effect';
 import { resetEntityId } from '../entities/Entity';
 import { SKILLS, HERO_SKILLS } from '../data/skills';
 
+/** 成长塔重渲染键（不含 exp，经验条由高频同步单独更新） */
+function makeGrowthKey(t: Tower): string {
+  return [t.level, t.attrPoints, t.skillPoints, ...Object.entries(t.skillLevels ?? {}).sort()].join(
+    '|',
+  );
+}
+
 /** 判断格子是否可建造（不在路径上） */
 function isCellBuildable(path: Path, cx: number, cy: number, pathWidth: number): boolean {
   const half = pathWidth / 2 + 4;
@@ -66,6 +73,30 @@ export class Game {
 
   // UI 元素引用
   private ui: UIElements;
+
+  // 上次同步快照（避免 60Hz 不必要 DOM 写入）
+  private lastSync = {
+    gold: -1,
+    wood: -1,
+    pop: -1,
+    popMax: -1,
+    pf: -1,
+    waveIndex: -1,
+    endless: false,
+    pressurePct: -1,
+    nextWaveText: '',
+    nextWaveColor: '',
+    waveBanner: '',
+    skillBlastCd: -1,
+    skillSlowCd: -1,
+    skillSummonCd: -1,
+    phase: '' as GamePhase,
+    pauseText: '',
+    selectedTowerId: -2, // 哨兵：与 selectedTowerId=-1 区分
+    growthRenderKey: '', // 由 (tower.instanceId, tower.level, tower.attrPoints, skillPoints, skillLevels) 拼成；不含 exp
+    combineRenderKey: '', // 由 selectedTowerIds 排序后拼成
+    popText: '', // 完整的 pop/popMax 字符串
+  };
 
   // 本地存档
   private saveData: SaveData;
@@ -569,55 +600,155 @@ export class Game {
   // ===== UI 同步 =====
 
   private syncUI() {
+    this.syncUIHot();
+    this.syncUICold();
+  }
+
+  /** 60Hz：只更新会变动的数值/进度条/CD 文字 / 经验条 */
+  private syncUIHot() {
     const state = this.state;
     const ui = this.ui;
-    ui.statGold.textContent = String(Math.floor(state.gold));
-    ui.statWood.textContent = String(Math.floor(state.wood));
-    ui.statPop.textContent = `${state.pop}/${state.popMax}`;
-    ui.statWave.textContent = state.endless
+
+    // 资源
+    const gold = Math.floor(state.gold);
+    if (this.lastSync.gold !== gold) {
+      ui.statGold.textContent = String(gold);
+      this.lastSync.gold = gold;
+    }
+    const wood = Math.floor(state.wood);
+    if (this.lastSync.wood !== wood) {
+      ui.statWood.textContent = String(wood);
+      this.lastSync.wood = wood;
+    }
+    const popText = `${state.pop}/${state.popMax}`;
+    if (this.lastSync.popText !== popText) {
+      ui.statPop.textContent = popText;
+      this.lastSync.popText = popText;
+    }
+    const pf = state.pf;
+    if (this.lastSync.pf !== pf) {
+      ui.statPf.textContent = String(pf);
+      this.lastSync.pf = pf;
+    }
+
+    // 波次
+    const waveText = state.endless
       ? `无尽 ${state.waveIndex} 波`
       : `${state.waveIndex}/${CONFIG.TOTAL_WAVES}`;
-    ui.statPf.textContent = String(state.pf);
+    if (this.lastSync.waveIndex !== state.waveIndex || this.lastSync.endless !== state.endless) {
+      ui.statWave.textContent = waveText;
+      this.lastSync.waveIndex = state.waveIndex;
+      this.lastSync.endless = state.endless;
+    }
+
     // 压力条
-    ui.pressureFill.style.width = `${Math.min(100, state.pressure * 100)}%`;
+    const pressurePct = Math.min(100, state.pressure * 100);
+    if (this.lastSync.pressurePct !== pressurePct) {
+      ui.pressureFill.style.width = `${pressurePct}%`;
+      this.lastSync.pressurePct = pressurePct;
+    }
+
     // 下波信息
-    if (state.currentWave) {
-      ui.nextWaveInfo.textContent = `当前: ${state.currentWave.hint}`;
-    } else if (state.waveIndex < CONFIG.TOTAL_WAVES) {
-      ui.nextWaveInfo.textContent = state.waveActive
-        ? '波次进行中'
-        : `下波倒计时: ${Math.ceil(state.waveTimer)}s`;
-    } else {
-      ui.nextWaveInfo.textContent = '已完成';
+    const nextWaveText =
+      state.clearBonusTimer > 0
+        ? `清场奖励 ${Math.ceil(state.clearBonusTimer)}s +${CONFIG.CLEAR_BONUS_GOLD}G`
+        : state.currentWave
+          ? `当前: ${state.currentWave.hint}`
+          : state.waveIndex < CONFIG.TOTAL_WAVES
+            ? state.waveActive
+              ? '波次进行中'
+              : `下波倒计时: ${Math.ceil(state.waveTimer)}s`
+            : '已完成';
+    const nextWaveColor = state.clearBonusTimer > 0 ? '#FFD700' : '';
+    if (this.lastSync.nextWaveText !== nextWaveText) {
+      ui.nextWaveInfo.textContent = nextWaveText;
+      this.lastSync.nextWaveText = nextWaveText;
     }
-    // 清场奖励倒计时（覆盖下波信息显示）
-    if (state.clearBonusTimer > 0) {
-      ui.nextWaveInfo.textContent = `清场奖励 ${Math.ceil(state.clearBonusTimer)}s +${CONFIG.CLEAR_BONUS_GOLD}G`;
-      ui.nextWaveInfo.style.color = '#FFD700';
-    } else {
-      ui.nextWaveInfo.style.color = '';
+    if (this.lastSync.nextWaveColor !== nextWaveColor) {
+      ui.nextWaveInfo.style.color = nextWaveColor || '';
+      this.lastSync.nextWaveColor = nextWaveColor;
     }
-    // 波次横幅
-    if (state.waveActive && state.currentWave && state.gameTime - state.waveStartTime < 3) {
-      ui.waveBanner.textContent = `第 ${state.waveIndex} 波 — ${state.currentWave.hint}`;
-      ui.waveBanner.classList.add('show');
-    } else {
-      ui.waveBanner.classList.remove('show');
-    }
+
     // 技能 CD
-    this.syncSkillBtn(ui.skillBlast, state.skillBlastCd, CONFIG.SKILL_BLAST_CD);
-    this.syncSkillBtn(ui.skillSlow, state.skillSlowCd, CONFIG.SKILL_SLOW_CD);
-    this.syncSkillBtn(ui.skillSummon, state.skillSummonCd, CONFIG.SKILL_SUMMON_CD);
+    this.syncSkillBtnHot(ui.skillBlast, state.skillBlastCd, 'skillBlastCd');
+    this.syncSkillBtnHot(ui.skillSlow, state.skillSlowCd, 'skillSlowCd');
+    this.syncSkillBtnHot(ui.skillSummon, state.skillSummonCd, 'skillSummonCd');
+
     // 暂停按钮
-    ui.pauseBtn.textContent = state.phase === 'paused' ? '▶' : '⏸';
-    // 选中塔信息实时刷新（成长塔经验/CD 变化）
+    const pauseText = state.phase === 'paused' ? '▶' : '⏸';
+    if (this.lastSync.pauseText !== pauseText) {
+      ui.pauseBtn.textContent = pauseText;
+      this.lastSync.pauseText = pauseText;
+    }
+
+    // 成长塔经验条（growthRenderKey 不变时仍然要更新）
     if (state.selectedTowerId >= 0) {
       const tower = state.getTowerById(state.selectedTowerId);
-      if (tower) this.showTowerInfo(tower);
+      if (tower && tower.isGrowth) {
+        const exp = tower.exp ?? 0;
+        const expToNext = tower.expToNext ?? 100;
+        const expText = `${Math.floor(exp)}/${expToNext}`;
+        const expPct = Math.min(100, (exp / expToNext) * 100);
+        if (ui.tiExp.textContent !== expText) {
+          ui.tiExp.textContent = expText;
+        }
+        const expWidth = `${expPct}%`;
+        if (ui.tiExpFill.style.width !== expWidth) {
+          ui.tiExpFill.style.width = expWidth;
+        }
+      }
+
+      // 升级按钮禁用状态随金币变动，单独高频守护
+      if (tower && state.selectedTowerIds.length === 0) {
+        const nextLevel = tower.level + 1;
+        if (nextLevel <= tower.maxLevel) {
+          const nextCost =
+            tower.levels[Math.min(nextLevel - 1, tower.levels.length - 1)].upgradeCost;
+          const shouldDisable = state.gold < nextCost;
+          if (ui.tiUpgrade.disabled !== shouldDisable) {
+            ui.tiUpgrade.disabled = shouldDisable;
+          }
+        }
+      }
     }
+  }
+
+  private syncSkillBtnHot(
+    btn: HTMLButtonElement,
+    cd: number,
+    key: 'skillBlastCd' | 'skillSlowCd' | 'skillSummonCd',
+  ) {
+    if (this.lastSync[key] === cd) return;
+    const cdEl = btn.querySelector('.cd');
+    btn.disabled = cd > 0;
+    if (cdEl) cdEl.textContent = cd > 0 ? Math.ceil(cd) + 's' : '';
+    this.lastSync[key] = cd;
+  }
+
+  /** 低频（事件驱动）：技能树 / 合成面板 / 升级按钮 / 选中塔静态信息 / 结束遮罩 */
+  private syncUICold() {
+    const state = this.state;
+    const ui = this.ui;
+
+    // 波次横幅
+    const currentWave = state.currentWave;
+    const showBanner =
+      state.waveActive && currentWave !== null && state.gameTime - state.waveStartTime < 3;
+    const waveBannerText = showBanner ? `第 ${state.waveIndex} 波 — ${currentWave.hint}` : '';
+    if (this.lastSync.waveBanner !== waveBannerText) {
+      ui.waveBanner.textContent = waveBannerText;
+      if (showBanner) {
+        ui.waveBanner.classList.add('show');
+      } else {
+        ui.waveBanner.classList.remove('show');
+      }
+      this.lastSync.waveBanner = waveBannerText;
+    }
+
     // 结束遮罩
-    if (state.phase === 'won' || state.phase === 'lost') {
-      const won = state.phase === 'won';
+    const phase = state.phase;
+    if ((phase === 'won' || phase === 'lost') && this.lastSync.phase !== phase) {
+      const won = phase === 'won';
       this.recordResult(won);
       ui.overlay.classList.remove('hide');
       ui.overlayTitle.textContent = '绿色循环圈';
@@ -633,18 +764,42 @@ export class Game {
       if (won) audio.playWin();
       else audio.playLose();
       state.phase = 'menu'; // 防止重复触发
+      this.lastSync.phase = 'menu';
       this.onShowMenu?.();
+    } else if (this.lastSync.phase !== phase) {
+      this.lastSync.phase = phase;
     }
-  }
 
-  private syncSkillBtn(btn: HTMLButtonElement, cd: number, _maxCd: number) {
-    const cdEl = btn.querySelector('.cd');
-    if (cd > 0) {
-      btn.disabled = true;
-      if (cdEl) cdEl.textContent = Math.ceil(cd) + 's';
-    } else {
-      btn.disabled = false;
-      if (cdEl) cdEl.textContent = '';
+    // 选中塔信息（含技能树/合成面板缓存）
+    if (state.selectedTowerId >= 0) {
+      const t = state.getTowerById(state.selectedTowerId);
+      if (t) {
+        const key = `${t.instanceId}:${t.isGrowth ? makeGrowthKey(t) : 'static'}`;
+        const combineKey = state.selectedTowerIds
+          .slice()
+          .sort((a, b) => a - b)
+          .join(',');
+        if (
+          this.lastSync.selectedTowerId !== t.instanceId ||
+          this.lastSync.growthRenderKey !== key ||
+          this.lastSync.combineRenderKey !== combineKey
+        ) {
+          this.showTowerInfo(t);
+          this.lastSync.selectedTowerId = t.instanceId;
+          this.lastSync.growthRenderKey = key;
+          this.lastSync.combineRenderKey = combineKey;
+        }
+      } else if (this.lastSync.selectedTowerId !== -1) {
+        ui.towerInfo.classList.remove('show');
+        this.lastSync.selectedTowerId = -1;
+        this.lastSync.growthRenderKey = '';
+        this.lastSync.combineRenderKey = '';
+      }
+    } else if (this.lastSync.selectedTowerId !== -1) {
+      ui.towerInfo.classList.remove('show');
+      this.lastSync.selectedTowerId = -1;
+      this.lastSync.growthRenderKey = '';
+      this.lastSync.combineRenderKey = '';
     }
   }
 
@@ -774,15 +929,11 @@ export class Game {
     }
   }
 
-  /** 成长塔：经验条、属性加点、技能树 */
+  /** 成长塔：属性加点、技能树（经验条由 syncUIHot 单独更新） */
   private showGrowthInfo(tower: Tower) {
     const ui = this.ui;
-    // 经验条
+    // 经验条容器显示（数值由 syncUIHot 每帧更新）
     ui.tiExpSection.style.display = 'block';
-    const exp = tower.exp ?? 0;
-    const expToNext = tower.expToNext ?? 100;
-    ui.tiExp.textContent = `${Math.floor(exp)}/${expToNext}`;
-    ui.tiExpFill.style.width = `${Math.min(100, (exp / expToNext) * 100)}%`;
 
     // 属性加点
     ui.tiAttrSection.style.display = 'block';
