@@ -100,7 +100,9 @@ export function update(state: GameState, dt: number): void {
             proj.debuff?.duration,
           );
         }
-        state.addEffect(createSplashEffect(proj.x, proj.y, proj.splashRadius, proj.color, state.effectPool));
+        state.addEffect(
+          createSplashEffect(proj.x, proj.y, proj.splashRadius, proj.color, state.effectPool),
+        );
       }
       proj.alive = false;
       continue;
@@ -141,7 +143,9 @@ export function update(state: GameState, dt: number): void {
             proj.debuff?.duration,
           );
         }
-        state.addEffect(createSplashEffect(target.x, target.y, proj.splashRadius, proj.color, state.effectPool));
+        state.addEffect(
+          createSplashEffect(target.x, target.y, proj.splashRadius, proj.color, state.effectPool),
+        );
       } else {
         // 单体伤害
         applyDamage(

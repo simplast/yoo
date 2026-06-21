@@ -50,7 +50,11 @@ export function update(state: GameState, _dt: number): void {
 
   // 收集所有友方光环塔
   const allyAuras = state.towers.filter(
-    (t) => t.category === 'aura' && t.auraTarget === 'ally' && t.auraRadius != null && t.auraValue != null,
+    (t) =>
+      t.category === 'aura' &&
+      t.auraTarget === 'ally' &&
+      t.auraRadius != null &&
+      t.auraValue != null,
   );
 
   if (allyAuras.length === 0) return; // 无友方光环塔，缓存为空 Map（敌方光环已在前面处理完毕，安全退出）

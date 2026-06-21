@@ -138,7 +138,15 @@ function castActiveSkill(
       if (!target) return false;
       applyDamage(state, target, value, 'holy', tower.instanceId);
       state.addEffect(createJudgeEffect(target.x, target.y, '#FFD700', state.effectPool));
-      state.addEffect(createDamageText(target.x, target.y - target.size, String(value), '#FFD700', state.effectPool));
+      state.addEffect(
+        createDamageText(
+          target.x,
+          target.y - target.size,
+          String(value),
+          '#FFD700',
+          state.effectPool,
+        ),
+      );
       return true;
     }
     case 'aoeDamage': {
@@ -148,7 +156,9 @@ function castActiveSkill(
       for (const e of targets) {
         applyDamage(state, e, value, 'normal', tower.instanceId);
       }
-      state.addEffect(createShockwaveEffect(tower.x, tower.y, skillRange, '#C0C0C0', state.effectPool));
+      state.addEffect(
+        createShockwaveEffect(tower.x, tower.y, skillRange, '#C0C0C0', state.effectPool),
+      );
       return true;
     }
     case 'chainLightning': {
@@ -181,7 +191,9 @@ function castActiveSkill(
         applyDamage(state, e, value, 'magic', tower.instanceId);
         applyBuff(e, 'stun', 1, 2, source); // 眩晕 2 秒
       }
-      state.addEffect(createShockwaveEffect(tower.x, tower.y, skillRange, '#00BFFF', state.effectPool));
+      state.addEffect(
+        createShockwaveEffect(tower.x, tower.y, skillRange, '#00BFFF', state.effectPool),
+      );
       return true;
     }
     default:

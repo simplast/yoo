@@ -31,7 +31,13 @@ interface Particle {
  * 创建伤害飘字特效
  * - type='damageText'，duration=0.8s，向上飘动（vy=-30）
  */
-export function createDamageText(x: number, y: number, text: string, color: string, pool?: Pool<Effect>): Effect {
+export function createDamageText(
+  x: number,
+  y: number,
+  text: string,
+  color: string,
+  pool?: Pool<Effect>,
+): Effect {
   const e = pool ? pool.acquire() : ({} as Effect);
   e.instanceId = nextEntityId();
   e.type = 'damageText';
@@ -82,7 +88,12 @@ export function createHitEffect(x: number, y: number, color: string, pool?: Pool
  * 创建死亡特效
  * - type='death'，duration=0.5s，8 个向外扩散粒子
  */
-export function createDeathEffect(x: number, y: number, color: string, pool?: Pool<Effect>): Effect {
+export function createDeathEffect(
+  x: number,
+  y: number,
+  color: string,
+  pool?: Pool<Effect>,
+): Effect {
   const duration = 0.5;
   const count = 8;
   const particles: Particle[] = [];
@@ -182,7 +193,13 @@ export function createUpgradeEffect(x: number, y: number, pool?: Pool<Effect>): 
  * - type='splash'，duration=0.3s，圆形扩散
  * - 粒子在 duration 内扩散到 radius 距离
  */
-export function createSplashEffect(x: number, y: number, radius: number, color: string, pool?: Pool<Effect>): Effect {
+export function createSplashEffect(
+  x: number,
+  y: number,
+  radius: number,
+  color: string,
+  pool?: Pool<Effect>,
+): Effect {
   const duration = 0.3;
   const count = 8;
   const speed = radius / duration; // 在 duration 秒内扩散到 radius
@@ -236,7 +253,12 @@ export function createLightningEffect(points: Vec2[], color: string, pool?: Pool
  * 创建审判之光特效（单体闪电从天而降）
  * - type='lightning'，单段竖直折线
  */
-export function createJudgeEffect(x: number, y: number, color: string, pool?: Pool<Effect>): Effect {
+export function createJudgeEffect(
+  x: number,
+  y: number,
+  color: string,
+  pool?: Pool<Effect>,
+): Effect {
   const duration = 0.4;
   const e = pool ? pool.acquire() : ({} as Effect);
   e.instanceId = nextEntityId();
@@ -258,7 +280,13 @@ export function createJudgeEffect(x: number, y: number, color: string, pool?: Po
  * 创建冲击波特效（剑刃风暴/雷暴）
  * - type='shockwave'，duration=0.5s，扩散到 radius
  */
-export function createShockwaveEffect(x: number, y: number, radius: number, color: string, pool?: Pool<Effect>): Effect {
+export function createShockwaveEffect(
+  x: number,
+  y: number,
+  radius: number,
+  color: string,
+  pool?: Pool<Effect>,
+): Effect {
   const duration = 0.5;
   const e = pool ? pool.acquire() : ({} as Effect);
   e.instanceId = nextEntityId();

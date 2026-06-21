@@ -48,7 +48,11 @@ export function createProjectile(opts: CreateProjectileOpts, pool?: Pool<Project
   proj.size = opts.size ?? 4;
   // debuff 字段：显式设置（覆盖池中旧值）
   if (opts.debuffType != null) {
-    proj.debuff = { type: opts.debuffType, value: opts.debuffValue ?? 0, duration: opts.debuffDuration ?? 1 };
+    proj.debuff = {
+      type: opts.debuffType,
+      value: opts.debuffValue ?? 0,
+      duration: opts.debuffDuration ?? 1,
+    };
   } else {
     proj.debuff = undefined;
   }
