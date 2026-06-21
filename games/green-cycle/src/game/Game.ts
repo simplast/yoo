@@ -101,6 +101,9 @@ export class Game {
   // 本地存档
   private saveData: SaveData;
 
+  // 上次序列化存档（避免无变化时重复写入 localStorage）
+  private lastSaved = '';
+
   // 菜单显示时的回调（用于外部同步解锁状态与排行榜）
   onShowMenu?: () => void;
 
@@ -485,8 +488,12 @@ export class Game {
 
   // ===== 存档/解锁 =====
 
-  /** 保存当前存档 */
+  /** 保存当前存档（仅在数据有变化时写入） */
   private saveProgress(): void {
+    // 去抖：上次序列化结果相同则跳过
+    const serialized = JSON.stringify(this.saveData);
+    if (serialized === this.lastSaved) return;
+    this.lastSaved = serialized;
     SaveManager.save(this.saveData);
   }
 
@@ -517,8 +524,8 @@ export class Game {
     }
 
     // 无尽模式记录排行榜
-    if (state.endless || won) {
-      const score = state.endless ? state.waveIndex * 100 + state.pf * 10 : state.pf * 100;
+    if (state.endless) {
+      const score = state.waveIndex * 100 + state.pf * 10;
       this.saveData.leaderboard.endless.push({
         wave: state.waveIndex,
         score,
@@ -554,13 +561,14 @@ export class Game {
       // 在路径中点召唤临时高伤炮台
       const pos = state.path.getPosition(0.5);
       const t = createTower('cannon', pos.x, pos.y);
-      t.instanceId = Math.floor(Math.random() * -100000) - 1; // 负 id 标记临时
+      // 临时塔：覆盖默认 level 配置为高伤单体炮台
       t.levels = [{ level: 1, damage: 200, attackSpeed: 2, range: 150, upgradeCost: 0 }];
       t.maxLevel = 1;
       t.popCost = 0;
+      t.isTemporary = true;
+      state.addTower(t);
       state.summonTowerId = t.instanceId;
       state.summonTimer = CONFIG.SKILL_SUMMON_DURATION;
-      state.towers.push(t);
       audio.playSkillSummon();
     }
   }

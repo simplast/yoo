@@ -121,7 +121,7 @@ function init(): void {
     ui.endlessBtn.textContent = `无尽模式: ${endlessMode && endlessUnlocked ? '开' : '关'}`;
     ui.endlessBtn.classList.toggle('active', endlessMode && endlessUnlocked);
 
-    // 渲染排行榜
+    // 渲染排行榜（仅写入无尽记录，标题与内容一致）
     const records = save.leaderboard.endless.slice(0, 5);
     if (records.length === 0) {
       ui.leaderboard.innerHTML =

@@ -173,6 +173,8 @@ export interface Tower extends TowerDef {
   shieldBonus?: number;
   // 光环缓存
   auraApplied?: boolean;
+  /** 临时塔标记（召唤技能等），到期自动移除，不占人口/格子 */
+  isTemporary?: boolean;
 }
 
 // ===== 投射物 =====
