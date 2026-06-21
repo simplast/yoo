@@ -14,7 +14,7 @@
 | 006  | 修复 6 个文件的 prettier --check                         | P1     | S    | —              | DONE                  |
 | 007  | 提取 resetProjectile 工厂函数                            | P1     | S    | —              | DONE                  |
 | 008  | 设置 UI（音量/画质）— spike + 接线                       | P2     | S    | —              | DONE                  |
-| 008b | 设置 UI 落地：overlay 音量+画质控件 + 画质运行时分支     | P2     | M    | 008            | TODO                  |
+| 008b | 设置 UI 落地：overlay 音量+画质控件 + 画质运行时分支     | P2     | M    | 008            | IN PROGRESS           |
 
 状态取值：`TODO` | `IN PROGRESS` | `DONE` | `BLOCKED`（附一行原因）| `REJECTED`（附一行理由 —— 发现被独立修复或方案放弃）
 
