@@ -1,10 +1,12 @@
 // 入口：初始化游戏、绑定 UI、启动主循环
+/// <reference types="vite/client" />
 import { Game } from './game/Game';
 import type { UIElements } from './game/Game';
 import type { Difficulty } from './config';
 import { getIconSvg, preloadImages } from './utils/AssetLoader';
 import { SaveManager } from './utils/SaveManager';
 import { audio } from './audio/Audio';
+import { attachCheatHelpers } from './debug/cheat';
 
 function $(id: string): HTMLElement {
   const el = document.getElementById(id);
@@ -75,6 +77,20 @@ function init(): void {
   };
 
   const game = new Game(canvas, ui);
+
+  // 开发/测试阶段暴露调试辅助（非生产）
+  // 开关规则：
+  //   - 生产构建（import.meta.env.PROD）：默认关闭
+  //   - 开发构建（import.meta.env.DEV）：默认开启
+  //   - 可通过 URL 参数显式控制：?cheat=1 强制开启，?cheat=0 强制关闭
+  const params = new URLSearchParams(location.search);
+  const cheatEnabled = import.meta.env.PROD
+    ? params.get('cheat') === '1'
+    : params.get('cheat') !== '0';
+  if (cheatEnabled) {
+    (window as unknown as Record<string, unknown>).__game = game;
+    attachCheatHelpers(game);
+  }
 
   // 技能按钮替换为 SVG 图标
   function setSkillIcon(btn: HTMLButtonElement, iconId: string) {

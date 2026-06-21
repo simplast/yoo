@@ -2,6 +2,7 @@
 import type { GameState } from '../game/State';
 import type { Tower } from '../types';
 import { getTowerStat } from '../entities/Tower';
+import { getHeroStat } from '../entities/HeroTower';
 import { drawEnemy, drawTower, drawProjectile, drawEffect } from './PixelArt';
 
 /**
@@ -56,7 +57,7 @@ export function drawEntities(
  * - 多选塔仅画高亮边框，颜色用青色区分
  */
 function drawSelectionRing(ctx: CanvasRenderingContext2D, tower: Tower, showRange: boolean): void {
-  const stat = getTowerStat(tower);
+  const stat = tower.isGrowth ? getHeroStat(tower) : getTowerStat(tower);
   const range = stat.range;
   ctx.save();
   // 射程圈（白色虚线）
