@@ -117,6 +117,8 @@ export class Game {
       CONFIG.INNER_SIZE,
     );
     this.state = new GameState(path);
+    audio.init();
+    audio.applySettings(this.saveData.settings);
     this.renderer = new Renderer(canvas);
     this.input = new InputManager(canvas);
 
@@ -152,6 +154,7 @@ export class Game {
   startGame(difficulty: Difficulty, endless = false) {
     audio.init();
     audio.resume();
+    audio.applySettings(this.saveData.settings);
     resetEntityId();
     const path = this.state.path;
     // 释放旧对象池中的对象，避免旧实体引用残留
