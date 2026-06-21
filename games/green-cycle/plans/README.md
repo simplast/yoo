@@ -55,6 +55,17 @@
 - D3 存档槽位
 - D4 本地化
 
+## Reconcile 记录
+
+- **2026-06-21 (HEAD `8d91c07`)**：spot-check 001-004 的 done criteria。
+  - `npm run typecheck`：通过
+  - `npm run lint`：通过
+  - `npm test`：113 个测试全部通过
+  - `npm run format:check`：**未通过**，`src/entities/Effect.ts`、`Enemy.ts`、`Projectile.ts`、`src/systems/AuraSystem.ts`、`CombatSystem.ts`、`SkillSystem.ts` 共 6 个文件存在格式问题
+  - Plan 002 的 DOM 缓存实现（`syncUIHot`/`syncUICold`/`lastSync`）仍在位且按预期守护写入
+  - 后续 commit（如 `3664f7a`、`abadf08`、`f309ad9`、`9102dd9`）触碰了上述 6 个文件，可能在这些变更中引入格式化回退
+  - 后续 plan-005+ 的合并记录在 git 历史中可见，但 `plans/` 目录下无对应 plan 文件（与审计摘要中"5 个 plan 文档被一次性删除"的技术债一致）
+
 ## 给执行者的统一提示
 
 - **每个 plan 的第一步都是"漂移检查"**：`git diff --stat <planned-at SHA>..HEAD -- <in-scope paths>`。如果发现 plan 中引用的代码位置已变，对照 "Current state" 与现行代码比较；不一致按 STOP 处理。
