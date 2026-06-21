@@ -70,5 +70,18 @@ describe('SaveManager', () => {
         bestPf: 0,
       });
     });
+
+    it('round-trips settings with custom volume and quality', () => {
+      const data = SaveManager.getDefault();
+      data.settings = { volume: 0.42, quality: 'low' };
+      SaveManager.save(data);
+      const loaded = SaveManager.load();
+      expect(loaded?.settings).toEqual({ volume: 0.42, quality: 'low' });
+      // second save/load proves no caching
+      data.settings = { volume: 0.88, quality: 'high' };
+      SaveManager.save(data);
+      const loaded2 = SaveManager.load();
+      expect(loaded2?.settings).toEqual({ volume: 0.88, quality: 'high' });
+    });
   });
 });

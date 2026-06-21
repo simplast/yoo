@@ -3,6 +3,8 @@ import { Game } from './game/Game';
 import type { UIElements } from './game/Game';
 import type { Difficulty } from './config';
 import { getIconSvg, preloadImages } from './utils/AssetLoader';
+import { SaveManager } from './utils/SaveManager';
+import { audio } from './audio/Audio';
 
 function $(id: string): HTMLElement {
   const el = document.getElementById(id);
@@ -67,6 +69,9 @@ function init(): void {
     skillSummon: $btn('skill-summon'),
     speedBtns: Array.from(document.querySelectorAll<HTMLButtonElement>('.speed-btn[data-speed]')),
     pauseBtn: $btn('pause-btn'),
+    volumeSlider: $('volume-slider') as HTMLInputElement,
+    volumeValue: $('volume-value'),
+    qualitySelect: $('quality-select') as HTMLSelectElement,
   };
 
   const game = new Game(canvas, ui);
@@ -106,6 +111,28 @@ function init(): void {
   // 开始按钮
   ui.startBtn.addEventListener('click', () => {
     game.startGame(selectedDiff, endlessMode);
+  });
+
+  // 初始化设置控件的当前值
+  const initialSave = game.getSaveData();
+  ui.volumeSlider.value = String(initialSave.settings.volume);
+  ui.volumeValue.textContent = `${Math.round(initialSave.settings.volume * 100)}%`;
+  ui.qualitySelect.value = initialSave.settings.quality;
+
+  // 音量滑动 → 实时生效 + 持久化
+  ui.volumeSlider.addEventListener('input', () => {
+    const v = Number(ui.volumeSlider.value);
+    game.getSaveData().settings.volume = v;
+    audio.applySettings({ volume: v });
+    ui.volumeValue.textContent = `${Math.round(v * 100)}%`;
+    SaveManager.save(game.getSaveData());
+  });
+
+  // 画质切换 → 持久化
+  ui.qualitySelect.addEventListener('change', () => {
+    const q = ui.qualitySelect.value as 'low' | 'high';
+    game.getSaveData().settings.quality = q;
+    SaveManager.save(game.getSaveData());
   });
 
   // 同步菜单解锁/排行榜状态

@@ -32,7 +32,7 @@ import {
   getSkillLevel,
 } from '../entities/HeroTower';
 import { upgradeTower, getTowerStat, getSellRefund } from '../entities/Tower';
-import { createBuildEffect, createUpgradeEffect } from '../entities/Effect';
+import { createBuildEffect, createUpgradeEffect, setEffectQuality } from '../entities/Effect';
 import { resetEntityId } from '../entities/Entity';
 import { SKILLS, HERO_SKILLS } from '../data/skills';
 
@@ -117,6 +117,7 @@ export class Game {
       CONFIG.INNER_SIZE,
     );
     this.state = new GameState(path);
+    this.state.saveData = this.saveData;
     audio.init();
     audio.applySettings(this.saveData.settings);
     this.renderer = new Renderer(canvas);
@@ -162,6 +163,8 @@ export class Game {
     this.state.projectilePool.releaseAll();
     this.state.effectPool.releaseAll();
     this.state = new GameState(path);
+    this.state.saveData = this.saveData;
+    setEffectQuality(this.saveData.settings.quality);
     this.state.initDifficulty(difficulty, endless);
     this.state.phase = 'battling';
     this.state.waveTimer = 3; // 3 秒后第一波
@@ -1088,4 +1091,7 @@ export interface UIElements {
   skillSummon: HTMLButtonElement;
   speedBtns: HTMLButtonElement[];
   pauseBtn: HTMLButtonElement;
+  volumeSlider: HTMLInputElement;
+  volumeValue: HTMLElement;
+  qualitySelect: HTMLSelectElement;
 }
