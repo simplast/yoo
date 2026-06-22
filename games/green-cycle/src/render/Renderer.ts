@@ -145,14 +145,7 @@ export class Renderer {
     this.recomputeTransform();
   }
 
-  /** 设置视图变换参数（由 Game 同步给 InputManager 做坐标转换） */
-  setView(offsetX: number, offsetY: number, scale: number): void {
-    this.offsetX = offsetX;
-    this.offsetY = offsetY;
-    this.scale = scale;
-  }
-
-  /** 获取当前视图变换参数 */
+  /** 获取当前视图变换参数（用于同步给 InputManager 做坐标转换） */
   getView(): { offsetX: number; offsetY: number; scale: number } {
     return { offsetX: this.offsetX, offsetY: this.offsetY, scale: this.scale };
   }

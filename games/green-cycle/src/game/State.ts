@@ -111,7 +111,6 @@ export class GameState {
 
   // ===== 统计 =====
   kills = 0;
-  leaks = 0;
   perfectStreak = 0;
   bossTimer = 0; // Boss 波击杀限时，0=无
   bossAlive = false;

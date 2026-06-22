@@ -51,9 +51,10 @@ export function applyDamage(
         child.maxHp = child.hp;
         child.pathProgress = enemy.pathProgress;
         child._splitChild = true;
-        // 子怪位置在父怪附近偏移，避免重叠
-        child.x = enemy.x + (Math.random() - 0.5) * 20;
-        child.y = enemy.y + (Math.random() - 0.5) * 20;
+        // 子怪出生在父怪路径位置（随机偏移会在下一帧被 MovementSystem 覆盖，仅造成一帧抖动）
+        const spawnPos = state.path.getPosition(child.pathProgress);
+        child.x = spawnPos.x;
+        child.y = spawnPos.y;
         state.addEnemy(child);
       }
     }

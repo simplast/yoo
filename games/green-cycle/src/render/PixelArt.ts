@@ -66,6 +66,19 @@ export function drawEnemy(ctx: CanvasRenderingContext2D, enemy: Enemy): void {
     ctx.stroke();
   }
 
+  // 敌方光环怪底部虚线范围圈（弱化显示）
+  if (abilities.some((a) => a.startsWith('aura')) && enemy.auraRadius) {
+    ctx.fillStyle = hexToRgba(enemy.color, 0.05);
+    ctx.beginPath();
+    ctx.arc(x, y, enemy.auraRadius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = hexToRgba(enemy.color, 0.18);
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 4]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
   // 护甲色边框（受击时变白）
   ctx.fillStyle = useFlash ? COLOR_WHITE : COLOR_BLACK;
   ctx.fillRect(x - half - 1, y - half - 1, size + 2, size + 2);

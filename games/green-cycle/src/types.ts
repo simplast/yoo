@@ -71,6 +71,8 @@ export interface EnemyDef {
   size: number; // 渲染尺寸
   color: string;
   isBoss?: boolean;
+  auraRadius?: number; // 敌方光环半径（像素），仅 abilities 含 auraXxx 时使用
+  auraValue?: number; // 敌方光环强度（haste = 加速比例，0.3 = +30%）
 }
 
 // ===== 敌人实例（运行时） =====

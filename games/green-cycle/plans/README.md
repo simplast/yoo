@@ -15,12 +15,12 @@
 | 007  | 提取 resetProjectile 工厂函数                            | P1     | S    | —              | DONE (merged 0ff5f71) |
 | 008  | 设置 UI（音量/画质）— spike + 接线                       | P2     | S    | —              | DONE (merged ffd7515) |
 | 008b | 设置 UI 落地：overlay 音量+画质控件 + 画质运行时分支     | P2     | M    | 008            | DONE (merged b6f1840) |
-| 009  | 实现敌方光环（auraHaster 加速友方怪）                    | P1     | M    | —              | TODO                  |
-| 010  | 新游戏（startGame）重置相机到默认视角                    | P1     | S    | —              | TODO                  |
-| 011  | CI 增加 format:check 步骤                                | P1     | S    | —              | TODO                  |
-| 012  | lastSync 声明 auraKey 字段，移除 4 处 (as any)           | P1     | S    | —              | TODO                  |
-| 013  | 删除或修正 Renderer.setView 陷阱方法                     | P2     | S    | —              | TODO                  |
-| 014  | 小 cleanup 集合：splitter 偏移/死字段 leaks/AGENT/Aura   | P2     | S    | —              | TODO                  |
+| 009  | 实现敌方光环（auraHaster 加速友方怪）                    | P1     | M    | —              | DONE                  |
+| 010  | 新游戏（startGame）重置相机到默认视角                    | P1     | S    | —              | DONE                  |
+| 011  | CI 增加 format:check 步骤                                | P1     | S    | —              | DONE                  |
+| 012  | lastSync 声明 auraKey 字段，移除 4 处 (as any)           | P1     | S    | —              | DONE                  |
+| 013  | 删除或修正 Renderer.setView 陷阱方法                     | P2     | S    | —              | DONE                  |
+| 014  | 小 cleanup 集合：splitter 偏移/死字段 leaks/AGENT/Aura   | P2     | S    | —              | DONE                  |
 
 状态取值：`TODO` | `IN PROGRESS` | `DONE` | `BLOCKED`（附一行原因）| `REJECTED`（附一行理由 —— 发现被独立修复或方案放弃）
 
@@ -113,11 +113,11 @@
 
 ## 验证矩阵（每个 plan 都跑）
 
-| 命令                   | 用途                                   |
-| ---------------------- | -------------------------------------- |
-| `npm run typecheck`    | TS 严格模式无错                        |
-| `npm run lint`         | ESLint 0 警告                          |
-| `npm test`             | 单元测试全过                           |
-| `npm run format:check` | Prettier 格式无差                      |
+| 命令                   | 用途                                     |
+| ---------------------- | ---------------------------------------- |
+| `npm run typecheck`    | TS 严格模式无错                          |
+| `npm run lint`         | ESLint 0 警告                            |
+| `npm test`             | 单元测试全过                             |
+| `npm run format:check` | Prettier 格式无差                        |
 | `npm run build`        | singlefile 产物能生成（仅 004/011 必跑） |
-| `npm run dev`          | 本地服务器可启动（手测步骤需要时）     |
+| `npm run dev`          | 本地服务器可启动（手测步骤需要时）       |

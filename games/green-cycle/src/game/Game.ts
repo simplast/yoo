@@ -95,6 +95,7 @@ export class Game {
     selectedTowerId: -2, // 哨兵：与 selectedTowerId=-1 区分
     growthRenderKey: '', // 由 (tower.instanceId, tower.level, tower.attrPoints, skillPoints, skillLevels) 拼成；不含 exp
     combineRenderKey: '', // 由 selectedTowerIds 排序后拼成
+    auraKey: '', // 友方光环加成缓存 key（damageMult:speedMult），变化时刷新塔信息
     popText: '', // 完整的 pop/popMax 字符串
   };
 
@@ -166,6 +167,7 @@ export class Game {
     this.state.saveData = this.saveData;
     setEffectQuality(this.saveData.settings.quality);
     this.state.initDifficulty(difficulty, endless);
+    this.renderer.resetCamera(); // 新游戏恢复默认视角
     this.state.phase = 'battling';
     this.state.waveTimer = 3; // 3 秒后第一波
     this.state.selectedTowerId = -1;
@@ -839,27 +841,27 @@ export class Game {
           this.lastSync.selectedTowerId !== t.instanceId ||
           this.lastSync.growthRenderKey !== key ||
           this.lastSync.combineRenderKey !== combineKey ||
-          (this.lastSync as any).auraKey !== auraKey
+          this.lastSync.auraKey !== auraKey
         ) {
           this.showTowerInfo(t);
           this.lastSync.selectedTowerId = t.instanceId;
           this.lastSync.growthRenderKey = key;
           this.lastSync.combineRenderKey = combineKey;
-          (this.lastSync as any).auraKey = auraKey;
+          this.lastSync.auraKey = auraKey;
         }
       } else if (this.lastSync.selectedTowerId !== -1) {
         ui.towerInfo.classList.remove('show');
         this.lastSync.selectedTowerId = -1;
         this.lastSync.growthRenderKey = '';
         this.lastSync.combineRenderKey = '';
-        (this.lastSync as any).auraKey = '';
+        this.lastSync.auraKey = '';
       }
     } else if (this.lastSync.selectedTowerId !== -1) {
       ui.towerInfo.classList.remove('show');
       this.lastSync.selectedTowerId = -1;
       this.lastSync.growthRenderKey = '';
       this.lastSync.combineRenderKey = '';
-      (this.lastSync as any).auraKey = '';
+      this.lastSync.auraKey = '';
     }
   }
 
@@ -893,7 +895,8 @@ export class Game {
         }
       } else {
         // 敌方光环（如减速）
-        const typeName = tower.auraType === 'slow' ? '减速' : tower.auraType === 'freeze' ? '冰冻' : '减益';
+        const typeName =
+          tower.auraType === 'slow' ? '减速' : tower.auraType === 'freeze' ? '冰冻' : '减益';
         ui.tiDmg.innerHTML = `<span class="aura-bonus">敌方${typeName} ${val}%</span>`;
       }
       ui.tiAs.textContent = '—';

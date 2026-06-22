@@ -4,13 +4,13 @@
 
 ## 项目信息
 
-| 项 | 值 |
-|----|----|
-| 位置 | `/Users/doer/dev/yoo/games/green-cycle/` |
-| 技术栈 | TypeScript + Vite + Canvas 2D + Web Audio |
-| 架构 | ECS-lite（集中式 State + 8 纯函数系统） |
-| 产物 | `public/games/green-cycle/index.html` 单文件（JS/CSS 全内联） |
-| 当前进度 | M10 + 里程碑一·二（plans/012-013）完成 |
+| 项       | 值                                                            |
+| -------- | ------------------------------------------------------------- |
+| 位置     | `/Users/doer/dev/yoo/games/green-cycle/`                      |
+| 技术栈   | TypeScript + Vite + Canvas 2D + Web Audio                     |
+| 架构     | ECS-lite（集中式 State + 8 纯函数系统）                       |
+| 产物     | `public/games/green-cycle/index.html` 单文件（JS/CSS 全内联） |
+| 当前进度 | 见 plans/README.md 状态表                                     |
 
 ## 快速开始
 
@@ -19,10 +19,11 @@ cd games/green-cycle
 npm install          # 安装依赖
 npm run dev          # dev 服务器 → http://localhost:5173
 npm run typecheck    # tsc --noEmit
-npm run test         # vitest run (6 files, 44 tests)
+npm run test         # vitest run (16 files, 118 tests at 2026-06-22)
 npm run build        # 单文件 → ../../public/games/green-cycle/
 npm run lint         # ESLint 检查
 ```
+
 ## 目录结构
 
 ```
@@ -37,10 +38,11 @@ green-cycle/
 │   ├── entities/             # 实体工厂（Enemy/Tower/HeroTower/Projectile/Effect）
 │   ├── systems/              # 8 系统（Wave/Movement/TowerAI/Combat/Aura/Skill/Economy/Effect）
 │   ├── data/                 # 数据表（towers/enemies/waves/recipes/skills/armor）
-│   ├── render/               # 像素风渲染（Entity/Map/UIRenderer + PixelArt）
-│   ├── utils/                # 工具（Path/Quadtree/Pool/BuffUtil/RecipeUtil/SaveManager）
+│   ├── render/               # 像素风渲染（Entity/Map/UI/PixelArt）
+│   ├── utils/                # 工具（Path/Quadtree/Pool/AssetLoader/BuffUtil/RecipeUtil/SaveManager/MathUtil）
 │   ├── audio/                # 8-bit 程序化音效
-│   └── input/                # 输入管理（点击/拖拽/框选/右键）
+│   ├── debug/                # 开发者作弊（cheat.ts）
+│   └── input/                # 输入管理（点击/拖拽/框选/右键/滚轮/中键平移）
 ├── index.html                # 游戏 HTML + CSS
 ├── package.json
 └── vite.config.ts            # vite-plugin-singlefile 内联打包

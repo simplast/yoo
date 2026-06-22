@@ -1,5 +1,5 @@
-// 光环系统：处理敌方光环（减速/加速敌人）
-// 友方光环（auraDamage/auraHaste）由 TowerAISystem 内部查询应用
+// 光环系统：处理塔→敌 debuff 与塔→塔友方光环缓存（allyAuraCache）
+// 友方光环（auraDamage/auraHaste）在此计算为 allyAuraCache，供 TowerAISystem 与 UI 读取
 import type { GameState } from '../game/State';
 import type { Enemy, Buff, BuffType } from '../types';
 
@@ -14,7 +14,7 @@ export function update(state: GameState, _dt: number): void {
   for (const tower of state.towers) {
     // 只处理光环塔
     if (tower.category !== 'aura') continue;
-    // 只处理敌方光环（友方光环由 TowerAISystem 处理）
+    // 只处理塔→敌 debuff（友方光环在后面的 allyAuraCache 段处理）
     if (tower.auraTarget !== 'enemy') continue;
     if (tower.auraType == null || tower.auraRadius == null || tower.auraValue == null) continue;
 
@@ -37,6 +37,49 @@ export function update(state: GameState, _dt: number): void {
       } else {
         enemy.buffs.push({
           type: auraType,
+          value: auraValue,
+          remaining: 1.0,
+          source,
+        });
+      }
+    }
+  }
+
+  // ===== 敌方→敌方光环（如 auraHaster 加速友方怪）=====
+  for (const caster of state.enemies) {
+    if (!caster.alive) continue;
+    if (!caster.abilities.some((a) => a.startsWith('aura'))) continue;
+    if (caster.auraRadius == null || caster.auraValue == null) continue;
+
+    // 将 ability 映射为 (buffType, isImplemented)
+    let buffType: BuffType | null = null;
+    for (const ability of caster.abilities) {
+      if (ability === 'auraHaste') {
+        buffType = 'haste';
+      } else if (ability === 'auraHeal' || ability === 'auraDamage') {
+        throw new Error(`[AuraSystem] enemy aura ${ability} not implemented`);
+      }
+    }
+    if (!buffType) continue;
+
+    const radius2 = caster.auraRadius * caster.auraRadius;
+    const source = 'enemy-aura:' + caster.instanceId;
+    const auraValue = caster.auraValue;
+
+    for (const other of state.enemies) {
+      if (!other.alive) continue;
+      if (other.instanceId === caster.instanceId) continue;
+      const dx = other.x - caster.x;
+      const dy = other.y - caster.y;
+      if (dx * dx + dy * dy > radius2) continue;
+
+      const existing = findBuff(other, buffType, source);
+      if (existing) {
+        existing.remaining = 1.0;
+        existing.value = auraValue;
+      } else {
+        other.buffs.push({
+          type: buffType,
           value: auraValue,
           remaining: 1.0,
           source,

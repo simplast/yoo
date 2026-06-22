@@ -154,6 +154,8 @@ export const ENEMIES: Record<string, EnemyDef> = {
     baseSpeed: 45,
     armor: 'physical',
     abilities: ['auraHaste'],
+    auraRadius: 100, // 光环影响半径（像素）
+    auraValue: 0.3, // 范围内友方 +30% 速度
     rewardGold: 20,
     rewardWood: 2,
     rewardExp: 15,
