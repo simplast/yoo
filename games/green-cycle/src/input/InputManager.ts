@@ -10,6 +10,7 @@ export interface InputState {
   mouseScreen: Vec2;
   mouseDown: boolean;
   mouseRightDown: boolean;
+  mouseMiddleDown: boolean;
   shiftDown: boolean;
   ctrlDown: boolean;
   /** 本帧左键按下（消费后清除） */
@@ -23,6 +24,10 @@ export interface InputState {
   isDragging: boolean;
   /** 本帧刚完成框选（消费后清除） */
   justFinishedSelectBox: boolean;
+  /** 相机平移：中键按下中持续为 true */
+  isPanning: boolean;
+  /** 本帧相机平移的屏幕坐标增量（消费后清零） */
+  panDelta: Vec2;
 }
 
 /**
@@ -49,6 +54,9 @@ export class InputManager {
   // 拖拽起点（世界坐标）
   private dragStartWorld: Vec2 | null = null;
 
+  // 中键拖拽平移：上一帧屏幕坐标
+  private panLastScreen: Vec2 | null = null;
+
   // 拖拽判定阈值（世界坐标像素）
   private static readonly DRAG_THRESHOLD = 8;
 
@@ -67,6 +75,8 @@ export class InputManager {
   private readonly boundPointerDown: (e: PointerEvent) => void;
   private readonly boundPointerMove: (e: PointerEvent) => void;
   private readonly boundPointerUp: (e: PointerEvent) => void;
+  private readonly boundMouseDown: (e: MouseEvent) => void;
+  private readonly boundAuxClick: (e: MouseEvent) => void;
   private readonly boundContextMenu: (e: Event) => void;
   private readonly boundWheel: (e: WheelEvent) => void;
   private readonly boundKeyDown: (e: KeyboardEvent) => void;
@@ -80,6 +90,7 @@ export class InputManager {
       mouseScreen: { x: 0, y: 0 },
       mouseDown: false,
       mouseRightDown: false,
+      mouseMiddleDown: false,
       shiftDown: false,
       ctrlDown: false,
       justClicked: false,
@@ -88,12 +99,21 @@ export class InputManager {
       dragStartWorld: null,
       isDragging: false,
       justFinishedSelectBox: false,
+      isPanning: false,
+      panDelta: { x: 0, y: 0 },
     };
 
     // 绑定监听器
     this.boundPointerDown = this.handlePointerDown.bind(this);
     this.boundPointerMove = this.handlePointerMove.bind(this);
     this.boundPointerUp = this.handlePointerUp.bind(this);
+    this.boundMouseDown = (e: MouseEvent) => {
+      if (e.button === 1) e.preventDefault();
+    };
+    this.boundAuxClick = (e: MouseEvent) => {
+      // 阻止中键点击触发浏览器的自动滚动/打开新标签页等默认行为
+      if (e.button === 1) e.preventDefault();
+    };
     this.boundContextMenu = this.handleContextMenu.bind(this);
     this.boundWheel = this.handleWheel.bind(this);
     this.boundKeyDown = this.handleKeyDown.bind(this);
@@ -104,6 +124,8 @@ export class InputManager {
     canvas.addEventListener('pointerdown', this.boundPointerDown);
     canvas.addEventListener('pointermove', this.boundPointerMove);
     canvas.addEventListener('pointerup', this.boundPointerUp);
+    canvas.addEventListener('mousedown', this.boundMouseDown);
+    canvas.addEventListener('auxclick', this.boundAuxClick);
     canvas.addEventListener('contextmenu', this.boundContextMenu);
     canvas.addEventListener('wheel', this.boundWheel, { passive: false });
     window.addEventListener('keydown', this.boundKeyDown);
@@ -199,12 +221,24 @@ export class InputManager {
   }
 
   /**
+   * 消费相机平移增量：返回本帧屏幕像素偏移并清零
+   */
+  consumePanDelta(): Vec2 {
+    const d = { ...this.state.panDelta };
+    this.state.panDelta.x = 0;
+    this.state.panDelta.y = 0;
+    return d;
+  }
+
+  /**
    * 移除所有监听器
    */
   dispose(): void {
     this.canvas.removeEventListener('pointerdown', this.boundPointerDown);
     this.canvas.removeEventListener('pointermove', this.boundPointerMove);
     this.canvas.removeEventListener('pointerup', this.boundPointerUp);
+    this.canvas.removeEventListener('mousedown', this.boundMouseDown);
+    this.canvas.removeEventListener('auxclick', this.boundAuxClick);
     this.canvas.removeEventListener('contextmenu', this.boundContextMenu);
     this.canvas.removeEventListener('wheel', this.boundWheel);
     window.removeEventListener('keydown', this.boundKeyDown);
@@ -232,10 +266,15 @@ export class InputManager {
   }
 
   /**
-   * 根据当前 rawX/rawY 更新 mouseScreen 和 mouseWorld
+   * 根据当前 rawX/rawY 更新 mouseScreen 和 mouseWorld；若中键正在平移，累加 panDelta
    */
   private updateMouseWorld(): void {
     const screen = this.clientToCanvas(this.rawX, this.rawY);
+    if (this.state.mouseMiddleDown && this.panLastScreen) {
+      this.state.panDelta.x += screen.x - this.panLastScreen.x;
+      this.state.panDelta.y += screen.y - this.panLastScreen.y;
+    }
+    this.panLastScreen = { ...screen };
     this.state.mouseScreen = screen;
     // 世界坐标 = (屏幕坐标 - offset) / scale
     this.state.mouseWorld = {
@@ -245,7 +284,7 @@ export class InputManager {
   }
 
   private handlePointerDown(e: PointerEvent): void {
-    // 只处理左键和右键
+    // 只处理左键、中键、右键
     if (e.button === 0) {
       this.state.mouseDown = true;
       this.pointerDownThisFrame = true;
@@ -255,6 +294,18 @@ export class InputManager {
       this.updateMouseWorld();
       this.dragStartWorld = { ...this.state.mouseWorld };
       this.state.dragStartWorld = this.dragStartWorld;
+    } else if (e.button === 1) {
+      // 中键：相机平移
+      this.state.mouseMiddleDown = true;
+      this.state.isPanning = true;
+      this.rawX = e.clientX;
+      this.rawY = e.clientY;
+      // 初始化 panLastScreen，避免首帧产生跳变
+      this.panLastScreen = this.clientToCanvas(e.clientX, e.clientY);
+      this.state.panDelta.x = 0;
+      this.state.panDelta.y = 0;
+      this.canvas.style.cursor = 'grabbing';
+      e.preventDefault();
     } else if (e.button === 2) {
       this.state.mouseRightDown = true;
       this.pointerRightDownThisFrame = true;
@@ -290,6 +341,11 @@ export class InputManager {
       this.state.isDragging = false;
       this.dragStartWorld = null;
       this.state.dragStartWorld = null;
+    } else if (e.button === 1) {
+      this.state.mouseMiddleDown = false;
+      this.state.isPanning = false;
+      this.panLastScreen = null;
+      this.canvas.style.cursor = '';
     } else if (e.button === 2) {
       this.state.mouseRightDown = false;
     }
@@ -337,6 +393,12 @@ export class InputManager {
   private handleBlur(): void {
     this.state.mouseDown = false;
     this.state.mouseRightDown = false;
+    this.state.mouseMiddleDown = false;
+    this.state.isPanning = false;
+    this.panLastScreen = null;
+    this.state.panDelta.x = 0;
+    this.state.panDelta.y = 0;
+    this.canvas.style.cursor = '';
     this.state.shiftDown = false;
     this.state.ctrlDown = false;
     this.state.isDragging = false;

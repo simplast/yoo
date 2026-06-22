@@ -196,16 +196,18 @@ export function drawTower(
 
   ctx.save();
 
-  // 光环塔底部画半透明范围圈
+  // 光环塔底部画半透明范围圈（弱化显示，避免遮挡战斗信息）
   if (category === 'aura' && tower.auraRadius) {
     const auraColor = tower.auraType ? (AURA_COLOR[tower.auraType] ?? '#FFD700') : '#FFD700';
-    ctx.fillStyle = hexToRgba(auraColor, 0.12);
+    ctx.fillStyle = hexToRgba(auraColor, 0.05);
     ctx.beginPath();
     ctx.arc(x, y, tower.auraRadius, 0, Math.PI * 2);
     ctx.fill();
-    ctx.strokeStyle = hexToRgba(auraColor, 0.4);
+    ctx.strokeStyle = hexToRgba(auraColor, 0.18);
     ctx.lineWidth = 1;
+    ctx.setLineDash([3, 4]);
     ctx.stroke();
+    ctx.setLineDash([]);
   }
 
   // 尝试使用 SVG 图标绘制塔

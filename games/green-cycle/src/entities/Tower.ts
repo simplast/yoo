@@ -44,22 +44,26 @@ export function createTower(defId: string, x: number, y: number): Tower {
  * 升级塔
  * - level < maxLevel 时 level++，totalSpent += 新级 upgradeCost
  * - 返回 true 表示升级成功，false 表示已满级
+ * - 防御性：索引做 Math.min 钳制，避免成长塔（levels 数组较短）越界
  */
 export function upgradeTower(t: Tower): boolean {
   if (t.level >= t.maxLevel) {
     return false;
   }
   t.level++;
-  t.totalSpent += t.levels[t.level - 1].upgradeCost;
+  const lvIndex = Math.min(t.level - 1, t.levels.length - 1);
+  t.totalSpent += t.levels[lvIndex].upgradeCost;
   return true;
 }
 
 /**
  * 获取塔当前等级的战斗属性
  * - 取 levels[level-1] 的 damage/attackSpeed/range
+ * - 防御性：索引做 Math.min 钳制，避免成长塔（levels 数组较短）越界
  */
 export function getTowerStat(t: Tower): { damage: number; attackSpeed: number; range: number } {
-  const lv = t.levels[t.level - 1];
+  const lvIndex = Math.min(t.level - 1, t.levels.length - 1);
+  const lv = t.levels[lvIndex];
   return {
     damage: lv.damage,
     attackSpeed: lv.attackSpeed,

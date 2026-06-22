@@ -202,6 +202,9 @@ export class Game {
     // 输入刷新
     this.input.update();
 
+    // 相机控制（滚轮缩放 / 中键拖拽），在 handleInput 之前同步视图
+    this.updateCamera();
+
     if (state.phase === 'battling') {
       // 应用游戏速度（用多次步进模拟加速）
       const steps = state.speed;
@@ -226,6 +229,41 @@ export class Game {
 
     this.render();
     this.syncUI();
+  }
+
+  // ===== 相机控制 =====
+
+  /**
+   * 每帧处理滚轮缩放 + 中键拖拽平移，并将最新 offset/scale 同步给 InputManager
+   * 缩放以鼠标位置为锚点；平移方向与鼠标拖拽方向一致
+   */
+  private updateCamera() {
+    const input = this.input;
+    const { mouseScreen } = input.state;
+
+    // 滚轮缩放：deltaY 通常为 ±100（鼠标滚轮一格）或小数（触控板），按比例换算
+    const wheel = input.consumeWheel();
+    if (wheel !== 0) {
+      // 100 单位 delta = 一格 = ZOOM_STEP 倍率
+      this.renderer.zoomAt(mouseScreen.x, mouseScreen.y, wheel);
+    }
+
+    // 中键拖拽平移：panDelta 是屏幕像素差，转为世界坐标差
+    if (input.state.mouseMiddleDown) {
+      const pan = input.consumePanDelta();
+      if (pan.x !== 0 || pan.y !== 0) {
+        const v = this.renderer.getView();
+        // 屏幕移动 pan.x 等价于相机世界坐标移动 -pan.x / scale
+        const cam = this.renderer.getCamera();
+        this.renderer.setCamera(cam.x - pan.x / v.scale, cam.y - pan.y / v.scale);
+      }
+    } else {
+      input.consumePanDelta(); // 清空残留
+    }
+
+    // 同步最新视图给输入管理器（鼠标世界坐标转换用）
+    const v = this.renderer.getView();
+    input.setView(v.offsetX, v.offsetY, v.scale);
   }
 
   // ===== 输入处理 =====
@@ -427,7 +465,7 @@ export class Game {
     const nextCost = tower.levels[Math.min(nextLevel - 1, tower.levels.length - 1)].upgradeCost;
     if (state.gold < nextCost) return;
     state.gold -= nextCost;
-    tower.totalSpent += nextCost;
+    // 注意：upgradeTower() 内部已累加 totalSpent，此处不要重复累加
     upgradeTower(tower);
     state.addEffect(createUpgradeEffect(tower.x, tower.y, state.effectPool));
     audio.playUpgrade();
@@ -788,7 +826,11 @@ export class Game {
     if (state.selectedTowerId >= 0) {
       const t = state.getTowerById(state.selectedTowerId);
       if (t) {
-        const key = `${t.instanceId}:${t.isGrowth ? makeGrowthKey(t) : 'static'}`;
+        const key = `${t.instanceId}:${t.isGrowth ? makeGrowthKey(t) : 'static'}:${t.level}`;
+        const auraKey = (() => {
+          const a = state.allyAuraCache.get(t.instanceId);
+          return a ? `${a.damageMult.toFixed(2)}:${a.speedMult.toFixed(2)}` : '1:1';
+        })();
         const combineKey = state.selectedTowerIds
           .slice()
           .sort((a, b) => a - b)
@@ -796,24 +838,28 @@ export class Game {
         if (
           this.lastSync.selectedTowerId !== t.instanceId ||
           this.lastSync.growthRenderKey !== key ||
-          this.lastSync.combineRenderKey !== combineKey
+          this.lastSync.combineRenderKey !== combineKey ||
+          (this.lastSync as any).auraKey !== auraKey
         ) {
           this.showTowerInfo(t);
           this.lastSync.selectedTowerId = t.instanceId;
           this.lastSync.growthRenderKey = key;
           this.lastSync.combineRenderKey = combineKey;
+          (this.lastSync as any).auraKey = auraKey;
         }
       } else if (this.lastSync.selectedTowerId !== -1) {
         ui.towerInfo.classList.remove('show');
         this.lastSync.selectedTowerId = -1;
         this.lastSync.growthRenderKey = '';
         this.lastSync.combineRenderKey = '';
+        (this.lastSync as any).auraKey = '';
       }
     } else if (this.lastSync.selectedTowerId !== -1) {
       ui.towerInfo.classList.remove('show');
       this.lastSync.selectedTowerId = -1;
       this.lastSync.growthRenderKey = '';
       this.lastSync.combineRenderKey = '';
+      (this.lastSync as any).auraKey = '';
     }
   }
 
@@ -833,10 +879,48 @@ export class Game {
     ui.tiName.textContent = tower.name;
     ui.tiLevel.textContent = `${tower.level}/${tower.maxLevel}`;
     const stat = tower.isGrowth ? getHeroStat(tower) : getTowerStat(tower);
-    ui.tiDmg.textContent = String(Math.floor(stat.damage));
-    ui.tiAs.textContent = stat.attackSpeed.toFixed(2);
-    ui.tiRange.textContent = String(Math.floor(stat.range));
-    ui.tiType.textContent = tower.attackType;
+    if (tower.category === 'aura') {
+      // 光环塔：不显示伤害/攻速（它们不攻击），改为显示光环效果
+      const val = tower.auraValue != null ? Math.round(tower.auraValue * 100) : 0;
+      const radius = tower.auraRadius ?? 0;
+      if (tower.auraTarget === 'ally') {
+        if (tower.id === 'auraHaste') {
+          ui.tiDmg.innerHTML = `<span class="aura-bonus">友方攻速 +${val}%</span>`;
+        } else if (tower.id === 'auraDamage') {
+          ui.tiDmg.innerHTML = `<span class="aura-bonus">友方攻击 +${val}%</span>`;
+        } else {
+          ui.tiDmg.innerHTML = `<span class="aura-bonus">友方增益 +${val}%</span>`;
+        }
+      } else {
+        // 敌方光环（如减速）
+        const typeName = tower.auraType === 'slow' ? '减速' : tower.auraType === 'freeze' ? '冰冻' : '减益';
+        ui.tiDmg.innerHTML = `<span class="aura-bonus">敌方${typeName} ${val}%</span>`;
+      }
+      ui.tiAs.textContent = '—';
+      ui.tiRange.textContent = String(Math.floor(radius));
+      ui.tiType.textContent = '光环';
+    } else {
+      // 普通/成长/辅助塔：应用友方光环加成（与 TowerAISystem 战斗逻辑一致）
+      const aura = state.allyAuraCache.get(tower.instanceId);
+      const dmgMult = aura?.damageMult ?? 1;
+      const spdMult = aura?.speedMult ?? 1;
+      const baseDmg = Math.floor(stat.damage);
+      const buffedDmg = Math.floor(stat.damage * dmgMult);
+      const baseAs = stat.attackSpeed;
+      const buffedAs = stat.attackSpeed * spdMult;
+      if (dmgMult > 1) {
+        ui.tiDmg.innerHTML = `${baseDmg} <span class="aura-bonus">→ ${buffedDmg} (+${Math.round((dmgMult - 1) * 100)}%)</span>`;
+      } else {
+        ui.tiDmg.textContent = String(baseDmg);
+      }
+      if (spdMult > 1) {
+        ui.tiAs.innerHTML = `${baseAs.toFixed(2)} <span class="aura-bonus">→ ${buffedAs.toFixed(2)} (+${Math.round((spdMult - 1) * 100)}%)</span>`;
+      } else {
+        ui.tiAs.textContent = baseAs.toFixed(2);
+      }
+      ui.tiRange.textContent = String(Math.floor(stat.range));
+      ui.tiType.textContent = tower.attackType;
+    }
     const nextLevel = tower.level + 1;
     if (nextLevel > tower.maxLevel) {
       ui.tiUpgrade.textContent = '已满级';
