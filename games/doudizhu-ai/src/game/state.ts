@@ -6,11 +6,20 @@
  */
 import type { CardId, GameState, PlayerId, PlayerState } from "../types";
 import { INITIAL_MULTIPLIER } from "../config";
-import { createDeck, dealCards, shuffleDeck, type RandomSource } from "../rules/deck";
+import {
+  createDeck,
+  dealCards,
+  shuffleDeck,
+  type RandomSource,
+} from "../rules/deck";
 import { sortCards } from "../rules/card";
 
 /** 默认出牌顺序 */
-export const DEFAULT_PLAYER_ORDER: PlayerId[] = ["human", "ai-calm", "ai-aggressive"];
+export const DEFAULT_PLAYER_ORDER: PlayerId[] = [
+  "human",
+  "ai-aggressive",
+  "ai-calm",
+];
 
 const PLAYER_NAMES: Record<PlayerId, string> = {
   human: "你",
@@ -19,10 +28,10 @@ const PLAYER_NAMES: Record<PlayerId, string> = {
 };
 
 export interface CreateRoundOptions {
-  random?: RandomSource;           // 可注入随机源用于测试
-  landlordId?: PlayerId;           // 强制指定地主（测试用）
+  random?: RandomSource; // 可注入随机源用于测试
+  landlordId?: PlayerId; // 强制指定地主（测试用）
   previousScores?: Partial<Record<PlayerId, number>>; // 跨局累积分数
-  order?: PlayerId[];              // 出牌顺序
+  order?: PlayerId[]; // 出牌顺序
 }
 
 /** 随机选一个玩家为地主 */
@@ -65,11 +74,19 @@ export function createNewRound(options: CreateRoundOptions = {}): GameState {
   const deal = dealCards(shuffled, order);
 
   // 地主获得底牌
-  deal.hands[landlordId] = sortCards([...deal.hands[landlordId], ...deal.bottomCards]);
+  deal.hands[landlordId] = sortCards([
+    ...deal.hands[landlordId],
+    ...deal.bottomCards,
+  ]);
 
   return {
     phase: getAwaitingPhase(landlordId),
-    players: createInitialPlayers(landlordId, deal.hands, options.previousScores, order),
+    players: createInitialPlayers(
+      landlordId,
+      deal.hands,
+      options.previousScores,
+      order,
+    ),
     order,
     currentPlayerId: landlordId,
     landlordId,
@@ -83,7 +100,10 @@ export function createNewRound(options: CreateRoundOptions = {}): GameState {
 }
 
 /** 获取按出牌顺序的下一个玩家 */
-export function getNextPlayerId(state: GameState, playerId: PlayerId = state.currentPlayerId): PlayerId {
+export function getNextPlayerId(
+  state: GameState,
+  playerId: PlayerId = state.currentPlayerId,
+): PlayerId {
   const index = state.order.indexOf(playerId);
   if (index < 0) throw new Error(`Unknown player ${playerId}.`);
   return state.order[(index + 1) % state.order.length];

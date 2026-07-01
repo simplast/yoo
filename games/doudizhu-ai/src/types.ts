@@ -149,7 +149,8 @@ export interface RoundResult {
 
 /* ---------- 设置 ---------- */
 
-export type ProviderId = "deepseek" | "spark-maas" | "agnes" | "nvidia";
+export type ProviderId =
+  "deepseek" | "spark-maas" | "agnes" | "nvidia" | "chenapi";
 
 export interface AiSettings {
   provider: ProviderId;

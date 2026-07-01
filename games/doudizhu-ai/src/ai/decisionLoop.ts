@@ -326,7 +326,8 @@ function resolveAiSettings(options: DecideMoveOptions):
     ai.provider !== "deepseek" &&
     ai.provider !== "spark-maas" &&
     ai.provider !== "agnes" &&
-    ai.provider !== "nvidia"
+    ai.provider !== "nvidia" &&
+    ai.provider !== "chenapi"
   )
     return {
       ok: false,

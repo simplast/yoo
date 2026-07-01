@@ -123,14 +123,14 @@ export class ConfigPanel {
     return {
       ai: {
         "ai-calm": {
-          provider: readProvider("ai-calm.provider", "deepseek"),
-          model: readText("ai-calm.model", DEFAULT_MODELS.deepseek),
+          provider: readProvider("ai-calm.provider", "chenapi"),
+          model: readText("ai-calm.model", DEFAULT_MODELS.chenapi),
           apiKey: readText("ai-calm.apiKey", ""),
           rememberKey: readChecked("ai-calm.rememberKey"),
         },
         "ai-aggressive": {
-          provider: readProvider("ai-aggressive.provider", "spark-maas"),
-          model: readText("ai-aggressive.model", DEFAULT_MODELS["spark-maas"]),
+          provider: readProvider("ai-aggressive.provider", "chenapi"),
+          model: readText("ai-aggressive.model", DEFAULT_MODELS.chenapi),
           apiKey: readText("ai-aggressive.apiKey", ""),
           rememberKey: readChecked("ai-aggressive.rememberKey"),
         },
@@ -183,6 +183,7 @@ export class ConfigPanel {
         <legend>${AI_NAMES[id]}</legend>
         <label><span>厂商</span>
           <select name="${id}.provider">
+            <option value="chenapi" ${ai.provider === "chenapi" ? "selected" : ""}>chenAPI</option>
             <option value="deepseek" ${ai.provider === "deepseek" ? "selected" : ""}>DeepSeek</option>
             <option value="spark-maas" ${ai.provider === "spark-maas" ? "selected" : ""}>星火 MaaS</option>
             <option value="agnes" ${ai.provider === "agnes" ? "selected" : ""}>Agnes</option>

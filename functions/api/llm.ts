@@ -58,6 +58,11 @@ const PROVIDERS: Record<ProviderId, OpenAiCompatibleProviderConfig> = {
     baseURL: "https://integrate.api.nvidia.com/v1",
     displayName: "NVIDIA NIM",
   },
+  chenapi: {
+    id: "chenapi",
+    baseURL: "http://api.chenbei.online",
+    displayName: "chenAPI",
+  },
 };
 
 const validateMoveInputSchema = z.object({
@@ -229,11 +234,12 @@ function validateRequest(
     record.provider !== "deepseek" &&
     record.provider !== "spark-maas" &&
     record.provider !== "agnes" &&
-    record.provider !== "nvidia"
+    record.provider !== "nvidia" &&
+    record.provider !== "chenapi"
   ) {
     return error(
       "UNSUPPORTED_PROVIDER",
-      "provider 必须是 deepseek、spark-maas、agnes 或 nvidia。",
+      "provider 必须是 deepseek、spark-maas、agnes、nvidia 或 chenapi。",
     );
   }
 

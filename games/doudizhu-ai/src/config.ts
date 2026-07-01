@@ -22,4 +22,5 @@ export const DEFAULT_MODELS: Record<ProviderId, string> = {
   "spark-maas": "x1",
   agnes: "agnes-2.0-flash",
   nvidia: "z-ai/glm-5.1",
+  chenapi: "deepseek-v4-flash",
 };
