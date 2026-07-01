@@ -15,21 +15,43 @@
  *   - 3 次后仍非法 → 该 AI 阵营判负（forced loss）
  *   - 鉴权/配置错误 → 暂停游戏，不判负
  */
-import { DEFAULT_MAX_TOKENS, DEFAULT_MODELS, DEFAULT_PROXY_URL, DEFAULT_TEMPERATURE, MAX_AI_ATTEMPTS } from "../config";
+import {
+  DEFAULT_MAX_TOKENS,
+  DEFAULT_MODELS,
+  DEFAULT_PROXY_URL,
+  DEFAULT_TEMPERATURE,
+  MAX_AI_ATTEMPTS,
+} from "../config";
 import type {
-  AiSettings, GameSettings, GameState, LegalActionHint, MoveProposal,
-  NormalizedLlmRequest, NormalizedMove, ProviderId, ToolCallProposal, ValidationResult,
+  AiSettings,
+  GameSettings,
+  GameState,
+  LegalActionHint,
+  MoveProposal,
+  NormalizedLlmRequest,
+  NormalizedMove,
+  ProviderId,
+  ToolCallProposal,
+  ValidationResult,
 } from "../types";
 import { createLlmClient, type LlmClient } from "./llmClient";
 import type { AiPlayerId } from "./personas";
 import {
-  buildDecisionPrompt, type AiAttemptFailure, type DecisionContext,
+  buildDecisionPrompt,
+  type AiAttemptFailure,
+  type DecisionContext,
   validationFailureToPromptFailure,
 } from "./promptBuilder";
 import { parseToolCallResponse } from "./responseParser";
 
-export type ValidateMove = (state: GameState, proposal: MoveProposal) => ValidationResult;
-export type GenerateLegalActions = (state: GameState, playerId: AiPlayerId) => LegalActionHint[];
+export type ValidateMove = (
+  state: GameState,
+  proposal: MoveProposal,
+) => ValidationResult;
+export type GenerateLegalActions = (
+  state: GameState,
+  playerId: AiPlayerId,
+) => LegalActionHint[];
 
 export interface DecideMoveOptions {
   state: GameState;
@@ -73,12 +95,17 @@ export interface AiLlmErrorDecision {
   attempts: AiDecisionAttempt[];
 }
 
-export type AiDecisionResult = AiAcceptedDecision | AiForcedLossDecision | AiLlmErrorDecision;
+export type AiDecisionResult =
+  AiAcceptedDecision | AiForcedLossDecision | AiLlmErrorDecision;
 
 /** 单次尝试的记录 */
 export interface AiDecisionAttempt {
   attempt: number;
   promptFailure?: AiAttemptFailure;
+  /** 发给 LLM 的 system prompt */
+  systemPrompt?: string;
+  /** 发给 LLM 的 user prompt */
+  userPrompt?: string;
   rawText?: string;
   proposal?: ToolCallProposal;
   validation?: ValidationResult;
@@ -90,9 +117,13 @@ export interface AiDecisionAttempt {
  *
  * @returns 决策结果 — 成功（move + speech）、LLM 错误（暂停）、或强制判负
  */
-export async function decideAiMove(options: DecideMoveOptions): Promise<AiDecisionResult> {
+export async function decideAiMove(
+  options: DecideMoveOptions,
+): Promise<AiDecisionResult> {
   const maxAttempts = options.maxAttempts ?? MAX_AI_ATTEMPTS;
-  const llmClient = options.llmClient ?? createLlmClient({ proxyUrl: options.proxyUrl ?? DEFAULT_PROXY_URL });
+  const llmClient =
+    options.llmClient ??
+    createLlmClient({ proxyUrl: options.proxyUrl ?? DEFAULT_PROXY_URL });
   const attempts: AiDecisionAttempt[] = [];
   let previousFailure: AiAttemptFailure | undefined;
 
@@ -102,19 +133,36 @@ export async function decideAiMove(options: DecideMoveOptions): Promise<AiDecisi
     const prompt = buildDecisionPrompt(context);
     const request = buildLlmRequest(options, prompt.messages);
 
-    const attemptRecord: AiDecisionAttempt = { attempt, promptFailure: previousFailure };
+    const attemptRecord: AiDecisionAttempt = {
+      attempt,
+      promptFailure: previousFailure,
+      systemPrompt: prompt.messages.find((m) => m.role === "system")?.content,
+      userPrompt: prompt.messages.find((m) => m.role === "user")?.content,
+    };
     attempts.push(attemptRecord);
 
     if (!request.ok) {
       attemptRecord.error = request.error;
-      return { ok: false, kind: "llm-error", code: request.error.code, message: request.error.message, attempts };
+      return {
+        ok: false,
+        kind: "llm-error",
+        code: request.error.code,
+        message: request.error.message,
+        attempts,
+      };
     }
 
     // 2. 调用 /api/llm
     const response = await llmClient.complete(request.value);
     if (!response.ok) {
       attemptRecord.error = response.error;
-      return { ok: false, kind: "llm-error", code: response.error.code, message: response.error.message, attempts };
+      return {
+        ok: false,
+        kind: "llm-error",
+        code: response.error.code,
+        message: response.error.message,
+        attempts,
+      };
     }
 
     attemptRecord.rawText = response.text;
@@ -122,13 +170,20 @@ export async function decideAiMove(options: DecideMoveOptions): Promise<AiDecisi
     // 3a. 主线：使用服务端 toolResult
     if (response.toolResult) {
       attemptRecord.validation = response.toolResult.validation;
-      if (response.toolResult.validation.ok && response.toolResult.validation.normalizedMove) {
+      if (
+        response.toolResult.validation.ok &&
+        response.toolResult.validation.normalizedMove
+      ) {
         return {
           ok: true,
           move: response.toolResult.validation.normalizedMove,
           proposal: {
             tool: "validateMove",
-            arguments: { action: response.toolResult.action, cards: response.toolResult.cards, reason: response.toolResult.reason },
+            arguments: {
+              action: response.toolResult.action,
+              cards: response.toolResult.cards,
+              reason: response.toolResult.reason,
+            },
             speech: response.toolResult.speech,
           },
           speech: response.toolResult.speech,
@@ -137,12 +192,20 @@ export async function decideAiMove(options: DecideMoveOptions): Promise<AiDecisi
       }
 
       // 服务端校验失败 → 注入错误，重试
-      previousFailure = validationFailureToPromptFailure(attempt, response.toolResult.validation, response.toolResult.action, response.toolResult.cards);
+      previousFailure = validationFailureToPromptFailure(
+        attempt,
+        response.toolResult.validation,
+        response.toolResult.action,
+        response.toolResult.cards,
+      );
       continue;
     }
 
     // 3b. Fallback：解析文本 JSON
-    const parsed = parseToolCallResponse(response.text, options.state.players[options.playerId].hand);
+    const parsed = parseToolCallResponse(
+      response.text,
+      options.state.players[options.playerId].hand,
+    );
     if (!parsed.ok) {
       attemptRecord.error = { code: parsed.code, message: parsed.message };
       previousFailure = { attempt, code: parsed.code, message: parsed.message };
@@ -160,33 +223,66 @@ export async function decideAiMove(options: DecideMoveOptions): Promise<AiDecisi
     attemptRecord.validation = validation;
 
     if (validation.ok && validation.normalizedMove) {
-      return { ok: true, move: validation.normalizedMove, proposal: parsed.proposal, speech: parsed.proposal.speech, attempts };
+      return {
+        ok: true,
+        move: validation.normalizedMove,
+        proposal: parsed.proposal,
+        speech: parsed.proposal.speech,
+        attempts,
+      };
     }
 
     // 校验失败 → 重试
     previousFailure = validationFailureToPromptFailure(
       attempt,
-      validation.ok ? { ok: false, code: "MISSING_NORMALIZED_MOVE", message: "规则校验通过但没有返回 normalizedMove。" } : validation,
+      validation.ok
+        ? {
+            ok: false,
+            code: "MISSING_NORMALIZED_MOVE",
+            message: "规则校验通过但没有返回 normalizedMove。",
+          }
+        : validation,
       parsed.proposal.arguments.action,
       parsed.proposal.arguments.cards,
     );
   }
 
   // 5. 超过重试次数 → 强制判负
-  return buildForcedLoss(options.state, options.playerId, maxAttempts, attempts);
+  return buildForcedLoss(
+    options.state,
+    options.playerId,
+    maxAttempts,
+    attempts,
+  );
 }
 
 /* ---------- 内部辅助 ---------- */
 
-function createDecisionContext(options: DecideMoveOptions, previousFailure: AiAttemptFailure | undefined): DecisionContext {
-  const legalActions = options.legalActions ?? options.generateLegalActions?.(options.state, options.playerId) ?? [];
-  return { state: options.state, playerId: options.playerId, legalActions, previousFailure };
+function createDecisionContext(
+  options: DecideMoveOptions,
+  previousFailure: AiAttemptFailure | undefined,
+): DecisionContext {
+  const legalActions =
+    options.legalActions ??
+    options.generateLegalActions?.(options.state, options.playerId) ??
+    [];
+  return {
+    state: options.state,
+    playerId: options.playerId,
+    legalActions,
+    previousFailure,
+  };
 }
 
-type BuildRequestResult = { ok: true; value: NormalizedLlmRequest } | { ok: false; error: { code: string; message: string } };
+type BuildRequestResult =
+  | { ok: true; value: NormalizedLlmRequest }
+  | { ok: false; error: { code: string; message: string } };
 
 /** 构造发给 /api/llm 的请求体 */
-function buildLlmRequest(options: DecideMoveOptions, messages: NormalizedLlmRequest["messages"]): BuildRequestResult {
+function buildLlmRequest(
+  options: DecideMoveOptions,
+  messages: NormalizedLlmRequest["messages"],
+): BuildRequestResult {
   const settings = resolveAiSettings(options);
   if (!settings.ok) return settings;
   return {
@@ -205,15 +301,48 @@ function buildLlmRequest(options: DecideMoveOptions, messages: NormalizedLlmRequ
 
 /** 从多层配置中解析 AI 设置（决策参数 > 游戏设置 > 默认值） */
 function resolveAiSettings(options: DecideMoveOptions):
-  | { ok: true; value: { provider: ProviderId; apiKey: string; model: string; temperature: number; maxTokens: number } }
+  | {
+      ok: true;
+      value: {
+        provider: ProviderId;
+        apiKey: string;
+        model: string;
+        temperature: number;
+        maxTokens: number;
+      };
+    }
   | { ok: false; error: { code: string; message: string } } {
   const ai = options.aiSettings ?? options.gameSettings?.ai[options.playerId];
 
-  if (!ai) return { ok: false, error: { code: "MISSING_AI_SETTINGS", message: `缺少 ${options.playerId} 的 AI 配置。` } };
-  if (ai.provider !== "deepseek" && ai.provider !== "spark-maas")
-    return { ok: false, error: { code: "UNSUPPORTED_PROVIDER", message: `不支持的 AI 厂商：${String(ai.provider)}。` } };
+  if (!ai)
+    return {
+      ok: false,
+      error: {
+        code: "MISSING_AI_SETTINGS",
+        message: `缺少 ${options.playerId} 的 AI 配置。`,
+      },
+    };
+  if (
+    ai.provider !== "deepseek" &&
+    ai.provider !== "spark-maas" &&
+    ai.provider !== "agnes" &&
+    ai.provider !== "nvidia"
+  )
+    return {
+      ok: false,
+      error: {
+        code: "UNSUPPORTED_PROVIDER",
+        message: `不支持的 AI 厂商：${String(ai.provider)}。`,
+      },
+    };
   if (typeof ai.apiKey !== "string" || ai.apiKey.trim() === "")
-    return { ok: false, error: { code: "MISSING_API_KEY", message: `缺少 ${options.playerId} 的 API Key。` } };
+    return {
+      ok: false,
+      error: {
+        code: "MISSING_API_KEY",
+        message: `缺少 ${options.playerId} 的 API Key。`,
+      },
+    };
 
   return {
     ok: true,
@@ -221,19 +350,33 @@ function resolveAiSettings(options: DecideMoveOptions):
       provider: ai.provider,
       apiKey: ai.apiKey,
       model: ai.model.trim() || DEFAULT_MODELS[ai.provider],
-      temperature: options.temperature ?? options.gameSettings?.temperature ?? DEFAULT_TEMPERATURE,
-      maxTokens: options.maxTokens ?? options.gameSettings?.maxTokens ?? DEFAULT_MAX_TOKENS,
+      temperature:
+        options.temperature ??
+        options.gameSettings?.temperature ??
+        DEFAULT_TEMPERATURE,
+      maxTokens:
+        options.maxTokens ??
+        options.gameSettings?.maxTokens ??
+        DEFAULT_MAX_TOKENS,
     },
   };
 }
 
 /** 构造强制判负结果 */
-function buildForcedLoss(state: GameState, playerId: AiPlayerId, maxAttempts: number, attempts: AiDecisionAttempt[]): AiForcedLossDecision {
+function buildForcedLoss(
+  state: GameState,
+  playerId: AiPlayerId,
+  maxAttempts: number,
+  attempts: AiDecisionAttempt[],
+): AiForcedLossDecision {
   const role = state.players[playerId].role;
   const winnerSide = role === "landlord" ? "farmer" : "landlord";
   const playerName = state.players[playerId].name;
   return {
-    ok: false, kind: "forced-loss", forcedLoserId: playerId, winnerSide,
+    ok: false,
+    kind: "forced-loss",
+    forcedLoserId: playerId,
+    winnerSide,
     reason: `${playerName}连续 ${maxAttempts} 次提交非法动作，触发强制判负。`,
     attempts,
   };

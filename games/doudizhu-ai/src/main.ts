@@ -25,6 +25,9 @@ import type {
 } from "./types";
 import { decideAiMove } from "./ai/decisionLoop";
 import type { AiPlayerId } from "./ai/personas";
+import { createSessionLogger, type LlmCallEntry } from "./ai/sessionLog";
+import type { AiDecisionResult } from "./ai/decisionLoop";
+import { handRanks } from "./rules/card";
 import { createNewRound } from "./game/state";
 import {
   applyValidatedMove,
@@ -42,6 +45,10 @@ import { playerDisplayName } from "./ui/ConfigPanel";
 /** 通过 URL 参数 `?mockAi=1` 启用本地 Mock AI 模式（无需 LLM key） */
 const USE_MOCK_AI =
   new URLSearchParams(window.location.search).get("mockAi") === "1";
+
+/** 局级 LLM 会话日志（浏览器控制台：__doudizhuLogs.pretty()） */
+const sessionLog = createSessionLogger();
+let llmCallIndex = 0;
 
 /** 游戏的核心状态对象 — 替代传统 Game 类 */
 interface AppModel {
@@ -125,6 +132,8 @@ function startRound(): void {
   hud.hideSettlement();
   model.selectedCards = [];
   model.speeches = {};
+  sessionLog.clear();
+  llmCallIndex = 0;
   model.state = createNewRound({ previousScores: currentScores() });
   model.status = `${playerDisplayName(model.state.landlordId)} 成为地主并先出。`;
   hud.showToast(
@@ -277,6 +286,9 @@ async function runAiTurn(playerId: AiPlayerId, token: number): Promise<void> {
 
   if (token !== aiTurnToken) return;
 
+  // 记录本次 LLM 调用到会话日志
+  logLlmCall(playerId, decision);
+
   if (decision.ok) {
     const validation: ValidationResult = {
       ok: true,
@@ -358,6 +370,35 @@ function mockSpeech(playerId: PlayerId, action: "play" | "pass"): string {
   if (playerId === "ai-calm")
     return action === "play" ? "按概率，这手收益最高。" : "不急，保留结构。";
   return action === "play" ? "节奏归我了。" : "这手让你喘口气。";
+}
+
+/** 将 AI 决策结果记录到会话日志 */
+function logLlmCall(playerId: AiPlayerId, decision: AiDecisionResult): void {
+  const state = model.state;
+  if (!state) return;
+  llmCallIndex += 1;
+  const player = state.players[playerId];
+  const lastAttempt = decision.attempts[decision.attempts.length - 1];
+  const usedTool = decision.ok
+    ? decision.attempts.some((a) => a.validation && !a.error)
+    : false;
+
+  const entry: LlmCallEntry = {
+    callIndex: llmCallIndex,
+    timestamp: new Date().toISOString(),
+    playerId,
+    role: player.role === "landlord" ? "地主" : "农民",
+    hand: handRanks(player.hand),
+    handCount: player.hand.length,
+    systemPrompt: lastAttempt?.systemPrompt ?? "",
+    userPrompt: lastAttempt?.userPrompt ?? "",
+    rawText: lastAttempt?.rawText,
+    usedToolResult: usedTool,
+    attempts: decision.attempts.length,
+    attemptDetails: decision.attempts,
+    decision,
+  };
+  sessionLog.logTurn(entry);
 }
 
 /**

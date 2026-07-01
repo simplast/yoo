@@ -11,7 +11,12 @@
  * 校验通过后触发 onStart。
  */
 import type { GameSettings, PlayerId, ProviderId } from "../types";
-import { DEFAULT_MAX_TOKENS, DEFAULT_MODELS, DEFAULT_PROXY_URL, DEFAULT_TEMPERATURE } from "../config";
+import {
+  DEFAULT_MAX_TOKENS,
+  DEFAULT_MODELS,
+  DEFAULT_PROXY_URL,
+  DEFAULT_TEMPERATURE,
+} from "../config";
 
 export interface ConfigPanelEvents {
   onStart: (settings: GameSettings) => void;
@@ -36,10 +41,13 @@ export class ConfigPanel {
     this.element = document.createElement("div");
     this.element.className = "config-panel";
     this.element.innerHTML = this.template(settings);
-    this.form = this.element.querySelector("form") ?? document.createElement("form");
+    this.form =
+      this.element.querySelector("form") ?? document.createElement("form");
 
     // 关闭按钮
-    const closeBtn = this.element.querySelector<HTMLButtonElement>("[data-config-close]");
+    const closeBtn = this.element.querySelector<HTMLButtonElement>(
+      "[data-config-close]",
+    );
     if (closeBtn) closeBtn.addEventListener("click", () => this.onClose?.());
 
     // 切换厂商时自动填充默认模型
@@ -49,7 +57,10 @@ export class ConfigPanel {
       if (target.name.endsWith(".provider")) {
         const aiId = target.name.split(".")[0] as (typeof AI_IDS)[number];
         const modelInput = this.form.elements.namedItem(`${aiId}.model`);
-        if (modelInput instanceof HTMLInputElement && !modelInput.value.trim()) {
+        if (
+          modelInput instanceof HTMLInputElement &&
+          !modelInput.value.trim()
+        ) {
           modelInput.value = DEFAULT_MODELS[target.value as ProviderId];
         }
       }
@@ -60,20 +71,28 @@ export class ConfigPanel {
       event.preventDefault();
       const next = this.readSettings();
       const validation = validateSettings(next);
-      if (!validation.ok) { this.setError(validation.message); return; }
+      if (!validation.ok) {
+        this.setError(validation.message);
+        return;
+      }
       this.setError("");
       this.currentSettings = next;
       events.onStart(next);
     });
   }
 
-  setVisible(visible: boolean): void { this.element.hidden = !visible; }
+  setVisible(visible: boolean): void {
+    this.element.hidden = !visible;
+  }
 
   update(settings: GameSettings): void {
     this.currentSettings = settings;
     this.element.innerHTML = this.template(settings);
-    this.form = this.element.querySelector("form") ?? document.createElement("form");
-    const closeBtn = this.element.querySelector<HTMLButtonElement>("[data-config-close]");
+    this.form =
+      this.element.querySelector("form") ?? document.createElement("form");
+    const closeBtn = this.element.querySelector<HTMLButtonElement>(
+      "[data-config-close]",
+    );
     if (closeBtn) closeBtn.addEventListener("click", () => this.onClose?.());
   }
 
@@ -85,11 +104,16 @@ export class ConfigPanel {
     };
     const readNumber = (name: string, fallback: number) => {
       const input = this.form.elements.namedItem(name);
-      return input instanceof HTMLInputElement && Number.isFinite(Number(input.value)) ? Number(input.value) : fallback;
+      return input instanceof HTMLInputElement &&
+        Number.isFinite(Number(input.value))
+        ? Number(input.value)
+        : fallback;
     };
     const readProvider = (name: string, fallback: ProviderId) => {
       const input = this.form.elements.namedItem(name);
-      return input instanceof HTMLSelectElement ? (input.value as ProviderId) : fallback;
+      return input instanceof HTMLSelectElement
+        ? (input.value as ProviderId)
+        : fallback;
     };
     const readChecked = (name: string) => {
       const input = this.form.elements.namedItem(name);
@@ -118,7 +142,9 @@ export class ConfigPanel {
   }
 
   private setError(message: string): void {
-    const error = this.element.querySelector<HTMLElement>("[data-config-error]");
+    const error = this.element.querySelector<HTMLElement>(
+      "[data-config-error]",
+    );
     if (error) error.textContent = message;
   }
 
@@ -128,8 +154,8 @@ export class ConfigPanel {
       <form class="panel-card" autocomplete="off">
         <button type="button" class="panel-close" data-config-close aria-label="关闭">✕</button>
         <div class="panel-eyebrow">Cyber Doudizhu</div>
-        <h1>AI 斗地主 · 空当接龙</h1>
-        <p class="panel-copy">配置两个 AI 的厂商与密钥。密钥默认只保存在当前页面内存；只有勾选"记住本机密钥"时才会写入浏览器 localStorage。</p>
+        <h1>AI 斗地主</h1>
+        <p class="panel-copy">配置两个 AI 的厂商与密钥。密钥默认只保存在当前页面内存；只有勾选"保存到本地"时才会写入浏览器 localStorage。</p>
         <div class="ai-config-grid">
           ${AI_IDS.map((id) => this.aiSection(id, settings)).join("")}
         </div>
@@ -147,7 +173,10 @@ export class ConfigPanel {
     `;
   }
 
-  private aiSection(id: (typeof AI_IDS)[number], settings: GameSettings): string {
+  private aiSection(
+    id: (typeof AI_IDS)[number],
+    settings: GameSettings,
+  ): string {
     const ai = settings.ai[id];
     return `
       <fieldset class="ai-config-card">
@@ -156,30 +185,42 @@ export class ConfigPanel {
           <select name="${id}.provider">
             <option value="deepseek" ${ai.provider === "deepseek" ? "selected" : ""}>DeepSeek</option>
             <option value="spark-maas" ${ai.provider === "spark-maas" ? "selected" : ""}>星火 MaaS</option>
+            <option value="agnes" ${ai.provider === "agnes" ? "selected" : ""}>Agnes</option>
+            <option value="nvidia" ${ai.provider === "nvidia" ? "selected" : ""}>NVIDIA NIM</option>
           </select>
         </label>
         <label><span>模型名</span><input name="${id}.model" value="${escapeAttr(ai.model)}" placeholder="${DEFAULT_MODELS[ai.provider]}" /></label>
         <label><span>API Key</span><input name="${id}.apiKey" type="password" value="${escapeAttr(ai.apiKey)}" placeholder="仅用于本次游戏请求" /></label>
-        <label class="checkbox-row"><input name="${id}.rememberKey" type="checkbox" ${ai.rememberKey ? "checked" : ""} /><span>记住本机密钥</span></label>
+        <label class="checkbox-row"><input name="${id}.rememberKey" type="checkbox" ${ai.rememberKey ? "checked" : ""} /><span>保存到本地</span></label>
       </fieldset>
     `;
   }
 }
 
 /** 表单校验 */
-function validateSettings(settings: GameSettings): { ok: true } | { ok: false; message: string } {
+function validateSettings(
+  settings: GameSettings,
+): { ok: true } | { ok: false; message: string } {
   for (const aiId of AI_IDS) {
     const ai = settings.ai[aiId];
-    if (!ai.provider) return { ok: false, message: `${AI_NAMES[aiId]} 需要选择厂商。` };
-    if (!ai.model.trim()) return { ok: false, message: `${AI_NAMES[aiId]} 需要填写模型名。` };
-    if (!ai.apiKey.trim()) return { ok: false, message: `${AI_NAMES[aiId]} 需要填写 API Key。` };
+    if (!ai.provider)
+      return { ok: false, message: `${AI_NAMES[aiId]} 需要选择厂商。` };
+    if (!ai.model.trim())
+      return { ok: false, message: `${AI_NAMES[aiId]} 需要填写模型名。` };
+    if (!ai.apiKey.trim())
+      return { ok: false, message: `${AI_NAMES[aiId]} 需要填写 API Key。` };
   }
-  if (!settings.proxyUrl.trim()) return { ok: false, message: "LLM 代理 URL 不能为空。" };
+  if (!settings.proxyUrl.trim())
+    return { ok: false, message: "LLM 代理 URL 不能为空。" };
   return { ok: true };
 }
 
 function escapeAttr(value: string): string {
-  return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 /** 玩家 ID → 显示名 */

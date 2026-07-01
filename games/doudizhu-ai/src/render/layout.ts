@@ -64,30 +64,42 @@ export function layoutHumanHand(
   return out;
 }
 
-/** 中央出牌区：所有已出牌随机堆叠，z-index 按出牌顺序递增 */
+/** 中央出牌区：按出牌分组横排，组间错开避免遮挡 */
 export function layoutCenterCards(
   history: PlayedMove[],
   stage: StageSize,
 ): Map<CardId, CardPos> {
   const out = new Map<CardId, CardPos>();
-
-  // 按卡牌 ID 字符串哈希生成伪随机偏移，保证每张牌位置始终固定
   const cx = stage.width / 2;
   const cy = (stage.height - CARD_H) / 2 - 20;
+
+  // 最多显示最近 4 手出牌，避免画面过满
+  const recent = history.slice(-4);
   let globalZ = 0;
 
-  for (const move of history) {
-    for (const cardId of move.cards) {
-      if (out.has(cardId)) continue; // 防御：每张牌只会出现一次
-      const rng = seedRandom(cardId);
-      const dx = (rng() - 0.5) * 60; // 水平偏移 ±30px
-      const dy = (rng() - 0.5) * 40; // 垂直偏移 ±20px
-      const angle = (rng() - 0.5) * 24; // 旋转 ±12°
+  for (let mi = 0; mi < recent.length; mi++) {
+    const move = recent[mi];
+    const n = move.cards.length;
+
+    // 整组牌的统一偏移（基于 move index 伪随机）
+    const moveRng = seedRandom(`move-${mi}`);
+    const groupDx = (moveRng() - 0.5) * 30;
+    const groupDy = (mi - recent.length + 1) * 28 + (moveRng() - 0.5) * 10;
+    const groupAngle = (moveRng() - 0.5) * 8;
+
+    // 组内牌的横向间隙：牌少留间距，牌多压缩
+    const gap = n <= 2 ? 20 : n <= 4 ? 14 : n <= 8 ? 10 : 6;
+    const totalW = CARD_W + gap * (n - 1);
+    const startX = cx - totalW / 2 + groupDx;
+
+    for (let ci = 0; ci < n; ci++) {
+      const cardId = move.cards[ci];
+      if (out.has(cardId)) continue;
       out.set(cardId, {
-        x: cx + dx,
-        y: cy + dy,
+        x: startX + ci * gap,
+        y: cy + groupDy,
         z: globalZ++,
-        rotate: angle,
+        rotate: groupAngle,
       });
     }
   }

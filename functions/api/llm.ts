@@ -48,6 +48,16 @@ const PROVIDERS: Record<ProviderId, OpenAiCompatibleProviderConfig> = {
     baseURL: "https://maas-api.cn-huabei-1.xf-yun.com/v2",
     displayName: "星火 MaaS",
   },
+  agnes: {
+    id: "agnes",
+    baseURL: "https://apihub.agnes-ai.com/v1",
+    displayName: "Agnes",
+  },
+  nvidia: {
+    id: "nvidia",
+    baseURL: "https://integrate.api.nvidia.com/v1",
+    displayName: "NVIDIA NIM",
+  },
 };
 
 const validateMoveInputSchema = z.object({
@@ -104,6 +114,20 @@ async function runAiSdkDecision(
     apiKey: request.apiKey,
     baseURL: providerConfig.baseURL,
     name: providerConfig.id,
+    // DeepSeek V4 默认开启思考模式，需在请求体中注入 thinking: disabled
+    // 才能正常支持工具调用（思考模式下工具调用不稳定）
+    ...(request.provider === "deepseek"
+      ? {
+          fetch: async (url: string, init?: RequestInit) => {
+            if (init?.body && typeof init.body === "string") {
+              const body = JSON.parse(init.body);
+              body.thinking = { type: "disabled" };
+              init = { ...init, body: JSON.stringify(body) };
+            }
+            return fetch(url, init);
+          },
+        }
+      : {}),
   });
   const toolContext = request.toolContext;
 
@@ -124,11 +148,16 @@ async function runAiSdkDecision(
           const hand = toolContext.state.players[toolContext.playerId].hand;
           const action = input.action;
           // pass 时 cards 为空
-          if (action === 'pass') {
+          if (action === "pass") {
             return {
-              action: 'pass', cards: [], speech: input.speech, reason: input.reason,
+              action: "pass",
+              cards: [],
+              speech: input.speech,
+              reason: input.reason,
               validation: validateMove(toolContext.state, {
-                playerId: toolContext.playerId, action: 'pass', cards: [],
+                playerId: toolContext.playerId,
+                action: "pass",
+                cards: [],
               }),
             };
           }
@@ -160,6 +189,16 @@ async function runAiSdkDecision(
   )?.output as ToolValidationOutput | undefined;
 
   if (!toolResult) {
+    // 模型未调用工具 — 返回错误而非空文本
+    if (!result.text || result.text.trim().length === 0) {
+      return {
+        ok: false,
+        error: {
+          code: "MODEL_DID_NOT_CALL_TOOL",
+          message: "模型未调用 validateMove 工具，且未返回文本。",
+        },
+      };
+    }
     return {
       ok: true,
       text: result.text,
@@ -186,10 +225,15 @@ function validateRequest(
 ): { ok: true; value: NormalizedLlmRequest } | NormalizedLlmError {
   const record = asRecord(value);
 
-  if (record.provider !== "deepseek" && record.provider !== "spark-maas") {
+  if (
+    record.provider !== "deepseek" &&
+    record.provider !== "spark-maas" &&
+    record.provider !== "agnes" &&
+    record.provider !== "nvidia"
+  ) {
     return error(
       "UNSUPPORTED_PROVIDER",
-      "provider 必须是 deepseek 或 spark-maas。",
+      "provider 必须是 deepseek、spark-maas、agnes 或 nvidia。",
     );
   }
 
