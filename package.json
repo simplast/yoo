@@ -7,12 +7,15 @@
     "dev": "astro dev",
     "start": "astro dev",
     "build": "npm run build:games && astro build",
-    "build:games": "cd games/green-cycle && npm run build",
+    "build:games": "npm --prefix games/green-cycle run build && npm --prefix games/doudizhu-ai run build",
     "preview": "astro preview",
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^4.16.0"
+    "@ai-sdk/openai": "^4.0.3",
+    "ai": "^7.0.7",
+    "astro": "^4.16.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "typescript": "^5.4.0",

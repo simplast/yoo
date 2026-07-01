@@ -28,6 +28,7 @@
 **关键代码位置**：
 
 [Game.ts:521-534](file:///Users/doer/dev/yoo/games/green-cycle/src/game/Game.ts#L521-L534)（召唤塔）：
+
 ```ts
 } else if (type === 'summon' && state.skillSummonCd <= 0) {
   state.skillSummonCd = CONFIG.SKILL_SUMMON_CD;
@@ -46,6 +47,7 @@
 ```
 
 [EconomySystem.ts:23-31](file:///Users/doer/dev/yoo/games/green-cycle/src/systems/EconomySystem.ts#L23-L31)（召唤到期清理）：
+
 ```ts
 if (state.summonTimer > 0) {
   state.summonTimer = Math.max(0, state.summonTimer - dt);
@@ -58,6 +60,7 @@ if (state.summonTimer > 0) {
 ```
 
 [State.ts:113](file:///Users/doer/dev/yoo/games/green-cycle/src/game/State.ts#L113)（死字段）：
+
 ```ts
 // ===== 游戏速度 =====
 speed = 1; // 1/2/3
@@ -65,6 +68,7 @@ accumulator = 0; // 固定步长累加
 ```
 
 [Game.ts:486-501](file:///Users/doer/dev/yoo/games/green-cycle/src/game/Game.ts#L486-L501)（排行榜写入）：
+
 ```ts
 // 无尽模式记录排行榜
 if (state.endless || won) {
@@ -83,6 +87,7 @@ this.saveProgress();
 ```
 
 [main.ts:124-139](file:///Users/doer/dev/yoo/games/green-cycle/src/main.ts#L124-L139)（UI 固定标签）：
+
 ```ts
 ui.leaderboard.innerHTML =
   '<div class="lb-title">无尽排行榜</div>' +
@@ -90,17 +95,18 @@ ui.leaderboard.innerHTML =
 ```
 
 **项目约定**：
+
 - 中文注释
 - 严格 TS，不开新依赖
 - 现有测试 44 个（`vitest run`）；本计划可以补 1-2 个单测，但**不强制**
 
 ## Commands you will need
 
-| 用途 | 命令 | 期望结果 |
-|------|------|---------|
-| 类型检查 | `npm run typecheck` | exit 0 |
-| 测试 | `npm test` | exit 0 |
-| Lint | `npm run lint` | exit 0 |
+| 用途     | 命令                | 期望结果 |
+| -------- | ------------------- | -------- |
+| 类型检查 | `npm run typecheck` | exit 0   |
+| 测试     | `npm test`          | exit 0   |
+| Lint     | `npm run lint`      | exit 0   |
 
 ## Scope
 
@@ -112,10 +118,11 @@ ui.leaderboard.innerHTML =
 - Step 4：`src/game/Game.ts`（save 写入去抖）
 
 **Out of scope**：
+
 - `src/entities/Tower.ts` / `HeroTower.ts`（不改实体工厂与属性计算）
 - 任何其他文件
 
-> 注：`src/types.ts` 在 Step 1 中需新增可选字段 `isTemporary`；AGENT.md 约定 "types.ts 只增不改现有字段"，新增可选字段符合该约定。
+> 注：`src/types.ts` 在 Step 1 中需新增可选字段 `isTemporary`；CLAUDE.md 约定 "types.ts 只增不改现有字段"，新增可选字段符合该约定。
 
 ## Git workflow
 
@@ -134,7 +141,7 @@ ui.leaderboard.innerHTML =
 isTemporary?: boolean;
 ```
 
-> 注意：types.ts 已有"types.ts 只增不改现有字段"约定（AGENT.md 提）；新增字段符合此约定。
+> 注意：types.ts 已有"types.ts 只增不改现有字段"约定（CLAUDE.md 提）；新增字段符合此约定。
 
 **B. 重构 `Game.useSkill('summon')`（[Game.ts:521-534](file:///Users/doer/dev/yoo/games/green-cycle/src/game/Game.ts#L521-L534)）**：
 
@@ -193,6 +200,7 @@ it('removes temporary summon tower on timer expiry', () => {
 > 若 001 尚未完成（未建 EconomySystem.test.ts），可跳过此步；本计划不强制要求新增测试。
 
 **Verify**：
+
 - `npm run typecheck` → exit 0
 - `npm test` → exit 0
 - `grep -n "Math.random.*-100000" src/game/Game.ts` → 无匹配（确认负数 ID 已删）
@@ -211,6 +219,7 @@ accumulator = 0; // 固定步长累加  ← 删除此行
 > 验证：搜 `accumulator` 在 src/ 的引用（已知 `Loop.ts` 有自己的 `accumulator`，与 state 无关）。
 
 **Verify**：
+
 - `grep -n "state.accumulator\|this.accumulator" src/game/State.ts` → 无匹配
 - `npm run typecheck` → exit 0
 - `npm test` → exit 0
@@ -220,6 +229,7 @@ accumulator = 0; // 固定步长累加  ← 删除此行
 **A. 在 [Game.ts:486-499](file:///Users/doer/dev/yoo/games/green-cycle/src/game/Game.ts#L486-L499)**，把"非无尽胜负"也写入排行榜的逻辑收紧：
 
 原：
+
 ```ts
 if (state.endless || won) {
   const score = state.endless ? state.waveIndex * 100 + state.pf * 10 : state.pf * 100;
@@ -270,6 +280,7 @@ if (records.length === 0) {
 > 保守方案：保持标题 "无尽排行榜" 不变，仅添加注释说明与 Step 3 A 的收敛逻辑一致。不要引入 `records[0].wave >= 51` 之类的启发式标题切换。
 
 **Verify**：
+
 - `grep -n "leaderboard.endless.push" src/game/Game.ts` 应只出现在 `if (state.endless)` 块内
 - `npm run typecheck` → exit 0
 - `npm test` → exit 0
@@ -292,6 +303,7 @@ private saveProgress(): void {
 **B. 在 `Game` 类加 `private lastSaved = '';` 字段**（[Game.ts:62-72](file:///Users/doer/dev/yoo/games/green-cycle/src/game/Game.ts#L62-L72) 区域附近）。
 
 **Verify**：
+
 - `npm run typecheck` → exit 0
 - `npm test` → exit 0
 - `grep -n "lastSaved" src/game/Game.ts` 至少 2 处（字段 + 方法内引用）

@@ -20,7 +20,7 @@
 | 011  | CI 增加 format:check 步骤                                | P1     | S    | —              | DONE                  |
 | 012  | lastSync 声明 auraKey 字段，移除 4 处 (as any)           | P1     | S    | —              | DONE                  |
 | 013  | 删除或修正 Renderer.setView 陷阱方法                     | P2     | S    | —              | DONE                  |
-| 014  | 小 cleanup 集合：splitter 偏移/死字段 leaks/AGENT/Aura   | P2     | S    | —              | DONE                  |
+| 014  | 小 cleanup 集合：splitter 偏移/死字段 leaks/CLAUDE/Aura  | P2     | S    | —              | DONE                  |
 
 状态取值：`TODO` | `IN PROGRESS` | `DONE` | `BLOCKED`（附一行原因）| `REJECTED`（附一行理由 —— 发现被独立修复或方案放弃）
 
@@ -53,7 +53,7 @@
   - 011 CI 缺 format:check（漂移已发生过两次）
   - 012 新引入的 `(this.lastSync as any).auraKey` 破坏类型安全
   - 013 Renderer.setView 公开但会破坏相机不变量，零调用方
-  - 014 四个小项：splitter 子怪随机偏移 1 帧被覆盖 / `state.leaks` 死字段 / AGENT.md 数字与目录过期 / AuraSystem 文件头注释误导
+  - 014 四个小项：splitter 子怪随机偏移 1 帧被覆盖 / `state.leaks` 死字段 / CLAUDE.md 数字与目录过期 / AuraSystem 文件头注释误导
 
 ## 已考虑但未规划（避免下一轮重复审计）
 

@@ -1,4 +1,4 @@
-# Plan 014: Small cleanups bundle — splitter offset, dead leaks field, stale AGENT.md and AuraSystem comment
+# Plan 014: Small cleanups bundle — splitter offset, dead leaks field, stale CLAUDE.md and AuraSystem comment
 
 > **Executor instructions**: Follow this plan step by step. Run every
 > verification command and confirm the expected result before moving to the
@@ -6,7 +6,7 @@
 > report — do not improvise. When done, update the status row for this plan
 > in `plans/README.md`.
 >
-> **Drift check (run first)**: `git diff --stat 329df77..HEAD -- src/systems/CombatSystem.ts src/systems/MovementSystem.ts src/game/State.ts AGENT.md src/systems/AuraSystem.ts`
+> **Drift check (run first)**: `git diff --stat 329df77..HEAD -- src/systems/CombatSystem.ts src/systems/MovementSystem.ts src/game/State.ts CLAUDE.md src/systems/AuraSystem.ts`
 > If any in-scope file changed since this plan was written, compare the
 > "Current state" excerpts against the live code before proceeding.
 
@@ -31,7 +31,7 @@ their own plans but worth fixing to avoid them being re-audited forever:
    or written; leftover from an earlier leak-based game-over design. The
    game actually uses pressure-based loss (see EconomySystem.ts:50-52),
    not a leak counter.
-3. **`AGENT.md` stale** — says tests are 44 (now 118), says 6 test files
+3. **`CLAUDE.md` stale** — says tests are 44 (now 118), says 6 test files
    (now 13), references non-existent plans 012-013, and omits
    `debug/cheat.ts`, `render/UIRenderer.ts`, `utils/AssetLoader.ts` from
    the directory listing.
@@ -79,21 +79,26 @@ perfectStreak = 0;
 reference it. No UI references it. (Game over uses `state.isLost` /
 pressure from EconomySystem.)
 
-### Fix 3 — AGENT.md stale
+### Fix 3 — CLAUDE.md stale
 
-`AGENT.md:13`:
+`CLAUDE.md:13`:
+
 ```
 | 当前进度 | M10 + 里程碑一·二（plans/012-013）完成 |
 ```
+
 plans/ contains 001–008b at this commit; no 012-013.
 
-`AGENT.md:23`:
+`CLAUDE.md:23`:
+
 ```
 npm run test         # vitest run (6 files, 44 tests)
 ```
+
 Actual: 13 test files, 118 tests (verified at HEAD `329df77`).
 
 Directory tree (lines 30-45) omits:
+
 - `src/debug/` (cheat.ts)
 - `src/render/UIRenderer.ts`
 - `src/utils/AssetLoader.ts`
@@ -101,6 +106,7 @@ Directory tree (lines 30-45) omits:
 ### Fix 4 — misleading AuraSystem comment
 
 `src/systems/AuraSystem.ts:1-2`:
+
 ```ts
 // 光环系统：处理敌方光环（减速/加速敌人）
 // 友方光环（auraDamage/auraHaste）由 TowerAISystem 内部查询应用
@@ -113,12 +119,12 @@ when computing damage/fire-rate for its own target selection/shots.
 
 ## Commands you will need
 
-| Purpose      | Command                 | Expected on success           |
-|--------------|-------------------------|-------------------------------|
-| Typecheck    | `npm run typecheck`     | exit 0                        |
-| Tests        | `npm test`              | all pass                      |
-| Lint         | `npm run lint`          | exit 0                        |
-| Format check | `npm run format:check`  | all formatted                 |
+| Purpose      | Command                     | Expected on success             |
+| ------------ | --------------------------- | ------------------------------- |
+| Typecheck    | `npm run typecheck`         | exit 0                          |
+| Tests        | `npm test`                  | all pass                        |
+| Lint         | `npm run lint`              | exit 0                          |
+| Format check | `npm run format:check`      | all formatted                   |
 | Dead-code    | `grep -rn "\bleaks\b" src/` | after fix: zero code references |
 
 ## Scope
@@ -130,7 +136,7 @@ when computing damage/fire-rate for its own target selection/shots.
   for one frame (preferred approach) OR remove offset from CombatSystem
   and add a position offset field on Enemy (alternative; see steps)
 - `src/game/State.ts` — delete `leaks` field
-- `AGENT.md` — update numbers and directory tree
+- `CLAUDE.md` — update numbers and directory tree
 - `src/systems/AuraSystem.ts` — fix header comment
 
 **Out of scope**:
@@ -140,7 +146,7 @@ when computing damage/fire-rate for its own target selection/shots.
 - Adding splash/particle effects for split (nice to have, not this plan).
 - Any changes to tower logic, balance, or damage.
 - Generating plans/012-013 or any other plans referenced by the old
-  AGENT.md line — just remove the reference.
+  CLAUDE.md line — just remove the reference.
 
 ## Git workflow
 
@@ -149,7 +155,7 @@ when computing damage/fire-rate for its own target selection/shots.
   or split into 4 micro-commits (preferred for bisectability):
   - `fix(green-cycle): splitter children retain spawn offset`
   - `refactor: remove unused state.leaks counter`
-  - `docs: refresh AGENT.md test count, plan progress, directory tree`
+  - `docs: refresh CLAUDE.md test count, plan progress, directory tree`
   - `docs: fix stale ally-aura comment in AuraSystem`
 - Do NOT push or open a PR unless instructed.
 
@@ -175,6 +181,7 @@ Wait — reading MovementSystem lines 49-58 more carefully, it always sets
 x/y from getPosition(pathProgress) when speed>0. This means even after
 spawning, position is overwritten next frame. The "burst out" visual
 needs either:
+
 - A one-frame position offset that MovementSystem does not overwrite, or
 - Accepting the offset only lasts one frame (which is what happens today
   — the offset is applied but the render at line 230 runs AFTER
@@ -193,6 +200,7 @@ that's ~16ms — essentially invisible, which matches the report "random
 offset is lost after one frame."
 
 To make the offset visible for longer, either:
+
 - **A1 (recommended, ~3 lines)**: Let newly split children NOT be
   moved by MovementSystem for `SPLIT_KNOCKBACK_TIME = 0.2` seconds. Add
   a field `splitFreeze: number = 0` to Enemy init (in createEnemy /
@@ -242,9 +250,9 @@ it too).
 
 **Verify**: `npm run typecheck && npm test` → pass.
 
-### Step 3: Update AGENT.md
+### Step 3: Update CLAUDE.md
 
-Edit `AGENT.md`:
+Edit `CLAUDE.md`:
 
 1. Line 13 (current progress): replace with
    `| 当前进度 | 008b 完成；009-014 已规划待执行 |`
@@ -261,10 +269,10 @@ Edit `AGENT.md`:
 4. After updating, verify by `ls src/debug src/render src/utils` and
    confirm the files exist.
 
-Do NOT over-reformat AGENT.md (keep the existing markdown table and
+Do NOT over-reformat CLAUDE.md (keep the existing markdown table and
 tree); only update the stale values.
 
-**Verify**: visually re-read the changed AGENT.md sections; `npm run lint`
+**Verify**: visually re-read the changed CLAUDE.md sections; `npm run lint`
 should not complain about markdown (no lint rule for it); test counts
 referenced match current `npm test` output.
 
@@ -312,7 +320,7 @@ path position rather than at the random offset.
 - [ ] `grep -rn "\bleaks\b" src/ --include="*.ts"` returns zero matches
 - [ ] Splitter children in CombatSystem.ts have x/y set from path
       position (no more misleading random offset that gets overwritten)
-- [ ] AGENT.md references accurate test count and directory entries
+- [ ] CLAUDE.md references accurate test count and directory entries
 - [ ] AuraSystem.ts:2 comment describes allyAuraCache correctly
 - [ ] Only the 5 files listed in Scope are modified
 - [ ] `plans/README.md` status row updated
@@ -327,14 +335,14 @@ path position rather than at the random offset.
   does, remove it from the SaveData type too. (Inspecting
   `src/utils/SaveManager.ts` and `src/types.ts` SaveData shape before
   deleting is recommended.)
-- If AGENT.md has drifted beyond what this plan describes (new sections
+- If CLAUDE.md has drifted beyond what this plan describes (new sections
   added), only update the specific lines listed and leave new content
   alone.
 
 ## Maintenance notes
 
 - When adding new test files, update the "Current progress" section in
-  AGENT.md — or better, don't list counts there at all (this is why
+  CLAUDE.md — or better, don't list counts there at all (this is why
   option "see plans/README.md" is recommended in step 3.1).
 - If a proper "burst out of parent" particle/offset effect is ever
   desired, do it via EffectSystem with a short-lived visual, not by

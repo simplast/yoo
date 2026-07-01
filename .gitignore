@@ -10,6 +10,8 @@ pnpm-debug.log*
 .env.production
 .DS_Store
 .wrangler/
+.superpowers/
 
 # 游戏构建产物（由 games/ 下的项目生成，不入库）
 public/games/green-cycle/
+public/games/doudizhu-ai/

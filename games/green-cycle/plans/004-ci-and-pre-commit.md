@@ -21,6 +21,7 @@
 ## Current state
 
 **关键事实**：
+
 - 仓库根：`/Users/doer/dev/yoo/games/green-cycle/`（注意：是 monorepo 的一个子目录，不是 git 根）
 - 实际 git 根推断：`/Users/doer/dev/yoo/`（`git rev-parse` 在 `games/green-cycle/` 下工作，但 `git log` 显示这是项目历史）
 - 已有 npm 脚本（`package.json`）：
@@ -40,9 +41,10 @@
   ```
 - `package.json` 已包含 `eslint`、`prettier`、`@typescript-eslint/*`、`vitest` 全部为 devDependencies
 - **无** husky / lint-staged / GitHub Actions / commitlint 任何一项
-- `AGENT.md` 列出全部 npm 命令，未提 CI
+- `CLAUDE.md` 列出全部 npm 命令，未提 CI
 
 **约束**：
+
 - 这是 monorepo 的子目录，CI 工作目录需要 `defaults.run.working-directory: games/green-cycle`
 - 不引入 React/Vue 等前端框架相关的 CI 模板
 - 保持 `npm test` / `npm run lint` / `npm run typecheck` 全部 exit 0 作为门禁
@@ -50,28 +52,30 @@
 
 ## Commands you will need
 
-| 用途 | 命令 | 期望结果 |
-|------|------|---------|
-| 安装 | `npm install` | exit 0 |
-| 类型检查 | `npm run typecheck` | exit 0 |
-| 测试 | `npm test` | exit 0 |
-| Lint | `npm run lint` | exit 0 |
-| husky 装钩子 | `npm run prepare` | exit 0（首次） |
-| 验证 pre-commit | `git commit --allow-empty -m "test"` | 应触发 lint-staged |
+| 用途            | 命令                                        | 期望结果                         |
+| --------------- | ------------------------------------------- | -------------------------------- |
+| 安装            | `npm install`                               | exit 0                           |
+| 类型检查        | `npm run typecheck`                         | exit 0                           |
+| 测试            | `npm test`                                  | exit 0                           |
+| Lint            | `npm run lint`                              | exit 0                           |
+| husky 装钩子    | `npm run prepare`                           | exit 0（首次）                   |
+| 验证 pre-commit | `git commit --allow-empty -m "test"`        | 应触发 lint-staged               |
 | 验证 commit-msg | `git commit --allow-empty -m "bad message"` | 应被 reject（若启用 commitlint） |
 
 ## Scope
 
 **In scope**：
+
 - `.github/workflows/ci.yml`（新建）
 - `.husky/pre-commit`（新建）
 - `.husky/pre-push`（新建）
 - `.husky/commit-msg`（新建，可选 — 若操作员希望启用 commitlint）
 - `commitlint.config.js`（新建，可选）
 - `package.json`（小改：加 `prepare` 脚本与 `lint-staged` 配置）
-- `README.md` / `AGENT.md` 顶部加一个"CI 状态徽章"行（可选；若不引入徽章可跳过）
+- `README.md` / `CLAUDE.md` 顶部加一个"CI 状态徽章"行（可选；若不引入徽章可跳过）
 
 **Out of scope**：
+
 - 改任何 `src/**` 文件
 - 改任何 `tsconfig.json` / `vite.config.ts` / `eslint.config.js`
 - 改 `.prettierrc` / `vitest.config.ts`
@@ -135,6 +139,7 @@ jobs:
 ```
 
 > 几点：
+>
 > - `working-directory: games/green-cycle` 是关键，否则 `npm ci` 找不到 `package.json`
 > - `cache-dependency-path` 必须指向 monorepo 子目录的 lockfile
 > - `actions/setup-node@v4` 用 Node 20（Vite 5 + TypeScript 5.4 兼容）
@@ -144,6 +149,7 @@ jobs:
 > - `timeout-minutes: 10` 防止挂死
 
 **Verify**：
+
 - 文件存在：`ls .github/workflows/ci.yml`
 - YAML 语法检查：`npx js-yaml .github/workflows/ci.yml > /dev/null` → exit 0（如果没有 `js-yaml`，用 `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/ci.yml'))"` 验证）
 
@@ -212,6 +218,7 @@ fi
 > 注意：pre-push 钩子只能阻止常规 `git push`；`git push --no-verify` 仍可绕过。彻底保护 `main` 需要在 GitHub 仓库设置里开启 branch protection rules。
 
 **Verify**：
+
 - `ls .husky/pre-commit` 存在
 - `cat .husky/pre-commit` 内容为 `npx lint-staged`
 - `ls .husky/pre-push` 存在
@@ -236,7 +243,11 @@ module.exports = {
   extends: ['@commitlint/config-conventional'],
   rules: {
     'header-max-length': [2, 'always', 72],
-    'type-enum': [2, 'always', ['feat', 'fix', 'refactor', 'perf', 'test', 'docs', 'chore', 'style', 'ci']],
+    'type-enum': [
+      2,
+      'always',
+      ['feat', 'fix', 'refactor', 'perf', 'test', 'docs', 'chore', 'style', 'ci'],
+    ],
   },
 };
 ```
@@ -248,6 +259,7 @@ npx --no -- commitlint --edit "$1"
 ```
 
 **Verify**：
+
 - `cat commitlint.config.js` 内容正确
 - `cat .husky/commit-msg` 内容正确
 - 试 `git commit --allow-empty -m "bad message"` → 应被 reject（exit code 非 0 + 提示）
@@ -259,6 +271,7 @@ npx --no -- commitlint --edit "$1"
 `npm run prepare`（Step 2D）已经安装 husky 骨架；本步只做确认。
 
 **Verify**：
+
 - `ls -la .husky/` 至少有 `pre-commit`、`pre-push`、`_/`、可能 `commit-msg`
 - `cat .git/hooks/pre-commit` 应该被 husky 接管（一般是 `husky.sh` 路径）
 - `cat .git/hooks/pre-push` 应该被 husky 接管
@@ -287,6 +300,7 @@ git checkout -- src/config.ts
 > 干净路径：直接 `git commit --allow-empty -m "chore(ci): verify hooks"` 也行，只是无法验证 lint-staged 是否实际修复格式。
 
 **Verify**：
+
 - `npm run typecheck` → exit 0
 - `npm run lint` → exit 0
 - `npm test` → exit 0
@@ -302,6 +316,7 @@ git status
 ```
 
 应该只有本计划新增/修改的文件：
+
 - `.github/workflows/ci.yml`（新增）
 - `.husky/pre-commit`（新增）
 - `.husky/pre-push`（新增）
