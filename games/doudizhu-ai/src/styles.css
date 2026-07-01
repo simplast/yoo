@@ -1,0 +1,653 @@
+:root {
+  color-scheme: dark;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background: #0b0f1a;
+  color: #aab2c0;
+  --bg: #0b0f1a;
+  --bg-surface: #121622;
+  --bg-panel: rgba(18, 22, 34, 0.94);
+  --accent: #5b8def;
+  --accent-dim: rgba(91, 141, 239, 0.12);
+  --accent-glow: rgba(91, 141, 239, 0.25);
+  --text-primary: #eaecf0;
+  --text-secondary: #8895a7;
+  --border: rgba(255, 255, 255, 0.08);
+  --danger: #ef6b6b;
+  --warn: #f0b74a;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  width: 100%; height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body {
+  background: var(--bg);
+}
+
+button, input, select { font: inherit; }
+
+button { cursor: pointer; }
+
+button:disabled {
+  cursor: not-allowed;
+  filter: grayscale(0.6);
+  opacity: 0.4;
+}
+
+#game-stage {
+  position: fixed;
+  inset: 0;
+  width: 100%; height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(1200px 600px at 50% 30%, rgba(91, 141, 239, 0.08), transparent 70%),
+    var(--bg);
+  z-index: 0;
+}
+
+.game-stage {
+  position: relative;
+  touch-action: manipulation;
+}
+
+/* 卡牌区域容器 */
+.card-region {
+  position: absolute;
+  inset: 0;
+}
+
+/* 仅人类手牌区域接收点击，其余区域穿透到下方 HUD */
+.region-human {
+  pointer-events: auto;
+  z-index: 5;
+}
+
+.hud-root, #hud-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 仅交互元素恢复指针事件；其余穿透到下方卡牌 */
+.hud-actionbar,
+.hud-actionbar > *,
+.icon-button,
+.panel-close,
+.toast--visible,
+.config-panel:not([hidden]),
+.settlement-modal:not([hidden]),
+.config-panel :is(input, select, textarea, button),
+.settlement-modal :is(input, select, textarea, button) {
+  pointer-events: auto;
+}
+
+.game-stage {
+  position: relative;
+  touch-action: manipulation;
+}
+
+/* 人类手牌区域接收指针事件，卡牌本身通过 .clickable 接收 */
+.region-human {
+  pointer-events: auto;
+  z-index: 5;
+}
+.region-center { z-index: 4; }
+.region-bottom { z-index: 3; }
+.region-ai-left, .region-ai-right { z-index: 2; }
+
+/* 单张卡牌 —— 经典空当接龙扑克牌 */
+.card {
+  position: absolute;
+  top: 0; left: 0;
+  width: 56px;
+  height: 80px;
+  border-radius: 5px;
+  border: 1px solid rgba(0, 0, 0, 0.35);
+  background: #fbfbf7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  user-select: none;
+  transition: transform 160ms ease-out, box-shadow 120ms ease-out;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  will-change: transform;
+}
+
+.card.card-face {
+  padding: 3px 4px;
+}
+
+.card-red { color: #d5303a; }
+.card-black { color: #1a1a1a; }
+
+.card-corner {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.05;
+  text-align: left;
+}
+.card-corner .rank { display: block; }
+.card-corner .suit { display: block; font-size: 11px; }
+
+.card-center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  font-weight: 700;
+  opacity: 0.85;
+}
+.card-center.joker {
+  font-size: 9px;
+  letter-spacing: 0.05em;
+  writing-mode: vertical-rl;
+}
+
+/* 背面 */
+.card.card-back {
+  background:
+    repeating-linear-gradient(45deg, #1a2b4a 0 6px, #243a5e 6px 12px);
+  border-color: rgba(91, 141, 239, 0.5);
+}
+.card-back-pattern {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+}
+
+/* 可点击 + 选中态 */
+.card.clickable {
+  pointer-events: auto;
+  cursor: pointer;
+}
+.card.clickable:hover {
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.5);
+}
+.card.selected {
+  box-shadow: 0 6px 16px rgba(91, 141, 239, 0.55), 0 0 0 2px var(--accent);
+  border-color: var(--accent);
+}
+
+/* 出牌飞入效果由 Scene.ts applyLayout() 用 JS 驱动 CSS transition 实现 */
+/* 旧牌淡出仍用 CSS animation（card-exit）。 */
+
+/* 旧牌淡出动画（淡出后保持不可见，等待 JS 移除 DOM） */
+.card--exit {
+  animation: card-exit 200ms ease-in forwards;
+}
+
+@keyframes card-exit {
+  0%   { opacity: 1; transform: translate3d(var(--tx), var(--ty), 0) rotate(var(--rotate)); }
+  100% { opacity: 0; transform: translate3d(var(--tx), var(--ty), 0) rotate(var(--rotate)); }
+}
+
+/* 炸弹/火箭抖动 */
+.region-center.shake {
+  animation: dd-shake 360ms ease-in-out;
+}
+@keyframes dd-shake {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-6px, 2px); }
+  40% { transform: translate(5px, -2px); }
+  60% { transform: translate(-4px, 1px); }
+  80% { transform: translate(3px, -1px); }
+}
+
+#hud-root, .hud-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* 仅对需要交互的元素恢复指针事件，其余区域穿透到下方卡牌 */
+.icon-button,
+.primary-action,
+.secondary-action,
+.ghost-action,
+.config-panel:not([hidden]),
+.settlement-modal:not([hidden]),
+.toast--visible,
+.panel-close,
+.config-panel :is(input, select, textarea, button),
+.settlement-modal :is(input, select, textarea, button) {
+  pointer-events: auto;
+}
+
+/* 非交互区域：穿透点击到下方游戏舞台 */
+.hud-actionbar,
+.ai-player,
+.player-info,
+.status-log-wrap {
+  pointer-events: none;
+}
+
+/* 设置图标按钮（右上角） */
+.icon-button {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+  line-height: 1;
+  transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+.icon-button:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+  background: rgba(91, 141, 239, 0.12);
+}
+
+/* 右下状态日志（弱化） */
+.status-log-wrap {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+  max-width: min(28rem, calc(100vw - 2rem));
+  text-align: right;
+  pointer-events: none;
+}
+
+.status-log, .meta-log {
+  margin: 0;
+  padding: 0.25rem 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  line-height: 1.35;
+  opacity: 0.75;
+  background: rgba(18, 22, 34, 0.5);
+  border-radius: 4px;
+  word-break: break-word;
+}
+
+.status-log {
+  font-weight: 600;
+}
+
+/* shared panel look */
+.panel-card, .modal-card,
+.player-info, .ai-player {
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: 8px;
+}
+
+/* action bar — 位于手牌上方，不遮挡卡牌 */
+.hud-actionbar {
+  position: absolute;
+  left: 50%;
+  bottom: calc(80px + 28px); /* 卡牌高度 + 间距 */
+  display: flex;
+  width: min(48rem, calc(100vw - 2rem));
+  transform: translateX(-50%);
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* player widgets */
+.player-info, .ai-player {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ai-player {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+  padding: 0.45rem 0.7rem;
+  max-width: 14rem;
+}
+
+.ai-player-left {
+  position: absolute;
+  top: 15%;
+  left: 14%;
+}
+
+.ai-player-right {
+  position: absolute;
+  top: 15%;
+  right: 14%;
+}
+
+.player-info.player-active,
+.ai-player.player-active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-dim);
+}
+
+.player-name {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.player-name.player-name-active {
+  color: var(--accent);
+}
+
+.player-role {
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.player-active .player-role {
+  background: rgba(91, 141, 239, 0.18);
+  color: var(--accent);
+}
+
+.player-cards {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.player-cards.player-cards-low {
+  color: var(--danger);
+}
+
+.player-speech {
+  display: none;
+  margin-top: 0.1rem;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 500;
+  max-width: 12rem;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+/* buttons */
+.primary-action, .secondary-action, .ghost-action {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.7rem 1.1rem;
+  color: var(--text-primary);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition: background 120ms ease, transform 120ms ease;
+  font-family: inherit;
+}
+
+.primary-action {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.secondary-action {
+  background: rgba(91, 141, 239, 0.15);
+  color: var(--accent);
+}
+
+.ghost-action {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.primary-action:not(:disabled):hover,
+.secondary-action:not(:disabled):hover,
+.ghost-action:not(:disabled):hover {
+  transform: translateY(-1px);
+}
+
+.primary-action:not(:disabled):hover {
+  background: #6b9cf2;
+}
+
+.secondary-action:not(:disabled):hover {
+  background: rgba(91, 141, 239, 0.22);
+}
+
+.ghost-action:not(:disabled):hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* config panel */
+.config-panel {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  padding: 1rem;
+  background: rgba(11, 15, 26, 0.88);
+}
+
+.config-panel[hidden], .settlement-modal[hidden] { display: none; }
+
+.panel-card {
+  position: relative;
+  width: min(62rem, calc(100vw - 2rem));
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+  padding: clamp(1rem, 2vw, 1.6rem);
+  border-radius: 10px;
+}
+
+.panel-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1;
+  transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+.panel-close:hover {
+  color: var(--text-primary);
+  border-color: var(--accent);
+  background: rgba(91, 141, 239, 0.12);
+}
+
+.panel-eyebrow {
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.panel-card h1, .modal-card h2 {
+  margin: 0.2rem 0 0.6rem;
+  font-size: clamp(1.5rem, 4vw, 2.8rem);
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.panel-copy {
+  max-width: 54rem;
+  margin: 0 0 1rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+.ai-config-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.ai-config-card {
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: rgba(18, 22, 34, 0.6);
+}
+
+.ai-config-card legend {
+  padding: 0 0.35rem;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+label {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: 0.8rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+input, select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0.6rem 0.7rem;
+  background: rgba(11, 15, 26, 0.8);
+  color: var(--text-primary);
+  outline: none;
+}
+
+input:focus, select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+}
+
+.advanced-config {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.8rem;
+}
+
+.advanced-config summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.inline-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+.config-error {
+  min-height: 1.4rem;
+  color: var(--danger);
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+/* toast */
+.toast {
+  position: absolute;
+  top: 4.5rem; left: 50%;
+  max-width: min(34rem, calc(100vw - 2rem));
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--border);
+  background: var(--bg-panel);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: 6px;
+  color: var(--text-primary);
+  opacity: 0;
+  transform: translate(-50%, -0.6rem);
+  transition: opacity 150ms ease, transform 150ms ease;
+  font-size: 0.85rem;
+}
+
+.toast--visible { opacity: 1; transform: translate(-50%, 0); }
+
+.toast[data-kind="error"] {
+  border-color: rgba(239, 107, 107, 0.3);
+  color: var(--danger);
+}
+
+/* settlement modal */
+.settlement-modal {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+}
+
+.modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(11, 15, 26, 0.82);
+}
+
+.modal-card {
+  position: relative;
+  width: min(30rem, calc(100vw - 2rem));
+  padding: 1.2rem;
+  border-radius: 10px;
+}
+
+.settlement-multiplier {
+  display: inline-flex;
+  margin: 0.5rem 0;
+  padding: 0.35rem 0.6rem;
+  border-radius: 4px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.score-list {
+  list-style: none; padding: 0;
+  margin: 0.7rem 0 0.9rem;
+}
+
+.score-list li {
+  display: flex; justify-content: space-between;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+.score-positive { color: var(--accent); }
+.score-negative { color: var(--danger); }
+
+.modal-actions {
+  display: flex; flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+/* responsive */
+@media (max-width: 760px) {
+  .hud-actionbar, .ai-config-grid, .inline-fields { grid-template-columns: 1fr; }
+  .hud-actionbar { display: grid; }
+  .status-log-wrap { max-width: calc(100vw - 1.5rem); }
+}
